@@ -1,8 +1,9 @@
 .box {
     position: fixed;
-    color: green;
-    background-color: gray;
+    color: yellowgreen;
+    background-color: black;
     padding: 0 10px;
+    border-radius: 100%;
 }
 h1 {
     margin: auto;
