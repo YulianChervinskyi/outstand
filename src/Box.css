@@ -2,6 +2,7 @@
     position: fixed;
     color: green;
     background-color: gray;
+    padding: 0 10px;
 }
 h1 {
     margin: auto;

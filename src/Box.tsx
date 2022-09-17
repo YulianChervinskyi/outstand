@@ -3,7 +3,7 @@ import './Box.css';
 interface BoxProps {
     x:number,
     y:number,
-    width:number,
+    width:number | 'auto',
     height:number,
     text:string,
     onClick:(e: React.MouseEvent) => void,

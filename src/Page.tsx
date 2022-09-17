@@ -7,6 +7,8 @@ interface IState {
 
 export class Page extends React.Component<{}, IState>
 {
+    counter = 0;
+
     constructor() {
         super({});
         this.state = {boxes: []};
@@ -24,9 +26,9 @@ export class Page extends React.Component<{}, IState>
         const newBox = <Box
             x={e.clientX}
             y={e.clientY}
-            width={50}
+            width={'auto'}
             height={50}
-            text={`${Math.round(e.clientX/e.clientY)}`}
+            text={`${++this.counter}`}
             onClick={(e) => {e.stopPropagation();}}
         />;
 
