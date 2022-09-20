@@ -26,8 +26,8 @@ export class Page extends React.Component<{}, IState>
         const newBox = <Box
             x={e.clientX}
             y={e.clientY}
-            width={'auto'}
-            height={50}
+            width={200}
+            height={200}
             text={`${++this.counter}`}
             onChange={(e) => console.log(e)}
             onMove={(pos) => console.log(pos)}
