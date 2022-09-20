@@ -13,12 +13,12 @@ export class Page extends React.Component<{}, IState>
         super({});
         this.state = {boxes: []};
 
-        setInterval(() => {
-            this.setState((s) => {
-                s.boxes.splice(0, 1);
-                return s;
-            })
-        }, 5000);
+        // setInterval(() => {
+        //     this.setState((s) => {
+        //         s.boxes.splice(0, 1);
+        //         return s;
+        //     })
+        // }, 5000);
     }
 
     handleClick = (e: React.MouseEvent) =>

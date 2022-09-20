@@ -1,4 +1,6 @@
 import './Box.css';
+import {BoxHeader} from "./BoxHeader";
+import {NoteEditor} from "./NoteEditor";
 
 interface BoxProps {
     x:number,
@@ -19,7 +21,8 @@ export function Box(props: BoxProps) {
 
     return (
         <div className="box" style={style} onClick={props.onClick}>
-            <h1>{props.text}</h1>
+            <BoxHeader/>
+            <NoteEditor/>
         </div>
     );
 }
