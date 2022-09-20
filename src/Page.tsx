@@ -29,7 +29,10 @@ export class Page extends React.Component<{}, IState>
             width={'auto'}
             height={50}
             text={`${++this.counter}`}
-            onClick={(e) => {e.stopPropagation();}}
+            onChange={(e) => console.log(e)}
+            onMove={(pos) => console.log(pos)}
+            onResize={(size) => console.log(size)}
+            onClose={() => console.log('close')}
         />;
 
         this.setState((s) => {

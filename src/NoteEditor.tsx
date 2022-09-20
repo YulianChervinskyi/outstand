@@ -1,4 +1,5 @@
 export interface INoteEditorProps {
+    onChange:(e: {text: string}) => void,
 }
 
 export function NoteEditor(props: INoteEditorProps) {

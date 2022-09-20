@@ -1,5 +1,6 @@
 import './Box.css';
 import {BoxHeader} from "./BoxHeader";
+import {BoxResizer} from "./BoxResizer";
 import {NoteEditor} from "./NoteEditor";
 
 interface BoxProps {
@@ -8,7 +9,10 @@ interface BoxProps {
     width:number | 'auto',
     height:number,
     text:string,
-    onClick:(e: React.MouseEvent) => void,
+    onChange:(e: {text: string}) => void,
+    onMove:(pos: {x: number, y:number}) => void,
+    onClose:() => void,
+    onResize:(size: {width: number, height:number}) => void,
 }
 
 export function Box(props: BoxProps) {
@@ -20,9 +24,10 @@ export function Box(props: BoxProps) {
     }
 
     return (
-        <div className="box" style={style} onClick={props.onClick}>
-            <BoxHeader/>
-            <NoteEditor/>
+        <div className="box" style={style}>
+            <BoxHeader onClose={props.onClose} onMove={props.onMove}/>
+            <NoteEditor onChange={props.onChange}/>
+            <BoxResizer onResize={props.onResize}/>
         </div>
     );
 }
