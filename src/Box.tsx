@@ -8,7 +8,6 @@ interface BoxProps {
     y: number,
     width: number | 'auto',
     height: number,
-    text: string,
     onChange: (e: { text: string }) => void,
     onMove: (pos: { x: number, y: number }) => void,
     onClose: () => void,
