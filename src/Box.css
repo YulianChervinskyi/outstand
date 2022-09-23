@@ -1,9 +1,15 @@
+:root {
+    --background-color: #204020;
+    --text-color: yellowgreen;
+    --border-radius: 10px;
+}
+
 .box {
     position: fixed;
-    color: yellowgreen;
-    background-color: #204020;
+    color: var(--text-color);
+    background-color: var(--background-color);
     padding: 10px 10px;
-    border-radius: 10px;
+    border-radius: var(--border-radius);
     display: flex;
     flex-direction: column;
 }
@@ -19,7 +25,7 @@
     resize: none;
     background: none;
     border: none;
-    color: yellowgreen;
+    color: var(--text-color);
 }
 
 .note-editor textarea:focus-visible {
@@ -33,7 +39,7 @@
 
 .note-editor textarea::-webkit-scrollbar-thumb {
     width: 5px;
-    background: yellowgreen;
+    background: var(--text-color);
 }
 
 h1 {
