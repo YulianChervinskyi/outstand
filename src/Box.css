@@ -22,6 +22,10 @@
     color: yellowgreen;
 }
 
+.note-editor textarea:focus-visible {
+    outline: none;
+}
+
 .note-editor textarea::-webkit-scrollbar {
     background: none;
     width: 8px;
