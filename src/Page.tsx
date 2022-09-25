@@ -12,13 +12,6 @@ export class Page extends React.Component<{}, IState>
     constructor(props = {}) {
         super(props);
         this.state = {boxes: []};
-
-        // setInterval(() => {
-        //     this.setState((s) => {
-        //         s.boxes.splice(0, 1);
-        //         return s;
-        //     })
-        // }, 5000);
     }
 
     handleClick = (e: React.MouseEvent) =>
@@ -40,7 +33,7 @@ export class Page extends React.Component<{}, IState>
     }
 
     render() {
-        return (<div className="App" onClick={this.handleClick}>
+        return (<div className="App" onDoubleClick={this.handleClick}>
             {this.state.boxes}
         </div>);
     }
