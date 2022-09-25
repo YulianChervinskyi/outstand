@@ -14,6 +14,16 @@
     flex-direction: column;
 }
 
+.box-resizer {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    background-color: red;
+    border-radius: 0 0 var(--border-radius) 0;
+}
+
 .note-editor{
   flex-grow: 1;
 }
