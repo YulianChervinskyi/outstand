@@ -11,8 +11,6 @@ export class BoxResizer extends React.Component<IBoxResizerProps, {pos: {x:numbe
     constructor(props: IBoxResizerProps) {
         super(props);
         this.state = {pos: {x: 0, y: 0}, dragging: false};
-        document.body.onmouseup = this.handleMouseUp;
-        document.body.onmousemove = this.handleMouseMove;
     }
 
     private dragging = false;
@@ -26,6 +24,8 @@ export class BoxResizer extends React.Component<IBoxResizerProps, {pos: {x:numbe
         this.startY = e.clientY;
         this.dragging = true;
         this.setState({...this.state, dragging: true});
+        document.body.onmouseup = this.handleMouseUp;
+        document.body.onmousemove = this.handleMouseMove;
     }
 
     private handleMouseUp = (e: MouseEvent) => {
