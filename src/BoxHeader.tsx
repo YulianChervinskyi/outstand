@@ -1,5 +1,5 @@
 import './BoxHeader.css';
-// import React, {useState} from "react";
+import React from "react";
 
 export interface IBoxHeaderProps {
     onMove: (pos: { x: number, y: number }) => void,
@@ -15,20 +15,14 @@ export function BoxHeader(props: IBoxHeaderProps) {
         oldPos = {x: e.clientX, y: e.clientY};
         document.body.onmousemove = handleMouseMove;
         document.body.onmouseup = handleMouseUp;
-        console.log("down");
-        console.log(oldPos);
     }
 
     const handleMouseUp = () => {
-        console.log("up");
-        console.log(oldPos);
         // setOldPos(undefined);
         oldPos = undefined;
     }
 
     const handleMouseMove = (e: MouseEvent) => {
-        console.log("move");
-        console.log(oldPos);
         if (oldPos)
             props.onMove({x: e.clientX - oldPos.x, y: e.clientY - oldPos.y});
     }
