@@ -1,5 +1,5 @@
 import './BoxHeader.css';
-import React, {useState} from "react";
+// import React, {useState} from "react";
 
 export interface IBoxHeaderProps {
     onMove: (pos: { x: number, y: number }) => void,
@@ -7,17 +7,28 @@ export interface IBoxHeaderProps {
 }
 
 export function BoxHeader(props: IBoxHeaderProps) {
-    const [oldPos, setOldPos] = useState<{x: number, y: number} | undefined>(undefined);
+    //const [oldPos, setOldPos] = useState<{x: number, y: number} | undefined>(undefined);
+    let oldPos:{x: number, y: number} | undefined = undefined;
 
     const handleMouseDown = (e: React.MouseEvent) => {
-        setOldPos({x: e.clientX, y: e.clientY});
+        // setOldPosPos({x: e.clientX, y: e.clientY});
+        oldPos = {x: e.clientX, y: e.clientY};
+        document.body.onmousemove = handleMouseMove;
+        document.body.onmouseup = handleMouseUp;
+        console.log("down");
+        console.log(oldPos);
     }
 
     const handleMouseUp = () => {
-        setOldPos(undefined);
+        console.log("up");
+        console.log(oldPos);
+        // setOldPos(undefined);
+        oldPos = undefined;
     }
 
-    const handleMouseMove = (e: React.MouseEvent) => {
+    const handleMouseMove = (e: MouseEvent) => {
+        console.log("move");
+        console.log(oldPos);
         if (oldPos)
             props.onMove({x: e.clientX - oldPos.x, y: e.clientY - oldPos.y});
     }
@@ -26,8 +37,8 @@ export function BoxHeader(props: IBoxHeaderProps) {
         <div
             className="box-header"
             onMouseDown={handleMouseDown}
-            onMouseUp={handleMouseUp}
-            onMouseMove={handleMouseMove}
+            // onMouseUp={handleMouseUp}
+            // onMouseMove={handleMouseMove}
         />
     );
 }
