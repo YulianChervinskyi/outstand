@@ -17,11 +17,11 @@ interface BoxProps {
 
 export function Box(props: BoxProps) {
     const [size, setSize] = useState({width: props.width, height: props.height});
-    const [pos, setPos] = useState({x: 0, y: 0});
+    const [pos, setPos] = useState({x: props.x, y: props.y});
 
     const style = {
-        left: props.x + pos.x,
-        top: props.y + pos.y,
+        left: pos.x,
+        top: pos.y,
         width: size.width,
         height: size.height,
     };
