@@ -6,11 +6,11 @@ export interface IBoxResizerProps {
     onResize: (size: { width: number, height: number }) => void,
 }
 
-export class BoxResizer extends React.Component<IBoxResizerProps, {pos: {x:number, y:number}, dragging: boolean}> {
+export class BoxResizer extends React.Component<IBoxResizerProps, {dragging: boolean}> {
 
     constructor(props: IBoxResizerProps) {
         super(props);
-        this.state = {pos: {x: 0, y: 0}, dragging: false};
+        this.state = {dragging: false};
     }
 
     private dragging = false;
@@ -23,7 +23,7 @@ export class BoxResizer extends React.Component<IBoxResizerProps, {pos: {x:numbe
         this.startX = e.clientX;
         this.startY = e.clientY;
         this.dragging = true;
-        this.setState({...this.state, dragging: true});
+        this.setState({dragging: true});
         document.body.onmouseup = this.handleMouseUp;
         document.body.onmousemove = this.handleMouseMove;
     }
@@ -34,7 +34,9 @@ export class BoxResizer extends React.Component<IBoxResizerProps, {pos: {x:numbe
             console.log("mouseup");
         }
 
-        this.setState({...this.state, dragging: false});
+        this.setState({dragging: false});
+        this.startWidth = this.props.width;
+        this.startHeight = this.props.height;
         this.dragging = false;
     }
 
@@ -43,7 +45,6 @@ export class BoxResizer extends React.Component<IBoxResizerProps, {pos: {x:numbe
             const x = this.startX - e.clientX;
             const y = this.startY - e.clientY;
 
-            this.setState({...this.state, pos: {x, y}});
             this.props.onResize({width: this.startWidth - x, height: this.startHeight - y});
         }
     }
@@ -51,8 +52,6 @@ export class BoxResizer extends React.Component<IBoxResizerProps, {pos: {x:numbe
     render() {
         return (<div className="box-resizer" style={{background: this.state.dragging ? "green" : "red"}}
                      onMouseDown={this.handleMouseDown}
-                     // onMouseUp={this.handleMouseUp}
-                     // onMouseMove={this.handleMouseMove}
         />)
     }
 }
