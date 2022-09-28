@@ -33,7 +33,7 @@ export function Box(props: BoxProps) {
     }
 
     const handleMove = (change: { x: number, y: number }) => {
-        setPos({x:change.x, y:change.y});
+        setPos({x: pos.x + change.x, y: pos.y + change.y});
     };
 
     return (
