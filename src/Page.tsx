@@ -5,8 +5,7 @@ interface IState {
     boxes: JSX.Element[];
 }
 
-export class Page extends React.Component<{}, IState>
-{
+export class Page extends React.Component<{}, IState> {
     counter = 0;
 
     constructor(props = {}) {
@@ -14,8 +13,7 @@ export class Page extends React.Component<{}, IState>
         this.state = {boxes: []};
     }
 
-    handleClick = (e: React.MouseEvent) =>
-    {
+    handleClick = (e: React.MouseEvent) => {
         const newBox = <Box
             x={e.clientX}
             y={e.clientY}
@@ -33,8 +31,10 @@ export class Page extends React.Component<{}, IState>
     }
 
     render() {
-        return (<div className="App" onDoubleClick={this.handleClick}>
-            {this.state.boxes}
-        </div>);
+        return (
+            <div className="App" onDoubleClick={this.handleClick}>
+                {this.state.boxes}
+            </div>
+        );
     }
 }

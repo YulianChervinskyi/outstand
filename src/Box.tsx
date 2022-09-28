@@ -16,7 +16,6 @@ interface BoxProps {
 }
 
 export function Box(props: BoxProps) {
-
     const [size, setSize] = useState({width: props.width, height: props.height});
     const [pos, setPos] = useState({x: 0, y: 0});
 
@@ -26,7 +25,6 @@ export function Box(props: BoxProps) {
         width: size.width,
         height: size.height,
     };
-
 
     const handleResize = (size: { width: number, height: number }) => {
         setSize(size);

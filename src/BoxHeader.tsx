@@ -7,18 +7,16 @@ export interface IBoxHeaderProps {
 }
 
 export function BoxHeader(props: IBoxHeaderProps) {
-    //const [oldPos, setOldPos] = useState<{x: number, y: number} | undefined>(undefined);
-    let oldPos:{x: number, y: number} | undefined = undefined;
+    let oldPos: { x: number, y: number } | undefined = undefined;
 
     const handleMouseDown = (e: React.MouseEvent) => {
-        // setOldPosPos({x: e.clientX, y: e.clientY});
         oldPos = {x: e.clientX, y: e.clientY};
+
         document.body.onmousemove = handleMouseMove;
         document.body.onmouseup = handleMouseUp;
     }
 
     const handleMouseUp = () => {
-        // setOldPos(undefined);
         oldPos = undefined;
     }
 
@@ -28,11 +26,6 @@ export function BoxHeader(props: IBoxHeaderProps) {
     }
 
     return (
-        <div
-            className="box-header"
-            onMouseDown={handleMouseDown}
-            // onMouseUp={handleMouseUp}
-            // onMouseMove={handleMouseMove}
-        />
+        <div className="box-header" onMouseDown={handleMouseDown}/>
     );
 }

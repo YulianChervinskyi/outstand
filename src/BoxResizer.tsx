@@ -6,7 +6,7 @@ export interface IBoxResizerProps {
     onResize: (size: { width: number, height: number }) => void,
 }
 
-export class BoxResizer extends React.Component<IBoxResizerProps, {dragging: boolean}> {
+export class BoxResizer extends React.Component<IBoxResizerProps, { dragging: boolean }> {
 
     constructor(props: IBoxResizerProps) {
         super(props);
@@ -24,6 +24,7 @@ export class BoxResizer extends React.Component<IBoxResizerProps, {dragging: boo
         this.startY = e.clientY;
         this.dragging = true;
         this.setState({dragging: true});
+
         document.body.onmouseup = this.handleMouseUp;
         document.body.onmousemove = this.handleMouseMove;
     }
@@ -50,8 +51,10 @@ export class BoxResizer extends React.Component<IBoxResizerProps, {dragging: boo
     }
 
     render() {
-        return (<div className="box-resizer" style={{background: this.state.dragging ? "green" : "red"}}
-                     onMouseDown={this.handleMouseDown}
-        />)
+        return (
+            <div className="box-resizer" style={{background: this.state.dragging ? "green" : "red"}}
+                 onMouseDown={this.handleMouseDown}
+            />
+        )
     }
 }
