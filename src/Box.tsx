@@ -11,10 +11,10 @@ interface BoxProps {
     height: number,
     active: boolean,
     text: string,
-    onChange: (e: { text: string }) => void,
-    onMove: (pos: { x: number, y: number }) => void,
+    onChange: (id: number, e: { text: string }) => void,
+    onMove: (id: number, pos: { x: number, y: number }) => void,
     onClose: (id: number) => void,
-    onResize: (size: { width: number, height: number }) => void,
+    onResize: (id: number, size: { width: number, height: number }) => void,
     onActive: (id: number) => void,
     id: number,
 }
@@ -33,10 +33,12 @@ export function Box(props: BoxProps) {
 
     const handleResize = (size: { width: number, height: number }) => {
         setSize(size);
+        props.onResize(props.id, size);
     };
 
     const handleMove = (change: { x: number, y: number }) => {
         setPos({x: pos.x + change.x, y: pos.y + change.y});
+        props.onMove(props.id, {x: pos.x + change.x, y: pos.y + change.y});
     };
 
     const handleMouseDown = () => {
@@ -46,7 +48,7 @@ export function Box(props: BoxProps) {
     return (
         <div className="box" style={style} onMouseDown={handleMouseDown}>
             <BoxHeader onClose={() => props.onClose(props.id)} onMove={handleMove}/>
-            <NoteEditor onChange={props.onChange}/>
+            <NoteEditor text={props.text} onChange={(e) => props.onChange(props.id, e)}/>
             <BoxResizer width={size.width} height={size.height} onResize={handleResize}/>
         </div>
     );
