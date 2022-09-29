@@ -13,6 +13,11 @@ export class Page extends React.Component<{}, IState> {
         this.state = {boxes: []};
     }
 
+    handleClose = (id: number) => {
+        this.setState({boxes: this.state.boxes.filter(b => Number(b.key) !== id)});
+        console.log(id);
+    }
+
     handleClick = (e: React.MouseEvent) => {
         const newBox = <Box
             x={e.clientX}
@@ -22,7 +27,8 @@ export class Page extends React.Component<{}, IState> {
             onChange={(e) => console.log(e)}
             onMove={(pos) => console.log(pos)}
             onResize={(size) => console.log(size)}
-            onClose={() => console.log('close')}
+            onClose={this.handleClose}
+            id={this.counter}
             key={this.counter++}
         />;
 

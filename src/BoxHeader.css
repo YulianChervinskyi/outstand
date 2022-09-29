@@ -1,5 +1,18 @@
 .box-header {
+    position: relative;
     background-color: darkorange;
     width: 100%;
-    height: 10px;
+    height: 15px;
+    display: flex;
+    flex-direction: row;
+}
+
+.box-header .mover {
+    flex-grow: 1;
+}
+
+.box-header .close-button {
+    margin: auto;
+    height: 100%;
+    vertical-align: baseline;
 }

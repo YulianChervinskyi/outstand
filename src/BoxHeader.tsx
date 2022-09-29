@@ -26,6 +26,9 @@ export function BoxHeader(props: IBoxHeaderProps) {
     }
 
     return (
-        <div className="box-header" onMouseDown={handleMouseDown}/>
+        <div className="box-header">
+            <div className="mover" onMouseDown={handleMouseDown}></div>
+            <button className="clos-button" onClick={props.onClose}>x</button>
+        </div>
     );
 }

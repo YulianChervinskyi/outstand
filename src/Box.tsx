@@ -11,8 +11,9 @@ interface BoxProps {
     height: number,
     onChange: (e: { text: string }) => void,
     onMove: (pos: { x: number, y: number }) => void,
-    onClose: () => void,
+    onClose: (id: number) => void,
     onResize: (size: { width: number, height: number }) => void,
+    id: number,
 }
 
 export function Box(props: BoxProps) {
@@ -36,7 +37,7 @@ export function Box(props: BoxProps) {
 
     return (
         <div className="box" style={style} onClick={(e) => e.stopPropagation()}>
-            <BoxHeader onClose={props.onClose} onMove={handleMove}/>
+            <BoxHeader onClose={() => props.onClose(props.id)} onMove={handleMove}/>
             <NoteEditor onChange={props.onChange}/>
             <BoxResizer width={size.width} height={size.height} onResize={handleResize}/>
         </div>
