@@ -1,54 +1,75 @@
 import React from "react";
 import {Box} from "./Box";
 
+interface IBoxData {
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    active: boolean,
+    text: string,
+}
+
 interface IState {
-    boxes: JSX.Element[];
+    boxes: { [id: number]: IBoxData };
 }
 
 export class Page extends React.Component<{}, IState> {
     counter = 0;
+    activeBoxId = 0;
 
     constructor(props = {}) {
         super(props);
-        this.state = {boxes: []};
+        this.state = {boxes: {}};
     }
 
     handleClose = (id: number) => {
-        this.setState({boxes: this.state.boxes.filter(b => Number(b.key) !== id)});
+        delete this.state.boxes[id];
+        this.setState(this.state);
         console.log(id);
     }
 
     handleActive = (id: number) => {
-        /*make for all boxes zIndex == 0*/
-/*
-        style.zIndex = 1;
+        this.state.boxes[this.activeBoxId].active = false;
+        this.state.boxes[id].active = true;
+        this.activeBoxId = id;
         this.setState(this.state);
-*/
     }
 
-    handleClick = (e: React.MouseEvent) => {
-        const newBox = <Box
-            x={e.clientX}
-            y={e.clientY}
-            width={200}
-            height={200}
-            onChange={(e) => console.log(e)}
-            onMove={(pos) => console.log(pos)}
-            onResize={(size) => console.log(size)}
-            onClose={this.handleClose}
-            onActive={this.handleActive}
-            id={this.counter}
-            key={this.counter++}
-        />;
+    handleDoubleClick = (e: React.MouseEvent) => {
+        this.state.boxes[this.counter] = {
+            x: e.clientX,
+            y: e.clientY,
+            width: 200,
+            height: 200,
+            active: true,
+            text: '',
+        }
 
-        this.state.boxes.push(newBox);
         this.setState(this.state);
+
+        this.handleActive(this.counter);
+        this.counter++;
     }
 
     render() {
         return (
-            <div className="App" onDoubleClick={this.handleClick}>
-                {this.state.boxes}
+            <div className="App" onDoubleClick={this.handleDoubleClick}>
+                {Object.entries(this.state.boxes).map(([key, b]) => <Box
+                    x={b.x}
+                    y={b.y}
+                    width={b.width}
+                    height={b.height}
+                    active={b.active}
+                    text={b.text}
+                    onChange={(e) => console.log(e)}
+                    onMove={(pos) => console.log(pos)}
+                    onResize={(size) => console.log(size)}
+                    onClose={this.handleClose}
+                    onActive={this.handleActive}
+                    id={Number(key)}
+                    key={key}
+                />)}
             </div>
         );
     }

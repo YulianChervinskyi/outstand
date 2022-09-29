@@ -30,10 +30,8 @@ export class BoxResizer extends React.Component<IBoxResizerProps, { dragging: bo
     }
 
     private handleMouseUp = (e: MouseEvent) => {
-        if (this.dragging) {
+        if (this.dragging)
             e.stopPropagation();
-            console.log("mouseup");
-        }
 
         this.setState({dragging: false});
         this.startWidth = this.props.width;
@@ -55,6 +53,6 @@ export class BoxResizer extends React.Component<IBoxResizerProps, { dragging: bo
             <div className="box-resizer" style={{background: this.state.dragging ? "#45853d" : "#a33939"}}
                  onMouseDown={this.handleMouseDown}
             />
-        )
+        );
     }
 }
