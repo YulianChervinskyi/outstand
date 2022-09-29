@@ -18,6 +18,14 @@ export class Page extends React.Component<{}, IState> {
         console.log(id);
     }
 
+    handleActive = (id: number) => {
+        /*make for all boxes zIndex == 0*/
+/*
+        style.zIndex = 1;
+        this.setState(this.state);
+*/
+    }
+
     handleClick = (e: React.MouseEvent) => {
         const newBox = <Box
             x={e.clientX}
@@ -28,6 +36,7 @@ export class Page extends React.Component<{}, IState> {
             onMove={(pos) => console.log(pos)}
             onResize={(size) => console.log(size)}
             onClose={this.handleClose}
+            onActive={this.handleActive}
             id={this.counter}
             key={this.counter++}
         />;
