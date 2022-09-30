@@ -15,8 +15,8 @@ interface IState {
 }
 
 export class Page extends React.Component<{}, IState> {
-    counter = 1;
-    activeBoxId = 1;
+    counter = 0;
+    activeBoxId = 0;
 
     constructor(props = {}) {
         super(props);
@@ -25,7 +25,7 @@ export class Page extends React.Component<{}, IState> {
         this.state = stateData ? JSON.parse(stateData) : {boxes: {}};
 
         const keys = Object.keys(this.state.boxes);
-        this.counter = keys.length > 0 ? Number(keys[keys.length - 1]) + 1 : this.counter;
+        this.counter = keys.length > 0 ? Number(keys[keys.length - 1]) : this.counter;
 
         const activeBoxPair = Object.entries(this.state.boxes).find(([_, b]) => b.active);
         this.activeBoxId = activeBoxPair ? Number(activeBoxPair[0]) : this.activeBoxId;
@@ -33,17 +33,21 @@ export class Page extends React.Component<{}, IState> {
 
     handleClose = (id: number) => {
         delete this.state.boxes[id];
-        this.changeState();
+        this.updateState();
     }
 
     handleActive = (id: number) => {
-        this.state.boxes[this.activeBoxId].active = false;
+        if (this.state.boxes[this.activeBoxId])
+            this.state.boxes[this.activeBoxId].active = false;
+
         this.state.boxes[id].active = true;
         this.activeBoxId = id;
-        this.changeState();
+        this.updateState();
     }
 
     handleDoubleClick = (e: React.MouseEvent) => {
+        this.counter++;
+
         this.state.boxes[this.counter] = {
             x: e.clientX,
             y: e.clientY,
@@ -53,11 +57,8 @@ export class Page extends React.Component<{}, IState> {
             text: '',
         }
 
-        this.setState(this.state);
-        this.saveData();
-
+        this.updateState();
         this.handleActive(this.counter);
-        this.counter++;
     }
 
     render() {
@@ -70,9 +71,9 @@ export class Page extends React.Component<{}, IState> {
                     height={b.height}
                     active={b.active}
                     text={b.text}
-                    onChange={(id, e) => this.changeState(id, e)}
-                    onMove={(id, pos) => this.changeState(id, pos)}
-                    onResize={(id, size) => this.changeState(id, size)}
+                    onChange={(id, e) => this.changeBoxState(id, e)}
+                    onMove={(id, pos) => this.changeBoxState(id, pos)}
+                    onResize={(id, size) => this.changeBoxState(id, size)}
                     onClose={this.handleClose}
                     onActive={this.handleActive}
                     id={Number(key)}
@@ -82,10 +83,12 @@ export class Page extends React.Component<{}, IState> {
         );
     }
 
-    changeState = (id?: number, data?: Partial<IBoxData>) => {
-        if (data && id)
-            this.state.boxes[id] = {...this.state.boxes[id], ...data};
+    changeBoxState = (id: number, data: Partial<IBoxData>) => {
+        this.state.boxes[id] = {...this.state.boxes[id], ...data};
+        this.updateState();
+    }
 
+    updateState = () => {
         this.setState(this.state);
         this.saveData();
     }
