@@ -1,32 +1,54 @@
 import {useState} from "react";
-
-interface ICalcProps {
-    width: number,
-    height: number,
-}
+import {KeyLayout} from "./KeyLayout";
+import {Digit, ICalcProps, Operator} from "./types";
 
 export function Calc(props: ICalcProps) {
     const [value, setValue] = useState(0);
+    const [operator, setOperator] = useState<Operator | undefined>(undefined);
+    const [operand, setOperand] = useState<number | undefined>(undefined);
 
-    const handlePressDigit = (digit: number) => {
-        console.log("digit:", digit);
+    const handlePressDigit = (digit: Digit) => {
+        let strValue = value.toString();
+
+        if (operator && !operand) {
+            setOperand(value);
+            strValue = "";
+        }
+        setValue(Number(strValue + digit));
     }
 
-    const handlePressOp = (op: "+" | "-" | "/" | "*") => {
-        console.log("op:", op);
+    const handlePressOp = (op: Operator) => {
+        if (op === Operator.Equal)
+            return handlePressEqual();
+
+        setOperator(op);
     }
 
-    const handlePressDot = () => {
-        console.log("dot pressed");
-    }
-
-    const handlePressResult = () => {
-        console.log("result pressed");
+    const handlePressEqual = () => {
+        if (operator && operand) {
+            switch (operator) {
+                case Operator.Plus:
+                    setValue(operand + value);
+                    break;
+                case Operator.Minus:
+                    setValue(operand - value);
+                    break;
+                case Operator.Multiply:
+                    setValue(operand * value);
+                    break;
+                case Operator.Divide:
+                    setValue(operand / value);
+                    break;
+            }
+            setOperator(undefined);
+            setOperand(undefined);
+        }
     }
 
     const handlePressClear = () => {
-        console.log("clear pressed");
+        setValue(0);
     }
+
 
     return (
         <div style={{
@@ -34,50 +56,31 @@ export function Calc(props: ICalcProps) {
             height: props.height,
             padding: "5px",
             border: "solid 1px black",
-            borderRadius: "4px"
+            borderRadius: "4px",
+            display: "flex",
+            flexDirection: "column",
         }}>
             <div style={{width: "100%"}}>
                 <input
-                    style={{width: "100%", fontSize: props.height * 0.13, marginBottom: "2%", boxSizing: "border-box"}}
+                    style={{
+                        width: "100%",
+                        fontSize: props.height * 0.15,
+                        marginBottom: "2%",
+                        boxSizing: "border-box",
+                        textAlign: "right",
+                        fontFamily: "monospace",
+                    }}
                     value={value}
-                    onChange={(e) => setValue(Number(e.target.value))}
+                    onChange={() => setValue(value)}
                 />
             </div>
 
-            <div style={{display: "flex", flexDirection: "row", height: "16.5%"}}>
-                <button style={{width: "25%"}} onClick={() => handlePressClear()}>C</button>
-                <button style={{width: "25%"}} onClick={() => handlePressOp("/")}>/</button>
-                <button style={{width: "25%"}} onClick={() => handlePressOp("*")}>*</button>
-                <button style={{width: "25%"}} onClick={() => handlePressOp("-")}>-</button>
-            </div>
-
-            <div style={{display: "flex", flexDirection: "row", height: "33%"}}>
-                <div style={{display: "flex", flexDirection: "column", width: "75%", justifyContent: "space-evenly"}}>
-                    <div style={{display: "flex", flexDirection: "row", height: "100%"}}>
-                        {[7, 8, 9].map((n) => <button style={{width: "33.33%"}}
-                                                      onClick={() => handlePressDigit(n)}>{n}</button>)}
-                    </div>
-                    <div style={{display: "flex", flexDirection: "row", height: "100%"}}>
-                        {[4, 5, 6].map((n) => <button style={{width: "33.33%"}}
-                                                      onClick={() => handlePressDigit(n)}>{n}</button>)}
-                    </div>
-                </div>
-                <button style={{width: "25%"}} onClick={() => console.log("+")}>+</button>
-            </div>
-
-            <div style={{display: "flex", flexDirection: "row", height: "33%"}}>
-                <div style={{display: "flex", flexDirection: "column", width: "75%", justifyContent: "space-evenly"}}>
-                    <div style={{display: "flex", flexDirection: "row", height: "100%"}}>
-                        {[1, 2, 3].map((n) => <button style={{width: "33.33%"}}
-                                                      onClick={() => handlePressDigit(n)}>{n}</button>)}
-                    </div>
-                    <div style={{display: "flex", flexDirection: "row", height: "100%"}}>
-                        <button style={{width: "66.66%"}} onClick={() => handlePressDigit(0)}>{0}</button>
-                        <button style={{width: "33.33%"}} onClick={() => handlePressDot()}>.</button>
-                    </div>
-                </div>
-                <button style={{width: "25%"}} onClick={() => handlePressResult()}>=</button>
-            </div>
+            <KeyLayout
+                style={{flexGrow: 1}}
+                onPressDigit={handlePressDigit}
+                onPressOperator={handlePressOp}
+                onPressClear={handlePressClear}
+            />
         </div>
     );
 }
