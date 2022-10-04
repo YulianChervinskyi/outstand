@@ -1,5 +1,6 @@
 import React from "react";
 import {Box} from "./Box";
+import {Calc} from "./calc/Calc";
 
 interface IBoxData {
     x: number,
@@ -79,6 +80,7 @@ export class Page extends React.Component<{}, IState> {
                     id={Number(key)}
                     key={key}
                 />)}
+                <Calc/>
             </div>
         );
     }
