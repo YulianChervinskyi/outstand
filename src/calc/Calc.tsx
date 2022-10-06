@@ -10,6 +10,13 @@ export function Calc() {
         oldValue === value ? setValue(number) : setValue(value.concat(number));
     }
 
+    const inputAddDot = (dot: string) => {
+        if (value.indexOf(".") !== -1)
+            return;
+
+        value ? setValue(value.concat(dot)) : setValue("0" + dot);
+    }
+
     const inputRemoveNumber = () => {
         setValue(value.slice(0, value.length - 1));
     }
@@ -55,7 +62,7 @@ export function Calc() {
                 <div style={{height: "16.66%"}}>
                     <input
                         style={{width: "100%", height: "100%", boxSizing: "border-box"}}
-                        type="number"
+                        type="text"
                         value={value}
                         onChange={(e) => setValue(e.target.value)}
                     />
@@ -83,7 +90,7 @@ export function Calc() {
                 </div>
                 <div style={{flexDirection: "row", height: "16.66%"}}>
                     <button style={{width: "50%"}} onClick={() => inputAddNumber("0")}>0</button>
-                    <button onClick={() => console.log(".")}>.</button>
+                    <button onClick={() => inputAddDot(".")}>.</button>
                     <button onClick={() => calc()}>=</button>
                 </div>
             </div>
