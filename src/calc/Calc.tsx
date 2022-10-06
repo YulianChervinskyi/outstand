@@ -63,6 +63,7 @@ export function Calc() {
                     <input
                         style={{width: "100%", height: "100%", boxSizing: "border-box"}}
                         type="text"
+                        onKeyDown={(e) => e.preventDefault()}
                         value={value}
                         onChange={(e) => setValue(e.target.value)}
                     />
