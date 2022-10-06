@@ -3,32 +3,32 @@ import './calc.css';
 
 export function Calc() {
     const [value, setValue] = useState("");
-    const [oldValue, setOldValue] = useState("");
+    const [prevValue, setPrevValue] = useState("");
     const [calcMode, setCalcMode] = useState("");
 
-    const inputAddNumber = (number: string) => {
-        oldValue === value ? setValue(number) : setValue(value.concat(number));
+    const addDigit = (number: string) => {
+        prevValue === value ? setValue(number) : setValue(value.concat(number));
     }
 
-    const inputAddDot = (dot: string) => {
+    const addDot = (dot: string) => {
         if (value.indexOf(".") !== -1)
             return;
 
         value ? setValue(value.concat(dot)) : setValue("0" + dot);
     }
 
-    const inputRemoveNumber = () => {
+    const removeDigit = () => {
         setValue(value.slice(0, value.length - 1));
     }
 
-    const inputClear = () => {
-        setValue("");
-        setOldValue("");
+    const resetMode = (s:string) => {
+        setValue(s);
+        setPrevValue(s);
         setCalcMode("");
     }
 
     const setMode = (mode: string) => {
-        setOldValue(value);
+        setPrevValue(value);
         setCalcMode(mode);
     }
 
@@ -36,24 +36,22 @@ export function Calc() {
         let a = "";
         switch (calcMode) {
             case "*":
-                a = String(Number(oldValue) * Number(value));
+                a = String(Number(prevValue) * Number(value));
                 break;
             case "/":
-                a = String(Number(oldValue) / Number(value));
+                a = String(Number(prevValue) / Number(value));
                 break;
             case "+":
-                a = String(Number(oldValue) + Number(value));
+                a = String(Number(prevValue) + Number(value));
                 break;
             case "-":
-                a = String(Number(oldValue) - Number(value));
+                a = String(Number(prevValue) - Number(value));
                 break;
             case "%":
-                a = String(Number(oldValue) % Number(value));
+                a = String(Number(prevValue) % Number(value));
                 break;
         }
-        setValue(a);
-        setOldValue(a);
-        setCalcMode("");
+        resetMode(a)
     }
 
     return (
@@ -76,22 +74,22 @@ export function Calc() {
                 </div>
                 <div style={{height: "16.66%"}}>
                     {[7, 8, 9].map((i) =>
-                        <button onClick={() => inputAddNumber(String(i))}>{i}</button>)}
+                        <button onClick={() => addDigit(String(i))}>{i}</button>)}
                     <button onClick={() => setMode("%")}>%</button>
                 </div>
                 <div style={{height: "16.66%"}}>
                     {[4, 5, 6].map((i) =>
-                        <button onClick={() => inputAddNumber(String(i))}>{i}</button>)}
-                    <button onClick={() => inputClear()}>CE</button>
+                        <button onClick={() => addDigit(String(i))}>{i}</button>)}
+                    <button onClick={() => resetMode("")}>CE</button>
                 </div>
                 <div style={{height: "16.66%"}}>
                     {[1, 2, 3].map((i) =>
-                        <button onClick={() => inputAddNumber(String(i))}>{i}</button>)}
-                    <button onClick={() => inputRemoveNumber()}>C</button>
+                        <button onClick={() => addDigit(String(i))}>{i}</button>)}
+                    <button onClick={() => removeDigit()}>C</button>
                 </div>
                 <div style={{flexDirection: "row", height: "16.66%"}}>
-                    <button style={{width: "50%"}} onClick={() => inputAddNumber("0")}>0</button>
-                    <button onClick={() => inputAddDot(".")}>.</button>
+                    <button style={{width: "50%"}} onClick={() => addDigit("0")}>0</button>
+                    <button onClick={() => addDot(".")}>.</button>
                     <button onClick={() => calc()}>=</button>
                 </div>
             </div>
