@@ -2,56 +2,59 @@ import React, {useState} from "react";
 import './calc.css';
 
 export function Calc() {
-    const [value, setValue] = useState("");
-    const [prevValue, setPrevValue] = useState("");
+    const [value, setValue] = useState("0");
+    const [prevValue, setPrevValue] = useState("0");
     const [calcMode, setCalcMode] = useState("");
 
     const addDigit = (number: string) => {
         prevValue === value ? setValue(number) : setValue(value.concat(number));
     }
 
-    const addDot = (dot: string) => {
-        if (value.indexOf(".") !== -1)
-            return;
-
-        value ? setValue(value.concat(dot)) : setValue("0" + dot);
-    }
-
-    const removeDigit = () => {
-        setValue(value.slice(0, value.length - 1));
-    }
-
-    const resetMode = (s:string) => {
-        setValue(s);
-        setPrevValue(s);
+    const resetMode = (_value: string) => {
+        setValue(_value);
+        setPrevValue(_value);
         setCalcMode("");
     }
 
     const setMode = (mode: string) => {
-        setPrevValue(value);
+        if (!calcMode && value !== "0")
+            setPrevValue(value);
+
         setCalcMode(mode);
     }
 
+    const addDot = (dot: string) => {
+        if (value.indexOf(".") !== -1)
+            return;
+
+        value ? setValue(value.concat(dot)) : setValue(value + dot);
+    }
+
+    const removeDigit = () => {
+        value.length > 1 && value !== "NaN" ?
+            setValue(value.slice(0, value.length - 1)) : setValue("0");
+    }
+
     const calc = () => {
-        let a = "";
+        let result = "0";
         switch (calcMode) {
             case "*":
-                a = String(Number(prevValue) * Number(value));
+                result = String(Number(prevValue) * Number(value));
                 break;
             case "/":
-                a = String(Number(prevValue) / Number(value));
+                result = String(Number(prevValue) / Number(value));
                 break;
             case "+":
-                a = String(Number(prevValue) + Number(value));
+                result = String(Number(prevValue) + Number(value));
                 break;
             case "-":
-                a = String(Number(prevValue) - Number(value));
+                result = String(Number(prevValue) - Number(value));
                 break;
             case "%":
-                a = String(Number(prevValue) % Number(value));
+                result = String(Number(prevValue) % Number(value));
                 break;
         }
-        resetMode(a)
+        resetMode(result);
     }
 
     return (
@@ -59,10 +62,10 @@ export function Calc() {
             <div className="main">
                 <div style={{height: "16.66%"}}>
                     <input
-                        style={{width: "100%", height: "100%", boxSizing: "border-box"}}
+                        style={{width: "100%", height: "100%", boxSizing: "border-box", textAlign: "right"}}
                         type="text"
-                        onKeyDown={(e) => e.preventDefault()}
                         value={value}
+                        onKeyDown={(e) => e.preventDefault()}
                         onChange={(e) => setValue(e.target.value)}
                     />
                 </div>
@@ -75,12 +78,12 @@ export function Calc() {
                 <div style={{height: "16.66%"}}>
                     {[7, 8, 9].map((i) =>
                         <button onClick={() => addDigit(String(i))}>{i}</button>)}
-                    <button onClick={() => setMode("%")}>%</button>
+                    <button onClick={() => setMode("%")}>mod</button>
                 </div>
                 <div style={{height: "16.66%"}}>
                     {[4, 5, 6].map((i) =>
                         <button onClick={() => addDigit(String(i))}>{i}</button>)}
-                    <button onClick={() => resetMode("")}>CE</button>
+                    <button onClick={() => resetMode("0")}>CE</button>
                 </div>
                 <div style={{height: "16.66%"}}>
                     {[1, 2, 3].map((i) =>
