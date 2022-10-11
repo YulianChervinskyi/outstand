@@ -12,8 +12,10 @@ export function Calc(props: ICalcProps) {
 
         if (operator && !operand) {
             setOperand(Number(input));
-            prevInput = "";
-        } else if (prevInput === "0" && digit !== Digit.Dot) {
+            prevInput = "0";
+        }
+
+        if (prevInput === "0" && digit !== Digit.Dot) {
             prevInput = "";
         } else if (prevInput.includes(".") && digit === Digit.Dot) {
             return;
@@ -24,7 +26,9 @@ export function Calc(props: ICalcProps) {
 
     const handlePressOp = (op: Operator) => {
         calculate();
-        setOperator(op);
+
+        if (op !== Operator.Equal)
+            setOperator(op);
     }
 
     const calculate = () => {
@@ -51,6 +55,8 @@ export function Calc(props: ICalcProps) {
     }
 
     const handlePressClear = () => {
+        setOperand(undefined);
+        setOperator(undefined);
         setInput("0");
     }
 
