@@ -26,14 +26,12 @@ export function Calc(props: ICalcProps) {
 
     const handlePressOp = (op: Operator) => {
         calculate();
-
-        if (op !== Operator.Equal)
-            setOperator(op);
+        setOperator(op);
     }
 
     const calculate = () => {
         let value = Number(input);
-        if (operator && operand) {
+        if (operator && operand !== undefined) {
             switch (operator) {
                 case Operator.Plus:
                     value = operand + value;
