@@ -32,8 +32,8 @@ export function KeyLayout(props: IKeyLayoutProps) {
                             <button style={{width: "33.33%"}} onClick={() => props.onPressDigit(d)}>{d}</button>)}
                     </div>
                     <div style={{display: "flex", flexDirection: "row", height: "100%"}}>
-                        {[Digit.D0, Digit.Dot].map((d) =>
-                            <button style={{width: "66.66%"}} onClick={() => props.onPressDigit(d)}>{d}</button>)}
+                        <button style={{width: "66.66%"}} onClick={() => props.onPressDigit(Digit.D0)}>0</button>
+                        <button style={{width: "33.33%"}} onClick={() => props.onPressDigit(Digit.Dot)}>.</button>
                     </div>
                 </div>
                 <button style={{width: "25%"}} onClick={() => props.onPressOperator(Operator.Equal)}>=</button>

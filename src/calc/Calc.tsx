@@ -3,50 +3,55 @@ import {KeyLayout} from "./KeyLayout";
 import {Digit, ICalcProps, Operator} from "./types";
 
 export function Calc(props: ICalcProps) {
-    const [value, setValue] = useState(0);
+    const [input, setInput] = useState("0");
     const [operator, setOperator] = useState<Operator | undefined>(undefined);
     const [operand, setOperand] = useState<number | undefined>(undefined);
 
     const handlePressDigit = (digit: Digit) => {
-        let strValue = value.toString();
+        let prevInput = input;
 
         if (operator && !operand) {
-            setOperand(value);
-            strValue = "";
+            setOperand(Number(input));
+            prevInput = "";
+        } else if (prevInput === "0" && digit !== Digit.Dot) {
+            prevInput = "";
+        } else if (prevInput.includes(".") && digit === Digit.Dot) {
+            return;
         }
-        setValue(Number(strValue + digit));
+
+        setInput(prevInput + digit);
     }
 
     const handlePressOp = (op: Operator) => {
-        if (op === Operator.Equal)
-            return handlePressEqual();
-
+        calculate();
         setOperator(op);
     }
 
-    const handlePressEqual = () => {
+    const calculate = () => {
+        let value = Number(input);
         if (operator && operand) {
             switch (operator) {
                 case Operator.Plus:
-                    setValue(operand + value);
+                    value = operand + value;
                     break;
                 case Operator.Minus:
-                    setValue(operand - value);
+                    value = operand - value;
                     break;
                 case Operator.Multiply:
-                    setValue(operand * value);
+                    value = operand * value;
                     break;
                 case Operator.Divide:
-                    setValue(operand / value);
+                    value = operand / value;
                     break;
             }
+            setInput(value.toString());
             setOperator(undefined);
             setOperand(undefined);
         }
     }
 
     const handlePressClear = () => {
-        setValue(0);
+        setInput("0");
     }
 
 
@@ -70,8 +75,8 @@ export function Calc(props: ICalcProps) {
                         textAlign: "right",
                         fontFamily: "monospace",
                     }}
-                    value={value}
-                    onChange={() => setValue(value)}
+                    value={input}
+                    onChange={() => setInput(input)}
                 />
             </div>
 
