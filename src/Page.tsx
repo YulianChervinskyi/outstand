@@ -80,7 +80,7 @@ export class Page extends React.Component<{}, IState> {
                     id={Number(key)}
                     key={key}
                 />)}
-                <Calc/>
+                <Calc width={250} height={250}/>
             </div>
         );
     }

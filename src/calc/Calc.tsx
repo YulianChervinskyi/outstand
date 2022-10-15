@@ -1,22 +1,29 @@
 import React, {useState} from "react";
-import './calc.css';
+import {ICalcProps} from "./types";
+import {KeyBoard} from "./KeyBoard";
 
-export function Calc() {
+export function Calc(props: ICalcProps) {
     const [value, setValue] = useState("0");
     const [prevValue, setPrevValue] = useState("0");
     const [calcMode, setCalcMode] = useState("");
 
-    const addDigit = (number: string) => {
-        prevValue === value ? setValue(number) : setValue(value.concat(number));
+    const handlePressDigit = (number: string) => {
+        if (number === ".")
+            addDot(number);
+        else
+            prevValue === value ? setValue(number) : setValue(value.concat(number));
     }
 
-    const resetMode = (_value: string) => {
+    const handleResetMode = (_value: string) => {
         setValue(_value);
         setPrevValue(_value);
         setCalcMode("");
     }
 
-    const setMode = (mode: string) => {
+    const handlePressOperator = (mode: string) => {
+        if (mode === "=")
+            calc();
+
         if (!calcMode && value !== "0")
             setPrevValue(value);
 
@@ -30,7 +37,7 @@ export function Calc() {
         value ? setValue(value.concat(dot)) : setValue(value + dot);
     }
 
-    const removeDigit = () => {
+    const handlePressClear = () => {
         value.length > 1 && value !== "NaN" ?
             setValue(value.slice(0, value.length - 1)) : setValue("0");
     }
@@ -54,12 +61,23 @@ export function Calc() {
                 result = String(Number(prevValue) % Number(value));
                 break;
         }
-        resetMode(result);
+        handleResetMode(result);
     }
 
     return (
-        <div style={{background: "gray", width: "250px", height: "250px", padding: "5px"}}>
-            <div className="main">
+        <div style={{
+            width: props.width,
+            height: props.height,
+            background: "gray",
+            padding: "5px"
+        }}>
+            <div style={{
+                display: "flex",
+                width: "100%",
+                height: "100%",
+                flexDirection: "column",
+                alignItems: "stretch",
+            }}>
                 <div style={{height: "16.66%"}}>
                     <input
                         style={{width: "100%", height: "100%", boxSizing: "border-box", textAlign: "right"}}
@@ -69,32 +87,13 @@ export function Calc() {
                         onChange={(e) => setValue(e.target.value)}
                     />
                 </div>
-                <div style={{height: "16.66%"}}>
-                    <button onClick={() => setMode("*")}>*</button>
-                    <button onClick={() => setMode("/")}>/</button>
-                    <button onClick={() => setMode("+")}>+</button>
-                    <button onClick={() => setMode("-")}>-</button>
-                </div>
-                <div style={{height: "16.66%"}}>
-                    {[7, 8, 9].map((i) =>
-                        <button onClick={() => addDigit(String(i))}>{i}</button>)}
-                    <button onClick={() => setMode("%")}>mod</button>
-                </div>
-                <div style={{height: "16.66%"}}>
-                    {[4, 5, 6].map((i) =>
-                        <button onClick={() => addDigit(String(i))}>{i}</button>)}
-                    <button onClick={() => resetMode("0")}>CE</button>
-                </div>
-                <div style={{height: "16.66%"}}>
-                    {[1, 2, 3].map((i) =>
-                        <button onClick={() => addDigit(String(i))}>{i}</button>)}
-                    <button onClick={() => removeDigit()}>C</button>
-                </div>
-                <div style={{flexDirection: "row", height: "16.66%"}}>
-                    <button style={{width: "50%"}} onClick={() => addDigit("0")}>0</button>
-                    <button onClick={() => addDot(".")}>.</button>
-                    <button onClick={() => calc()}>=</button>
-                </div>
+                <KeyBoard
+                    style={{height: "100%"}}
+                    onPressDigit={handlePressDigit}
+                    onPressOperator={handlePressOperator}
+                    onPressClear={handlePressClear}
+                    onResetMode={handleResetMode}
+                />
             </div>
         </div>
     );
