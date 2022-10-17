@@ -6,13 +6,14 @@ export function Calc(props: ICalcProps) {
     const [input, setInput] = useState("0");
     const [operator, setOperator] = useState<Operator | undefined>(undefined);
     const [operand, setOperand] = useState<number | undefined>(undefined);
+    const [inputMode, setInputMode] = useState(true);
 
     const handlePressDigit = (digit: Digit) => {
         let prevInput = input;
 
-        if (operator && !operand) {
-            setOperand(Number(input));
+        if (!inputMode) {
             prevInput = "0";
+            setInputMode(true);
         }
 
         if (prevInput === "0" && digit !== Digit.Dot) {
@@ -25,30 +26,40 @@ export function Calc(props: ICalcProps) {
     }
 
     const handlePressOp = (op: Operator) => {
-        calculate();
-        setOperator(op);
+        if (inputMode || op === Operator.Equal)
+            calculate();
+
+        if (op !== Operator.Equal) {
+            setOperand(Number(input));
+            setOperator(op);
+        }
+
+        setInputMode(false);
     }
 
     const calculate = () => {
-        let value = Number(input);
-        if (operator && operand !== undefined) {
+        let result = operand;
+        let operand2 = Number(input);
+
+        if (operator && result !== undefined) {
             switch (operator) {
                 case Operator.Plus:
-                    value = operand + value;
+                    result += operand2;
                     break;
                 case Operator.Minus:
-                    value = operand - value;
+                    result -= operand2;
                     break;
                 case Operator.Multiply:
-                    value = operand * value;
+                    result *= operand2;
                     break;
                 case Operator.Divide:
-                    value = operand / value;
+                    result /= operand2;
+                    break;
+                case Operator.Equal:
+                    result = operand2;
                     break;
             }
-            setInput(value.toString());
-            setOperator(undefined);
-            setOperand(undefined);
+            setInput(result.toString());
         }
     }
 
@@ -57,7 +68,6 @@ export function Calc(props: ICalcProps) {
         setOperator(undefined);
         setInput("0");
     }
-
 
     return (
         <div style={{
