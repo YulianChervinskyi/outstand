@@ -1,67 +1,62 @@
 import React, {useState} from "react";
-import {ICalcProps} from "./types";
+import {Digit, ICalcProps, Operator} from "./types";
 import {KeyBoard} from "./KeyBoard";
 
 export function Calc(props: ICalcProps) {
     const [value, setValue] = useState("0");
-    const [prevValue, setPrevValue] = useState("0");
-    const [calcMode, setCalcMode] = useState("");
+    const [prevValue, setPrevValue] = useState<number | undefined>(undefined);
+    const [calcMode, setCalcMode] = useState<Operator | undefined>(undefined);
 
-    const handlePressDigit = (number: string) => {
-        if (number === ".")
-            addDot(number);
+    const handlePressDigit = (digit: Digit) => {
+        if (digit !== Digit.Dot)
+            value === "0" && !calcMode || value === String(prevValue) ?
+                setValue(digit) : setValue(value.concat(digit));
+        else if (value.indexOf(Digit.Dot) === -1)
+            value ? setValue(value.concat(Digit.Dot)) : setValue(value + Digit.Dot);
         else
-            prevValue === value ? setValue(number) : setValue(value.concat(number));
-    }
-
-    const handleResetMode = (_value: string) => {
-        setValue(_value);
-        setPrevValue(_value);
-        setCalcMode("");
-    }
-
-    const handlePressOperator = (mode: string) => {
-        if (mode === "=")
-            calc();
-
-        if (!calcMode && value !== "0")
-            setPrevValue(value);
-
-        setCalcMode(mode);
-    }
-
-    const addDot = (dot: string) => {
-        if (value.indexOf(".") !== -1)
             return;
-
-        value ? setValue(value.concat(dot)) : setValue(value + dot);
     }
 
-    const handlePressClear = () => {
-        value.length > 1 && value !== "NaN" ?
-            setValue(value.slice(0, value.length - 1)) : setValue("0");
+    const handlePressClear = (mode?: string) => {
+        if (mode) {
+            setValue(Digit.D0);
+            handlePressOperator(undefined);
+        } else {
+            (value.length > 1 && value !== "NaN") ?
+                setValue(value.slice(0, value.length - 1)) : setValue("0");
+        }
+    }
+
+    const handlePressOperator = (mode: Operator | undefined) => {
+        if (value !== String(prevValue) || !mode)
+            setPrevValue(Number(value));
+
+        mode === Operator.Equal ? setPrevValue(calc()) : setCalcMode(mode);
     }
 
     const calc = () => {
-        let result = "0";
+        let result = 0;
         switch (calcMode) {
-            case "*":
-                result = String(Number(prevValue) * Number(value));
+            case Operator.Multiply:
+                result = Number(prevValue) * Number(value);
                 break;
-            case "/":
-                result = String(Number(prevValue) / Number(value));
+            case Operator.Divide:
+                result = Number(prevValue) / Number(value);
                 break;
-            case "+":
-                result = String(Number(prevValue) + Number(value));
+            case Operator.Plus:
+                result = Number(prevValue) + Number(value);
                 break;
-            case "-":
-                result = String(Number(prevValue) - Number(value));
+            case Operator.Minus:
+                result = Number(prevValue) - Number(value);
                 break;
-            case "%":
-                result = String(Number(prevValue) % Number(value));
+            case Operator.Mod:
+                result = Number(prevValue) % Number(value);
                 break;
         }
-        handleResetMode(result);
+        value === String(prevValue) ? handlePressOperator(calcMode) : handlePressOperator(undefined);
+
+        setValue(String(result));
+        return result;
     }
 
     return (
@@ -92,7 +87,6 @@ export function Calc(props: ICalcProps) {
                     onPressDigit={handlePressDigit}
                     onPressOperator={handlePressOperator}
                     onPressClear={handlePressClear}
-                    onResetMode={handleResetMode}
                 />
             </div>
         </div>

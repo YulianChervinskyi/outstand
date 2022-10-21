@@ -24,9 +24,8 @@ export enum Operator {
 export interface IKeyBoardProps {
     onPressDigit: (digit: Digit) => void,
     onPressOperator: (op: Operator) => void,
-    onPressClear: () => void,
+    onPressClear: (mode?: Digit) => void,
     style?: React.CSSProperties,
-    onResetMode: (mode: string) => void,
 }
 
 export interface ICalcProps {

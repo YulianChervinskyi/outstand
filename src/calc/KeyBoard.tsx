@@ -17,7 +17,7 @@ export function KeyBoard(props: IKeyBoardProps) {
             <div style={{height: "20%"}}>
                 {[Digit.D4, Digit.D5, Digit.D6].map((i) =>
                     <button onClick={() => props.onPressDigit(i)} style={{width: "25%", height: "100%"}}>{i}</button>)}
-                <button onClick={() => props.onResetMode(Digit.D0)} style={{width: "25%", height: "100%"}}>CE</button>
+                <button onClick={() => props.onPressClear(Digit.D0)} style={{width: "25%", height: "100%"}}>CE</button>
             </div>
             <div style={{height: "20%"}}>
                 {[Digit.D1, Digit.D2, Digit.D3].map((i) =>
