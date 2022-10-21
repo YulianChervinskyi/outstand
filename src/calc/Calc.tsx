@@ -9,16 +9,13 @@ export function Calc(props: ICalcProps) {
 
     const handlePressDigit = (digit: Digit) => {
         if (digit !== Digit.Dot)
-            value === "0" && !calcMode || value === String(prevValue) ?
-                setValue(digit) : setValue(value.concat(digit));
+            setValue(value === "0" && !calcMode || value === String(prevValue) ? digit : value.concat(digit));
         else if (value.indexOf(Digit.Dot) === -1)
-            value ? setValue(value.concat(Digit.Dot)) : setValue(value + Digit.Dot);
-        else
-            return;
+            setValue(value + Digit.Dot);
     }
 
-    const handlePressClear = (mode?: string) => {
-        if (mode) {
+    const handlePressClear = (full?: boolean) => {
+        if (full) {
             setValue(Digit.D0);
             handlePressOperator(undefined);
         } else {
