@@ -3,54 +3,64 @@ import {Digit, ICalcProps, Operator} from "./types";
 import {KeyBoard} from "./KeyBoard";
 
 export function Calc(props: ICalcProps) {
-    const [value, setValue] = useState("0");
-    const [prevValue, setPrevValue] = useState<string | undefined>(undefined);
+    const [display, setDisplay] = useState("0");
+    const [register, setRegister] = useState<number | undefined>(undefined);
     const [calcMode, setCalcMode] = useState<Operator | undefined>(undefined);
+    const [resetDisplay, setResetDisplay] = useState(false);
 
     const handlePressDigit = (digit: Digit) => {
         if (digit !== Digit.Dot)
-            setValue(value === "0" || value === prevValue ? digit : value + digit);
-        else if (value.indexOf(Digit.Dot) === -1)
-            setValue(value === prevValue || !prevValue && !calcMode ? Digit.D0 + digit : value + digit);
+            setDisplay(display === "0" || resetDisplay ? digit : display + digit);
+        else if (display.indexOf(Digit.Dot) === -1 || resetDisplay)
+            setDisplay(resetDisplay ? Digit.D0 + digit : display + digit);
+
+        setResetDisplay(false);
     }
 
     const handlePressClear = (full?: boolean) => {
         if (full)
             resetStates();
         else
-            setValue(value.length > 1 && value !== "NaN" ? value.slice(0, value.length - 1) : Digit.D0);
+            setDisplay(display.length > 1 && display !== "NaN" ? display.slice(0, display.length - 1) : Digit.D0);
     }
 
     const handlePressOperator = (mode: Operator) => {
-        setCalcMode(mode);
-        setPrevValue(mode === Operator.Equal ? calc() : value);
+        if (mode !== Operator.Equal)
+            setCalcMode(mode);
+
+        setRegister(mode === Operator.Equal ? calc() : Number(display));
+        setResetDisplay(true);
     }
 
     const resetStates = () => {
-        setValue(Digit.D0);
-        setPrevValue(undefined);
+        setDisplay(Digit.D0);
+        setRegister(undefined);
         setCalcMode(undefined);
     }
 
     const calc = () => {
-        let result = "0";
+        if (!register)
+            return undefined;
+
+        let result = register;
         switch (calcMode) {
             case Operator.Multiply:
-                setValue(result = String(Number(prevValue) * Number(value)));
+                result *= Number(display);
                 break;
             case Operator.Divide:
-                setValue(result = String(Number(prevValue) / Number(value)));
+                result /= Number(display);
                 break;
             case Operator.Plus:
-                setValue(result = String(Number(prevValue) + Number(value)));
+                result += Number(display);
                 break;
             case Operator.Minus:
-                setValue(result = String(Number(prevValue) - Number(value)));
+                result -= Number(display);
                 break;
             case Operator.Mod:
-                setValue(result = String(Number(prevValue) % Number(value)));
+                result %= Number(display);
                 break;
         }
+        setDisplay(result.toString());
         return result;
     }
 
@@ -72,9 +82,9 @@ export function Calc(props: ICalcProps) {
                     <input
                         style={{width: "100%", height: "100%", boxSizing: "border-box", textAlign: "right"}}
                         type="text"
-                        value={value}
+                        value={display}
                         onKeyDown={(e) => e.preventDefault()}
-                        onChange={(e) => setValue(e.target.value)}
+                        onChange={(e) => setDisplay(e.target.value)}
                     />
                 </div>
                 <KeyBoard
