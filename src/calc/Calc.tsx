@@ -4,55 +4,53 @@ import {KeyBoard} from "./KeyBoard";
 
 export function Calc(props: ICalcProps) {
     const [value, setValue] = useState("0");
-    const [prevValue, setPrevValue] = useState<number | undefined>(undefined);
+    const [prevValue, setPrevValue] = useState<string | undefined>(undefined);
     const [calcMode, setCalcMode] = useState<Operator | undefined>(undefined);
 
     const handlePressDigit = (digit: Digit) => {
         if (digit !== Digit.Dot)
-            setValue(value === "0" && !calcMode || value === String(prevValue) ? digit : value.concat(digit));
+            setValue(value === "0" || value === prevValue ? digit : value + digit);
         else if (value.indexOf(Digit.Dot) === -1)
-            setValue(value + Digit.Dot);
+            setValue(value === prevValue || !prevValue && !calcMode ? Digit.D0 + digit : value + digit);
     }
 
     const handlePressClear = (full?: boolean) => {
-        if (full) {
-            setValue(Digit.D0);
-            handlePressOperator(undefined);
-        } else {
-            (value.length > 1 && value !== "NaN") ?
-                setValue(value.slice(0, value.length - 1)) : setValue("0");
-        }
+        if (full)
+            resetStates();
+        else
+            setValue(value.length > 1 && value !== "NaN" ? value.slice(0, value.length - 1) : Digit.D0);
     }
 
-    const handlePressOperator = (mode: Operator | undefined) => {
-        if (value !== String(prevValue) || !mode)
-            setPrevValue(Number(value));
+    const handlePressOperator = (mode: Operator) => {
+        setCalcMode(mode);
+        setPrevValue(mode === Operator.Equal ? calc() : value);
+    }
 
-        mode === Operator.Equal ? setPrevValue(calc()) : setCalcMode(mode);
+    const resetStates = () => {
+        setValue(Digit.D0);
+        setPrevValue(undefined);
+        setCalcMode(undefined);
     }
 
     const calc = () => {
-        let result = 0;
+        let result = "0";
         switch (calcMode) {
             case Operator.Multiply:
-                result = Number(prevValue) * Number(value);
+                setValue(result = String(Number(prevValue) * Number(value)));
                 break;
             case Operator.Divide:
-                result = Number(prevValue) / Number(value);
+                setValue(result = String(Number(prevValue) / Number(value)));
                 break;
             case Operator.Plus:
-                result = Number(prevValue) + Number(value);
+                setValue(result = String(Number(prevValue) + Number(value)));
                 break;
             case Operator.Minus:
-                result = Number(prevValue) - Number(value);
+                setValue(result = String(Number(prevValue) - Number(value)));
                 break;
             case Operator.Mod:
-                result = Number(prevValue) % Number(value);
+                setValue(result = String(Number(prevValue) % Number(value)));
                 break;
         }
-        value === String(prevValue) ? handlePressOperator(calcMode) : handlePressOperator(undefined);
-
-        setValue(String(result));
         return result;
     }
 
