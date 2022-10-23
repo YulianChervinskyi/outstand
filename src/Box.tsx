@@ -60,7 +60,7 @@ export function Box(props: BoxProps) {
                 && <NoteEditor text={props.text} onChange={(e) => props.onChange(props.id, e)}/>}
 
             {props.type === BoxType.Calc
-                && <Calc width={props.width} height={props.height}/>}
+                && <Calc width={props.width} height={props.height} text={props.text} onChange={(e) => props.onChange(props.id, e)}/>}
 
             <BoxResizer width={size.width} height={size.height} onResize={handleResize}/>
         </div>

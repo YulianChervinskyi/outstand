@@ -30,4 +30,6 @@ export interface IKeyLayoutProps {
 export interface ICalcProps {
     width: number,
     height: number,
+    text: string,
+    onChange: (e: { text: string }) => void,
 }

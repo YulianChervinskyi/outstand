@@ -3,10 +3,12 @@ import {KeyLayout} from "./KeyLayout";
 import {Digit, ICalcProps, Operator} from "./types";
 
 export function Calc(props: ICalcProps) {
-    const [input, setInput] = React.useState("0");
-    const [operator, setOperator] = React.useState<Operator | undefined>(undefined);
-    const [operand, setOperand] = React.useState<number | undefined>(undefined);
-    const [inputMode, setInputMode] = React.useState(true);
+    const data = JSON.parse(props.text || '{}');
+
+    const [input, setInput] = React.useState<string>(data?.input || '0');
+    const [operator, setOperator] = React.useState<Operator | undefined>(data?.operator);
+    const [operand, setOperand] = React.useState<number | undefined>(data?.operand);
+    const [inputMode, setInputMode] = React.useState<boolean>(data?.inputMode || true);
 
     const handlePressDigit = (digit: Digit) => {
         let prevInput = input;
@@ -91,6 +93,20 @@ export function Calc(props: ICalcProps) {
         }
         event.preventDefault();
     }
+
+    const saveState = () => {
+        const data = JSON.stringify({
+            input,
+            operator,
+            operand,
+            inputMode,
+        });
+
+        if (props.text !== data)
+            props.onChange({text: data});
+    }
+
+    React.useEffect(saveState, [input, operator, operand, inputMode]);
 
     return (
         <div
