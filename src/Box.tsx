@@ -2,7 +2,13 @@ import './Box.css';
 import {useState} from "react";
 import {BoxHeader} from "./BoxHeader";
 import {BoxResizer} from "./BoxResizer";
+import {Calc} from "./calc/Calc";
 import {NoteEditor} from "./NoteEditor";
+
+export enum BoxType {
+    Note,
+    Calc,
+}
 
 interface BoxProps {
     x: number,
@@ -17,6 +23,7 @@ interface BoxProps {
     onResize: (id: number, size: { width: number, height: number }) => void,
     onActive: (id: number) => void,
     id: number,
+    type: BoxType,
 }
 
 export function Box(props: BoxProps) {
@@ -48,7 +55,13 @@ export function Box(props: BoxProps) {
     return (
         <div className="box" style={style} onMouseDown={handleMouseDown}>
             <BoxHeader onClose={() => props.onClose(props.id)} onMove={handleMove}/>
-            <NoteEditor text={props.text} onChange={(e) => props.onChange(props.id, e)}/>
+
+            {props.type === BoxType.Note
+                && <NoteEditor text={props.text} onChange={(e) => props.onChange(props.id, e)}/>}
+
+            {props.type === BoxType.Calc
+                && <Calc width={props.width} height={props.height}/>}
+
             <BoxResizer width={size.width} height={size.height} onResize={handleResize}/>
         </div>
     );

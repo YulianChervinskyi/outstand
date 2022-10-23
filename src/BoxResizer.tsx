@@ -50,7 +50,7 @@ export class BoxResizer extends React.Component<IBoxResizerProps, { dragging: bo
 
     render() {
         return (
-            <div className="box-resizer" style={{background: this.state.dragging ? "#45853d" : "#a33939"}}
+            <div className="box-resizer" style={{background: this.state.dragging ? "rgba(69, 133, 61, 0.8)" : "rgba(163, 57, 57, 0.8)"}}
                  onMouseDown={this.handleMouseDown}
             />
         );

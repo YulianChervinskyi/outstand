@@ -98,9 +98,6 @@ export function Calc(props: ICalcProps) {
             style={{
                 width: props.width,
                 height: props.height,
-                padding: "5px",
-                border: "solid 1px black",
-                borderRadius: "4px",
                 display: "flex",
                 flexDirection: "column",
             }}

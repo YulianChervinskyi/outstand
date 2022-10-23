@@ -1,6 +1,5 @@
 import React from "react";
-import {Box} from "./Box";
-import {Calc} from "./calc/Calc";
+import {Box, BoxType} from "./Box";
 
 interface IBoxData {
     x: number,
@@ -9,6 +8,7 @@ interface IBoxData {
     height: number,
     active: boolean,
     text: string,
+    type: BoxType,
 }
 
 interface IState {
@@ -56,6 +56,7 @@ export class Page extends React.Component<{}, IState> {
             height: 200,
             active: true,
             text: '',
+            type: Math.random() > 0.5 ? BoxType.Note : BoxType.Calc,
         }
 
         this.updateState();
@@ -79,8 +80,8 @@ export class Page extends React.Component<{}, IState> {
                     onActive={this.handleActive}
                     id={Number(key)}
                     key={key}
+                    type={b.type}
                 />)}
-                <Calc width={150} height={150} />
             </div>
         );
     }
