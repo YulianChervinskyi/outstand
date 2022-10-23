@@ -1,12 +1,12 @@
-import {useState} from "react";
+import React from "react";
 import {KeyLayout} from "./KeyLayout";
 import {Digit, ICalcProps, Operator} from "./types";
 
 export function Calc(props: ICalcProps) {
-    const [input, setInput] = useState("0");
-    const [operator, setOperator] = useState<Operator | undefined>(undefined);
-    const [operand, setOperand] = useState<number | undefined>(undefined);
-    const [inputMode, setInputMode] = useState(true);
+    const [input, setInput] = React.useState("0");
+    const [operator, setOperator] = React.useState<Operator | undefined>(undefined);
+    const [operand, setOperand] = React.useState<number | undefined>(undefined);
+    const [inputMode, setInputMode] = React.useState(true);
 
     const handlePressDigit = (digit: Digit) => {
         let prevInput = input;
@@ -69,16 +69,43 @@ export function Calc(props: ICalcProps) {
         setInput("0");
     }
 
+    const handlePressBackspace = () => {
+        if (input.length > 1) {
+            setInput(input.slice(0, -1));
+        } else {
+            setInput("0");
+        }
+    }
+
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+        if (event.key === "Backspace") {
+            handlePressBackspace();
+        } else if (event.key === "Enter") {
+            handlePressOp(Operator.Equal);
+        } else if (event.key === "Escape") {
+            handlePressClear();
+        } else if (event.key >= "0" && event.key <= "9" || event.key === ".") {
+            handlePressDigit(event.key as Digit);
+        } else if (event.key === "+" || event.key === "-" || event.key === "*" || event.key === "/") {
+            handlePressOp(event.key as Operator);
+        }
+        event.preventDefault();
+    }
+
     return (
-        <div style={{
-            width: props.width,
-            height: props.height,
-            padding: "5px",
-            border: "solid 1px black",
-            borderRadius: "4px",
-            display: "flex",
-            flexDirection: "column",
-        }}>
+        <div
+            className="Calc"
+            style={{
+                width: props.width,
+                height: props.height,
+                padding: "5px",
+                border: "solid 1px black",
+                borderRadius: "4px",
+                display: "flex",
+                flexDirection: "column",
+            }}
+            onKeyDown={handleKeyDown}
+        >
             <div style={{width: "100%"}}>
                 <input
                     style={{
