@@ -1,5 +1,8 @@
 import React from "react";
 
+const MIN_WIDTH = 150;
+const MIN_HEIGHT = 165;
+
 export interface IBoxResizerProps {
     width: number,
     height: number,
@@ -44,13 +47,16 @@ export class BoxResizer extends React.Component<IBoxResizerProps, { dragging: bo
             const x = this.startX - e.clientX;
             const y = this.startY - e.clientY;
 
-            this.props.onResize({width: this.startWidth - x, height: this.startHeight - y});
+            this.props.onResize({
+                width: Math.max(this.startWidth - x, MIN_WIDTH),
+                height: Math.max(this.startHeight - y, MIN_HEIGHT),
+            });
         }
     }
 
     render() {
         return (
-            <div className="box-resizer" style={{background: this.state.dragging ? "#45853d" : "#a33939"}}
+            <div className="box-resizer" style={{background: this.state.dragging ? "rgba(69, 133, 61, 0.8)" : "rgba(163, 57, 57, 0.8)"}}
                  onMouseDown={this.handleMouseDown}
             />
         );

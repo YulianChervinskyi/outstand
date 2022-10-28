@@ -1,12 +1,14 @@
-import React, {useState} from "react";
+import React from "react";
 import {Digit, ICalcProps, Operator} from "./types";
 import {KeyBoard} from "./KeyBoard";
 
 export function Calc(props: ICalcProps) {
-    const [display, setDisplay] = useState("0");
-    const [register, setRegister] = useState<number | undefined>(undefined);
-    const [calcMode, setCalcMode] = useState<Operator | undefined>(undefined);
-    const [resetDisplay, setResetDisplay] = useState(false);
+    const data = JSON.parse(props.text || '{}');
+
+    const [display, setDisplay] = React.useState<string>(data?.display || '0');
+    const [register, setRegister] = React.useState<number | undefined>(data?.register);
+    const [calcMode, setCalcMode] = React.useState<Operator | undefined>(data?.calcMode);
+    const [resetDisplay, setResetDisplay] = React.useState<boolean>(data?.resetDisplay || false);
 
     const handlePressDigit = (digit: Digit) => {
         if (digit !== Digit.Dot)
@@ -64,12 +66,24 @@ export function Calc(props: ICalcProps) {
         return result;
     }
 
+    const saveState = () => {
+        const data = JSON.stringify({
+            display,
+            register,
+            calcMode,
+            resetDisplay,
+        });
+
+        if (props.text !== data)
+            props.onChange({text: data});
+    }
+
+    React.useEffect(saveState, [display, register, calcMode, resetDisplay]);
+
     return (
         <div style={{
             width: props.width,
             height: props.height,
-            background: "gray",
-            padding: "5px"
         }}>
             <div style={{
                 display: "flex",
@@ -80,8 +94,13 @@ export function Calc(props: ICalcProps) {
             }}>
                 <div style={{height: "16.66%"}}>
                     <input
-                        style={{width: "100%", height: "100%", boxSizing: "border-box", textAlign: "right"}}
-                        type="text"
+                        style={{
+                            width: "100%",
+                            height: "100%",
+                            boxSizing: "border-box",
+                            textAlign: "right",
+                            fontSize: props.height * 0.1,
+                        }}
                         value={display}
                         onKeyDown={(e) => e.preventDefault()}
                         onChange={(e) => setDisplay(e.target.value)}

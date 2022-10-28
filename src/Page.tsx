@@ -1,6 +1,6 @@
 import React from "react";
-import {Box} from "./Box";
-import {Calc} from "./calc/Calc";
+import {Box, BoxType} from "./Box";
+import {ModeSelector} from "./ModeSelector";
 
 interface IBoxData {
     x: number,
@@ -9,6 +9,7 @@ interface IBoxData {
     height: number,
     active: boolean,
     text: string,
+    type: BoxType,
 }
 
 interface IState {
@@ -18,6 +19,7 @@ interface IState {
 export class Page extends React.Component<{}, IState> {
     counter = 0;
     activeBoxId = 0;
+    type: BoxType | undefined = undefined;
 
     constructor(props = {}) {
         super(props);
@@ -46,6 +48,10 @@ export class Page extends React.Component<{}, IState> {
         this.updateState();
     }
 
+    handleSelectMode = (type: BoxType) => {
+        this.type = type;
+    }
+
     handleDoubleClick = (e: React.MouseEvent) => {
         this.counter++;
 
@@ -56,6 +62,7 @@ export class Page extends React.Component<{}, IState> {
             height: 200,
             active: true,
             text: '',
+            type: this.type ? this.type : BoxType.Note,
         }
 
         this.updateState();
@@ -79,8 +86,9 @@ export class Page extends React.Component<{}, IState> {
                     onActive={this.handleActive}
                     id={Number(key)}
                     key={key}
+                    type={b.type}
                 />)}
-                <Calc width={250} height={250}/>
+                <ModeSelector onSelectMode={this.handleSelectMode}/>
             </div>
         );
     }
