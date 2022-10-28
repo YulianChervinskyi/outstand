@@ -19,7 +19,7 @@ interface IState {
 export class Page extends React.Component<{}, IState> {
     counter = 0;
     activeBoxId = 0;
-    type: BoxType | undefined = undefined;
+    type: BoxType = localStorage.getItem("type") as BoxType || BoxType.Note;
 
     constructor(props = {}) {
         super(props);
@@ -49,7 +49,8 @@ export class Page extends React.Component<{}, IState> {
     }
 
     handleSelectMode = (type: BoxType) => {
-        this.type = type;
+        this.type = type
+        localStorage.setItem('type', type);
     }
 
     handleDoubleClick = (e: React.MouseEvent) => {
@@ -62,7 +63,7 @@ export class Page extends React.Component<{}, IState> {
             height: 200,
             active: true,
             text: '',
-            type: this.type ? this.type : BoxType.Note,
+            type: this.type,
         }
 
         this.updateState();
