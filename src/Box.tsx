@@ -57,11 +57,22 @@ export function Box(props: BoxProps) {
             <BoxHeader onClose={() => props.onClose(props.id)} onMove={handleMove}/>
 
             {props.type === BoxType.Note &&
-                <NoteEditor text={props.text} onChange={(e) => props.onChange(props.id, e)}/>}
+                <NoteEditor
+                    width={props.width}
+                    height={props.height}
+                    text={props.text}
+                    onChange={(e) => props.onChange(props.id, e)}
+                />
+            }
 
             {props.type === BoxType.Calc &&
-                <Calc width={props.width} height={props.height} text={props.text}
-                      onChange={(e) => props.onChange(props.id, e)}/>}
+                <Calc
+                    width={props.width}
+                    height={props.height}
+                    text={props.text}
+                    onChange={(e) => props.onChange(props.id, e)}
+                />
+            }
 
             <BoxResizer width={size.width} height={size.height} onResize={handleResize}/>
         </div>

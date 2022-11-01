@@ -81,10 +81,7 @@ export function Calc(props: ICalcProps) {
     React.useEffect(saveState, [display, register, calcMode, resetDisplay]);
 
     return (
-        <div style={{
-            width: props.width,
-            height: props.height,
-        }}>
+        <div style={{width: "100%", height: "100%"}}>
             <div style={{
                 display: "flex",
                 width: "100%",
