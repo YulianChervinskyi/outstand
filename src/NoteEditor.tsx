@@ -8,9 +8,11 @@ export interface INoteEditorProps {
 export function NoteEditor(props: INoteEditorProps) {
     return (
         <div className="note-editor">
-            <textarea value={props.text}
-                      style={{width: props.width, height: "100%"}}
-                      onChange={(e) => props.onChange({text: e.target.value})}/>
+            <textarea
+                value={props.text}
+                style={{width: props.width, height: "100%"}}
+                onChange={(e) => props.onChange({text: e.target.value})}
+            />
         </div>
     );
 }
