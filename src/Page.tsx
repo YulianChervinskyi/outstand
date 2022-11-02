@@ -13,19 +13,19 @@ interface IBoxData {
 }
 
 interface IState {
-    boxes: { [id: number]: IBoxData };
+    boxes: { [id: number]: IBoxData },
+    modeType: BoxType,
 }
 
 export class Page extends React.Component<{}, IState> {
     counter = 0;
     activeBoxId = 0;
-    type: BoxType = localStorage.getItem("type") as BoxType || BoxType.Note;
 
     constructor(props = {}) {
         super(props);
 
         const stateData = localStorage.getItem('state');
-        this.state = stateData ? JSON.parse(stateData) : {boxes: {}};
+        this.state = stateData ? JSON.parse(stateData) : {boxes: {}, modeType: BoxType.Note};
 
         const keys = Object.keys(this.state.boxes);
         this.counter = keys.length > 0 ? Number(keys[keys.length - 1]) : this.counter;
@@ -49,8 +49,7 @@ export class Page extends React.Component<{}, IState> {
     }
 
     handleSelectMode = (type: BoxType) => {
-        this.type = type
-        localStorage.setItem('type', type);
+        this.setState({...this.state, modeType: type});
     }
 
     handleDoubleClick = (e: React.MouseEvent) => {
@@ -63,7 +62,7 @@ export class Page extends React.Component<{}, IState> {
             height: 200,
             active: true,
             text: '',
-            type: this.type,
+            type: this.state.modeType,
         }
 
         this.updateState();
@@ -89,7 +88,7 @@ export class Page extends React.Component<{}, IState> {
                     key={key}
                     type={b.type}
                 />)}
-                <ModeSelector onSelectMode={this.handleSelectMode}/>
+                <ModeSelector selected={this.state.modeType} onSelectMode={this.handleSelectMode}/>
             </div>
         );
     }
