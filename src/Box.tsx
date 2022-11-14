@@ -4,10 +4,12 @@ import {BoxHeader} from "./BoxHeader";
 import {BoxResizer} from "./BoxResizer";
 import {Calc} from "./calc/Calc";
 import {NoteEditor} from "./NoteEditor";
+import {Tetris} from "./tetris/Tetris";
 
 export enum BoxType {
     Note,
     Calc,
+    Tetris,
 }
 
 interface BoxProps {
@@ -61,6 +63,9 @@ export function Box(props: BoxProps) {
 
             {props.type === BoxType.Calc
                 && <Calc width={props.width} height={props.height} text={props.text} onChange={(e) => props.onChange(props.id, e)}/>}
+
+            {props.type === BoxType.Tetris
+                && <Tetris width={props.width} height={props.height} text={props.text} onChange={(e) => props.onChange(props.id, e)}/>}
 
             <BoxResizer width={size.width} height={size.height} onResize={handleResize}/>
         </div>

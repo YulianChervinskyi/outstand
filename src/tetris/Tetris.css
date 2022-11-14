@@ -1,0 +1,97 @@
+.tetris {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+}
+
+.tetris-board {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-grow: 1;
+}
+
+.tetris-row {
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.tetris-cell {
+    width: 100%;
+    height: 100%;
+    border-left: 1px solid #222;
+    border-right: 1px solid #111;
+    border-top: 1px solid #222;
+    border-bottom: 1px solid #111;
+    display: inline-block;
+}
+
+.tetris-info {
+    width: 25%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    text-align: center;
+    padding: 2%;
+    background: #454d3b;
+}
+
+.tetris-info > * {
+    width: 100%;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.tetris-info > *:nth-child(4) {
+    flex-grow: 2;
+}
+
+.tetris-info > * > .title {
+    color: #b9b96d;
+    font-size: 1em;
+    font-weight: bold;
+}
+
+.tetris-info > * > .value {
+    flex-grow: 1;
+    background: black;
+    color: greenyellow;
+    margin-top: 1%;
+    margin-bottom: 5%;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-size: 1.2em;
+}
+
+.tetris-info > *:nth-child(4) > .value {
+    margin-bottom: 0;
+}
+
+.tetris .info-overlay .controls {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.tetris .info-overlay .controls button {
+    border: none;
+    border-radius: 5px;
+    background: darkorange;
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 5px;
+    padding: 5px;
+}
+

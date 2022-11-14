@@ -13,6 +13,7 @@ interface IBoxData {
 
 interface IState {
     boxes: { [id: number]: IBoxData };
+    activeBox: number;
 }
 
 export class Page extends React.Component<{}, IState> {
@@ -56,7 +57,7 @@ export class Page extends React.Component<{}, IState> {
             height: 200,
             active: true,
             text: '',
-            type: Math.random() > 0.5 ? BoxType.Note : BoxType.Calc,
+            type: [BoxType.Note, BoxType.Calc, BoxType.Tetris][Math.floor(Math.random() * 3)],
         }
 
         this.updateState();
@@ -82,6 +83,7 @@ export class Page extends React.Component<{}, IState> {
                     key={key}
                     type={b.type}
                 />)}
+                {/*<Tetris/>*/}
             </div>
         );
     }
@@ -94,6 +96,8 @@ export class Page extends React.Component<{}, IState> {
     updateState = () => {
         this.setState(this.state);
         this.saveData();
+
+
     }
 
     saveData = () => {
