@@ -1,6 +1,6 @@
-export interface IPiece {
+export interface IShape {
     color: number;
-    shape: number[][];
+    body: number[][];
 }
 
 export const BOARD_WIDTH = 10;
@@ -16,10 +16,10 @@ export const COLORS = [
     "#922B8C",
 ];
 
-export const PIECES: IPiece[] = [
+export const SHAPES: IShape[] = [
     {
         color: 0,
-        shape: [
+        body: [
             [0, 0, 0, 0],
             [1, 1, 0, 0],
             [0, 1, 1, 0],
@@ -27,7 +27,7 @@ export const PIECES: IPiece[] = [
         ],
     }, {
         color: 1,
-        shape: [
+        body: [
             [0, 0, 0, 0],
             [0, 0, 1, 0],
             [1, 1, 1, 0],
@@ -35,7 +35,7 @@ export const PIECES: IPiece[] = [
         ],
     }, {
         color: 2,
-        shape: [
+        body: [
             [0, 0, 0, 0],
             [0, 1, 1, 0],
             [0, 1, 1, 0],
@@ -43,7 +43,7 @@ export const PIECES: IPiece[] = [
         ],
     }, {
         color: 3,
-        shape: [
+        body: [
             [0, 0, 0, 0],
             [0, 1, 1, 0],
             [1, 1, 0, 0],
@@ -51,7 +51,7 @@ export const PIECES: IPiece[] = [
         ],
     }, {
         color: 4,
-        shape: [
+        body: [
             [0, 0, 0, 0],
             [1, 1, 1, 1],
             [0, 0, 0, 0],
@@ -59,7 +59,7 @@ export const PIECES: IPiece[] = [
         ],
     }, {
         color: 5,
-        shape: [
+        body: [
             [0, 0, 0, 0],
             [1, 0, 0, 0],
             [1, 1, 1, 0],
@@ -67,7 +67,7 @@ export const PIECES: IPiece[] = [
         ],
     }, {
         color: 6,
-        shape: [
+        body: [
             [0, 0, 0, 0],
             [1, 1, 1, 0],
             [0, 1, 0, 0],

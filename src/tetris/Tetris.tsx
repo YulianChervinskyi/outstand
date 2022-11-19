@@ -1,17 +1,18 @@
 import React from "react";
 import {Board} from "./Board";
-import {BOARD_HEIGHT, BOARD_WIDTH, PIECES} from "./config";
+import {BOARD_HEIGHT, BOARD_WIDTH, SHAPES} from "./config";
 import {Piece} from "./Piece";
-import {PieceModel} from "./PieceModel";
+import {IPiece, PieceModel} from "./PieceModel";
 import './Tetris.css';
 
-function getRandomPiece() {
-    const piece = PIECES[Math.floor(Math.random() * PIECES.length)];
-    return new PieceModel({
-        piece: piece,
+function getRandomPiece(): IPiece {
+    const shape = SHAPES[Math.floor(Math.random() * SHAPES.length)];
+    return {
+        shape,
         rotation: Math.floor(Math.random() * 4),
-        x: Math.floor(BOARD_WIDTH / 2 - piece.shape.length / 2),
-    });
+        x: Math.floor(BOARD_WIDTH / 2 - shape.body.length / 2),
+        y: 0,
+    };
 }
 
 interface IProps {
@@ -23,8 +24,8 @@ interface IProps {
 
 interface IState {
     board: number[][];
-    activePiece: PieceModel,
-    nextPiece: PieceModel,
+    activePiece: IPiece,
+    nextPiece: IPiece,
     score: number,
     lines: number,
     level: number,
@@ -50,7 +51,7 @@ export class Tetris extends React.Component<IProps, IState> {
 
     constructor(props: IProps) {
         super(props);
-        this.state = initialState;
+        this.state = this.props.text ? JSON.parse(this.props.text) : initialState;
         document.body.onkeydown = this.handleKeyDown;
         this.tick();
     }
@@ -87,39 +88,37 @@ export class Tetris extends React.Component<IProps, IState> {
     }
 
     movePiece = (dx: number, dy: number) => {
-        const s = this.state;
-        let newPiece = new PieceModel({...s.activePiece, x: s.activePiece.x + dx, y: s.activePiece.y + dy});
+        const activePiece = this.state.activePiece;
+        let newPiece = {...activePiece, x: activePiece.x + dx, y: activePiece.y + dy};
         if (this.isValidPosition(newPiece))
-            this.setState({...s, activePiece: newPiece});
+            this.setState({activePiece: newPiece});
     }
 
     rotatePiece = () => {
-        const s = this.state;
-        const r = {...s.activePiece, rotation: (s.activePiece.rotation + 1) % 4};
+        const activePiece = this.state.activePiece;
+        const r = {...activePiece, rotation: (activePiece.rotation + 1) % 4};
         for (const m of [r, {...r, x: r.x - 1}, {...r, x: r.x + 1}, {...r, x: r.x - 2}, {...r, x: r.x + 2}]) {
-            let newPiece = new PieceModel(m);
-            if (this.isValidPosition(newPiece)) {
-                this.setState({...s, activePiece: newPiece});
+            if (this.isValidPosition(m)) {
+                this.setState({activePiece: m});
                 break;
             }
         }
     }
 
     dropPiece = () => {
-        const s = this.state;
+        const activePiece = this.state.activePiece;
         let y = this.state.activePiece.y;
         while (true) {
-            let newPiece = new PieceModel({...s.activePiece, y: ++y});
-            if (!this.isValidPosition(newPiece))
+            if (!this.isValidPosition({...activePiece, y: ++y}))
                 break;
         }
-        this.setState({...s, activePiece: new PieceModel({...s.activePiece, y: y - 1})});
+        this.setState({activePiece: {...activePiece, y: y - 1}});
         setTimeout(this.tick, 0);
     }
 
-    isValidPosition = (piece: PieceModel) => {
+    isValidPosition = (piece: IPiece) => {
         let {x, y} = piece;
-        let shape = piece.shape;
+        let shape = new PieceModel(piece).shape;
 
         for (let row = 0; row < shape.length; row++) {
             for (let col = 0; col < shape[row].length; col++) {
@@ -143,28 +142,30 @@ export class Tetris extends React.Component<IProps, IState> {
         if (s.gameOver || s.paused)
             return;
 
-        let newPiece = new PieceModel({...s.activePiece, y: s.activePiece.y + 1});
+        let newPiece = {...s.activePiece, y: s.activePiece.y + 1};
 
         if (this.isValidPosition(newPiece)) {
-            this.setState({...s, activePiece: newPiece});
+            this.setState({activePiece: newPiece});
         } else {
             if (s.activePiece.y === 0) {
-                this.setState({...s, gameOver: true});
+                this.setState({gameOver: true});
             } else {
-                this.addPieceToBoard(s);
-                this.setState({...s, activePiece: s.nextPiece, nextPiece: getRandomPiece()});
+                this.addPieceToBoard();
+                this.setState({activePiece: s.nextPiece, nextPiece: getRandomPiece()});
             }
         }
     };
 
-    addPieceToBoard = (s: IState) => {
+    addPieceToBoard = () => {
+        const s = this.state;
         let newBoard = s.board.map(row => row.map(cell => cell));
         let newScore = s.score + 10;
+        let shape = new PieceModel(s.activePiece).shape;
 
-        for (let row = 0; row < s.activePiece.shape.length; row++) {
-            for (let col = 0; col < s.activePiece.shape[row].length; col++) {
-                if (s.activePiece.shape[row][col] !== 0) {
-                    newBoard[s.activePiece.y + row][s.activePiece.x + col] = s.activePiece.color;
+        for (let row = 0; row < shape.length; row++) {
+            for (let col = 0; col < shape[row].length; col++) {
+                if (shape[row][col] !== 0) {
+                    newBoard[s.activePiece.y + row][s.activePiece.x + col] = s.activePiece.shape.color;
                 }
             }
         }
@@ -173,16 +174,14 @@ export class Tetris extends React.Component<IProps, IState> {
 
         if (removedLines > 0) {
             newScore += 100 * removedLines;
-            s.lines += removedLines;
+            this.setState({lines: s.lines + removedLines});
 
             if (Math.floor((s.lines + removedLines) / 10) > s.level) {
-                s.level++;
-                s.speed *= 0.9;
+                this.setState({level: s.level + 1, speed: s.speed * 0.9});
             }
         }
 
-        s.score = newScore;
-        s.board = newBoard;
+        this.setState({score: newScore, board: newBoard});
     }
 
     checkLines = (board: number[][]) => {
@@ -211,6 +210,13 @@ export class Tetris extends React.Component<IProps, IState> {
         this.setState(initialState);
     }
 
+    setState<K extends keyof IState>(state: Pick<IState, K> | IState | null) {
+        super.setState(state, () => {
+            console.log(this.state);
+            this.props.onChange({text: JSON.stringify(this.state)});
+        });
+    }
+
     render() {
         const s = this.state;
         return (
@@ -230,7 +236,7 @@ export class Tetris extends React.Component<IProps, IState> {
                         <button onClick={this.resetGame}>Restart</button>
                     </div>
                 </div>}
-                <Board board={s.board} activePiece={s.activePiece}/>
+                <Board board={s.board} activePiece={new PieceModel(s.activePiece)}/>
                 <div className="tetris-info">
                     <div className="tetris-score">
                         <div className="title">Score</div>
@@ -246,7 +252,7 @@ export class Tetris extends React.Component<IProps, IState> {
                     </div>
                     <div className="tetris-next-piece">
                         <div className="title">Next</div>
-                        <div className="value"><Piece piece={s.nextPiece}/></div>
+                        <div className="value"><Piece piece={new PieceModel(s.nextPiece)}/></div>
                     </div>
                 </div>
             </div>
