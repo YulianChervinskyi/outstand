@@ -38,6 +38,7 @@ export function Box(props: BoxProps) {
         width: size.width,
         height: size.height,
         zIndex: props.active ? 1 : 0,
+        filter: props.active ? "none" : "grayscale(100%)",
     };
 
     const handleResize = (size: { width: number, height: number }) => {
