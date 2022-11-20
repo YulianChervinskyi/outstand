@@ -66,7 +66,7 @@ export function Box(props: BoxProps) {
                 && <Calc width={props.width} height={props.height} text={props.text} onChange={(e) => props.onChange(props.id, e)}/>}
 
             {props.type === BoxType.Tetris
-                && <Tetris width={props.width} height={props.height} text={props.text} onChange={(e) => props.onChange(props.id, e)}/>}
+                && <Tetris width={props.width} height={props.height} text={props.text} active={props.active} onChange={(e) => props.onChange(props.id, e)}/>}
 
             <BoxResizer width={size.width} height={size.height} onResize={handleResize}/>
         </div>

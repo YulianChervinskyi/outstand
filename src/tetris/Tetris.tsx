@@ -20,6 +20,7 @@ interface IProps {
     height: number,
     text: string,
     onChange: (e: { text: string }) => void,
+    active?: boolean,
 }
 
 interface IState {
@@ -52,7 +53,7 @@ export class Tetris extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
         this.state = this.props.text ? JSON.parse(this.props.text) : initialState;
-        document.body.onkeydown = this.handleKeyDown;
+        document.body.addEventListener("keydown", this.handleKeyDown);
         this.tick();
     }
 
@@ -63,7 +64,7 @@ export class Tetris extends React.Component<IProps, IState> {
     }
 
     handleKeyDown = (e: KeyboardEvent) => {
-        if (this.state.gameOver || this.state.paused && e.key !== 'Escape')
+        if (!this.props.active || this.state.gameOver || this.state.paused && e.key !== 'Escape')
             return;
 
         switch (e.key) {
