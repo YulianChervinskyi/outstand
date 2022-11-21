@@ -53,8 +53,16 @@ export class Tetris extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
         this.state = this.props.text ? JSON.parse(this.props.text) : initialState;
+    }
+
+    componentDidMount() {
         document.body.addEventListener("keydown", this.handleKeyDown);
         this.tick();
+    }
+
+    componentWillUnmount() {
+        document.body.removeEventListener("keydown", this.handleKeyDown);
+        clearTimeout(this.timeoutId);
     }
 
     tick = () => {
@@ -213,7 +221,6 @@ export class Tetris extends React.Component<IProps, IState> {
 
     setState<K extends keyof IState>(state: Pick<IState, K> | IState | null) {
         super.setState(state, () => {
-            console.log(this.state);
             this.props.onChange({text: JSON.stringify(this.state)});
         });
     }
