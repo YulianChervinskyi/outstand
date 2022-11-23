@@ -57,7 +57,7 @@ export class Page extends React.Component<{}, IState> {
             height: 200,
             active: true,
             text: '',
-            type: [BoxType.Note, BoxType.Calc, BoxType.Tetris][Math.floor(Math.random() * 3)],
+            type: [BoxType.Note, BoxType.Calc, BoxType.Tetris, BoxType.Fpe][Math.floor(Math.random() * 4)],
         }
 
         this.updateState();
@@ -83,7 +83,6 @@ export class Page extends React.Component<{}, IState> {
                     key={key}
                     type={b.type}
                 />)}
-                {/*<Tetris/>*/}
             </div>
         );
     }
@@ -96,8 +95,6 @@ export class Page extends React.Component<{}, IState> {
     updateState = () => {
         this.setState(this.state);
         this.saveData();
-
-
     }
 
     saveData = () => {

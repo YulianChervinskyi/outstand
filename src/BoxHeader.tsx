@@ -4,6 +4,7 @@ import React from "react";
 export interface IBoxHeaderProps {
     onMove: (pos: { x: number, y: number }) => void,
     onClose: () => void,
+    caption: string,
 }
 
 export function BoxHeader(props: IBoxHeaderProps) {
@@ -27,7 +28,7 @@ export function BoxHeader(props: IBoxHeaderProps) {
 
     return (
         <div className="box-header">
-            <div className="mover" onMouseDown={handleMouseDown}></div>
+            <div className="mover" onMouseDown={handleMouseDown}>{props.caption}</div>
             <button className="close-button" onClick={props.onClose}>X</button>
         </div>
     );

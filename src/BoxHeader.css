@@ -13,6 +13,9 @@
 
 .box-header .mover {
     flex-grow: 1;
+    padding-left: 12px;
+    color: darkblue;
+    font-size: 15px;
 }
 
 .box-header .close-button {
