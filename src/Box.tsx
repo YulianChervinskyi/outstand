@@ -1,5 +1,6 @@
 import './Box.css';
 import {useState} from "react";
+import {Asteroids} from "./asteroids/Asteroids";
 import {BoxHeader} from "./BoxHeader";
 import {BoxResizer} from "./BoxResizer";
 import {Calc} from "./calc/Calc";
@@ -20,6 +21,7 @@ export enum BoxType {
     Calc = "Calc",
     Tetris = "Tetris",
     Fpe = "Fpe",
+    Asteroids = "Asteroids",
 }
 
 interface BoxProps {
@@ -65,6 +67,9 @@ export function Box(props: BoxProps) {
         props.onActive(props.id);
     };
 
+    const width = size.width - 10;
+    const height = size.height - 24;
+
     return (
         <div className="box" style={style} onMouseDown={handleMouseDown}>
             <BoxHeader onClose={() => props.onClose(props.id)} onMove={handleMove} caption={props.type.toString()}/>
@@ -73,16 +78,20 @@ export function Box(props: BoxProps) {
                 && <NoteEditor text={props.text} onChange={(e) => props.onChange(props.id, e)}/>}
 
             {props.type === BoxType.Calc
-                && <Calc width={props.width} height={props.height} text={props.text}
+                && <Calc width={width} height={height} text={props.text}
                          onChange={(e) => props.onChange(props.id, e)}/>}
 
             {props.type === BoxType.Tetris
-                && <Tetris width={props.width} height={props.height} text={props.text} active={props.active}
+                && <Tetris width={width} height={height} text={props.text} active={props.active}
                            onChange={(e) => props.onChange(props.id, e)}/>}
 
             {props.type === BoxType.Fpe
-                && <Fpe width={props.width} height={props.height} text={props.text} active={props.active}
+                && <Fpe width={width} height={height} text={props.text} active={props.active}
                         onChange={(e) => props.onChange(props.id, e)}/>}
+
+            {props.type === BoxType.Asteroids
+                && <Asteroids width={width} height={height} text={props.text} active={props.active}
+                              onChange={(e) => props.onChange(props.id, e)}/>}
 
             <BoxResizer width={size.width} height={size.height} onResize={handleResize}/>
         </div>

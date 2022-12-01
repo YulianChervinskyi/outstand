@@ -57,7 +57,13 @@ export class Page extends React.Component<{}, IState> {
             height: 200,
             active: true,
             text: '',
-            type: [BoxType.Note, BoxType.Calc, BoxType.Tetris, BoxType.Fpe][Math.floor(Math.random() * 4)],
+            type: [
+                BoxType.Note,
+                BoxType.Calc,
+                BoxType.Tetris,
+                BoxType.Fpe,
+                BoxType.Asteroids,
+            ][Math.floor(Math.random() * 5)],
         }
 
         this.updateState();
