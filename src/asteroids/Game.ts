@@ -28,13 +28,6 @@ export class Game {
         }
 
         for (let i = 0; i < this.objects.length; i++) {
-            const object = this.objects[i];
-            objectsToAdd.push(...object.update(seconds));
-            if (object.ttl && object.ttl <= 0)
-                idsToDelete.push(i);
-        }
-
-        for (let i = 0; i < this.objects.length; i++) {
             const o1 = this.objects[i];
             if (![EObjectType.asteroid, EObjectType.bullet, EObjectType.ship].includes(o1.type))
                 continue;
@@ -49,16 +42,24 @@ export class Game {
                     if (types.includes(EObjectType.asteroid)) {
                         if (types.includes(EObjectType.bullet)) {
                             const [a, b] = (o1.type === EObjectType.asteroid ? [o1, o2] : [o2, o1]) as [Asteroid, Bullet];
-                            objectsToAdd.push(...a.split(b.angle));
+                            a.split(b.angle);
                             idsToDelete.push(i, j);
                         } else if (types.includes(EObjectType.ship)) {
                             const [a, s] = (o1.type === EObjectType.asteroid ? [o1, o2] : [o2, o1]) as [Asteroid, Ship];
-                            objectsToAdd.push(...a.explosion(), ...s.explosion());
+                            a.explode();
+                            s.explode();
                             idsToDelete.push(i, j);
                         }
                     }
                 }
             }
+        }
+
+        for (let i = 0; i < this.objects.length; i++) {
+            const object = this.objects[i];
+            objectsToAdd.push(...object.update(seconds));
+            if (object.ttl && object.ttl <= 0)
+                idsToDelete.push(i);
         }
 
         for (let i = idsToDelete.length - 1; i >= 0; i--) {

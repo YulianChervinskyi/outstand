@@ -31,20 +31,17 @@ export class Asteroid extends MovingObject {
 
     split(attackAngle: number) {
         let leftVertexes = this.body.points.length - 1;
-        const asteroids: Asteroid[] = [];
         while (leftVertexes >= 5) {
             const vertexes = Math.max(5, Math.floor((0.5 + 0.5 * Math.random()) * leftVertexes / 2));
             const angle = attackAngle - Math.PI / 2 + Math.random() * Math.PI;
             const speed = 1.5 * this.speed + this.speed * Math.random();
-            asteroids.push(new Asteroid(this.x, this.y, angle, speed, vertexes));
+            this.generatedObjects.push(new Asteroid(this.x, this.y, angle, speed, vertexes));
             leftVertexes -= vertexes;
         }
-        return [...asteroids, ...this.explosion()];
     }
 
-    explosion() {
+    explode() {
         const amountOfParticles = this.body.points.length + Math.floor(Math.random() * 10);
-        const particles: MovingObject[] = [];
         for (let i = 0; i < amountOfParticles; i++) {
             const params = {
                 x: this.x,
@@ -53,8 +50,7 @@ export class Asteroid extends MovingObject {
                 speed: 100 + 100 * Math.random(),
                 ttl: 0.5
             }
-            particles.push(new Particle(COLOR, params));
+            this.generatedObjects.push(new Particle(COLOR, params));
         }
-        return particles;
     }
 }

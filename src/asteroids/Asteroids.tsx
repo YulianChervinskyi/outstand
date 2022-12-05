@@ -28,7 +28,7 @@ export class Asteroids extends React.Component<IComponentProps, {}> {
         const seconds = (time - this.lastTime) / 1000;
         this.lastTime = time;
 
-        if (seconds < 0.2)
+        if (seconds > 0 && seconds < 0.2)
             this.tick(seconds);
 
         if (this.scene)

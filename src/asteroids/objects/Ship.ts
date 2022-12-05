@@ -5,7 +5,7 @@ import {Particle} from "./Particle";
 
 const BODY = {
     color: '#0f0',
-    points: [{x: 17, y: 0}, {x: -13, y: 10}, {x: -13, y: -10}],
+    points: [{x: 20, y: 0}, {x: -15, y: 10}, {x: -15, y: -10}],
 };
 
 const FIRE_TIMEOUT = 0.2;
@@ -16,11 +16,38 @@ export class Ship extends MovingObject {
 
     fireTimeout: number = 0;
 
+    engine = {forward: 0, backward: 0, left: 0, right: 0}
+
     constructor(x: number = 0, y: number = 0, angle: number = 0) {
         super(EObjectType.ship, BODY, {x, y, angle});
     }
 
     update(seconds: number) {
+        if (this.engine.forward > 0) {
+            this.makeJet(-16, 0, this.spin + Math.PI, this.engine.forward);
+        }
+
+        if (this.engine.backward > 0) {
+            if (this.engine.right > 0)
+                this.makeJet(10, -4, this.spin, this.engine.backward);
+
+            if (this.engine.left > 0)
+                this.makeJet(10, 4, this.spin, this.engine.backward);
+
+            if (this.engine.right === 0 && this.engine.left === 0) {
+                this.makeJet(10, -4, this.spin, this.engine.backward);
+                this.makeJet(10, 4, this.spin, this.engine.backward);
+            }
+        } else {
+            if (this.engine.right > 0)
+                this.makeJet(10, 4, this.spin - Math.PI / 2, 4);
+
+            if (this.engine.left > 0)
+                this.makeJet(10, -4, this.spin + Math.PI / 2, 4);
+        }
+
+        this.engine = {forward: 0, backward: 0, left: 0, right: 0};
+
         return super.update(seconds);
     }
 
@@ -30,34 +57,24 @@ export class Ship extends MovingObject {
 
     turnRight(seconds: number) {
         this.turn(TURNING_SPEED * seconds);
+        this.engine.right = 1;
     }
 
     turnLeft(seconds: number) {
         this.turn(-TURNING_SPEED * seconds);
+        this.engine.left = 1;
     }
 
     forward(seconds: number) {
         const distance = seconds * MOVING_SPEED;
         this.move(distance);
-
-        const amount = Math.ceil(distance * 6);
-        for (let i = 0; i < amount; i++) {
-            const distance = 14 + 5 * Math.random();
-            const x = this.x - Math.cos(this.angle) * distance;
-            const y = this.y - Math.sin(this.angle) * distance;
-            const particle = new Particle("#ff0", {
-                x, y,
-                spin: this.angle + Math.PI + Math.random() * 0.5 - 0.25,
-                speed: 2 * MOVING_SPEED + Math.random() * MOVING_SPEED,
-                ttl: 0.05 * Math.random() + 0.2,
-            });
-            this.generatedObjects.push(particle);
-        }
-
+        this.engine.forward = distance * 6;
     }
 
     backward(seconds: number) {
-        this.move(-seconds * MOVING_SPEED);
+        const distance = seconds * MOVING_SPEED / 2;
+        this.move(-distance);
+        this.engine.backward = distance * 4;
     }
 
     fire(seconds: number) {
@@ -72,9 +89,26 @@ export class Ship extends MovingObject {
         return [new Bullet(x, y, this.spin)];
     }
 
-    explosion() {
+    private makeJet(dx: number, dy: number, spin: number, power: number) {
+        let sx = this.x + Math.cos(this.angle) * dx + Math.sin(this.angle) * dy;
+        let sy = this.y + Math.sin(this.angle) * dx - Math.cos(this.angle) * dy;
+        for (let i = 0; i < power; i++) {
+            const startOffset = MOVING_SPEED / 10 * Math.random();
+            const particleSpin = spin + Math.random() * 0.5 - 0.25;
+            const x = sx + Math.cos(particleSpin) * startOffset;
+            const y = sy + Math.sin(particleSpin) * startOffset;
+            const particle = new Particle("#ff0", {
+                x, y,
+                spin: particleSpin,
+                speed: 2 * MOVING_SPEED + Math.random() * MOVING_SPEED,
+                ttl: (0.05 * Math.random() + 0.2) * power / 20,
+            });
+            this.generatedObjects.push(particle);
+        }
+    }
+
+    explode() {
         const amountOfParticles = 80 + Math.floor(Math.random() * 70);
-        const particles: MovingObject[] = [];
         for (let i = 0; i < amountOfParticles; i++) {
             const params = {
                 x: this.x,
@@ -83,9 +117,8 @@ export class Ship extends MovingObject {
                 speed: 100 + 100 * Math.random(),
                 ttl: 0.5
             }
-            particles.push(new Particle(BODY.color, params));
+            this.generatedObjects.push(new Particle(BODY.color, params));
         }
-        return particles;
     }
 
 }
