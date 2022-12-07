@@ -1,6 +1,6 @@
-import './ModeSelector.css';
 import {BoxType} from "./Box";
 import React from "react";
+import './ModeSelector.css';
 
 export interface IModeSelectorProps {
     onSelectMode: (type: BoxType) => void,
@@ -10,7 +10,6 @@ export interface IModeSelectorProps {
 export function ModeSelector(props: IModeSelectorProps) {
     return (
         <div className="mode-selector">
-            <p>Modes</p>
             {Object.values(BoxType).map((value) =>
                 <button
                     style={{borderColor: props.selected === value ? 'lightsalmon' : 'darkgray'}}

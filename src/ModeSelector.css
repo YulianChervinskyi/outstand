@@ -1,24 +1,14 @@
 .mode-selector {
     width: fit-content;
-    margin: 0 auto;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, 0);
     -webkit-user-select: none;
     -ms-user-select: none;
     user-select: none;
 }
 
-.mode-selector p {
-    margin: 0;
-    display: block;
-}
-
 .mode-selector button {
-    display: none;
-}
-
-.mode-selector:hover p {
-    display: none;
-}
-
-.mode-selector:hover button {
     display: inline-block;
 }

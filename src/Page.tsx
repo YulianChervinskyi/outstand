@@ -14,14 +14,12 @@ interface IBoxData {
 
 interface IState {
     boxes: { [id: number]: IBoxData };
-    activeBox: number;
     modeType: BoxType,
 }
 
 export class Page extends React.Component<{}, IState> {
     counter = 0;
     activeBoxId = 0;
-    type: BoxType = localStorage.getItem("type") as BoxType || BoxType.Note;
 
     constructor(props = {}) {
         super(props);
