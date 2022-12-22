@@ -10,6 +10,9 @@ export class Game {
     objects: SceneObject[] = [];
     player = new Ship();
     controls = new Controls();
+    paused = false;
+    lives = 4;
+    pauseState = false;
 
     constructor() {
         this.objects.push(this.player);
@@ -19,7 +22,15 @@ export class Game {
         const objectsToAdd: SceneObject[] = [];
         const idsToDelete: number[] = [];
 
-        if (active) {
+        if (active && !this.pauseState && this.controls.states.pause)
+            this.paused = !this.paused
+
+        this.pauseState = this.controls.states.pause;
+
+        if (this.paused)
+            return;
+
+        if (active && this.lives > 0) {
             this.controls.states.forward && this.player.forward(seconds);
             this.controls.states.backward && this.player.backward(seconds);
             this.controls.states.right && this.player.turnRight(seconds);
@@ -48,6 +59,7 @@ export class Game {
                             const [a, s] = (o1.type === EObjectType.asteroid ? [o1, o2] : [o2, o1]) as [Asteroid, Ship];
                             a.explode();
                             s.explode();
+                            objectsToAdd.push(...this.destroyPlayer());
                             idsToDelete.push(i, j);
                         }
                     }
@@ -66,7 +78,9 @@ export class Game {
             this.objects.splice(idsToDelete[i], 1);
         }
 
-        this.spawnAsteroids(seconds);
+        if (this.lives > 0)
+            this.spawnAsteroids(seconds);
+
         this.objects.push(...objectsToAdd);
     }
 
@@ -80,5 +94,11 @@ export class Game {
             this.objects.push(new Asteroid(x, y, angle + Math.PI));
         }
 
+    }
+
+    private destroyPlayer() {
+        this.lives--;
+        this.player = new Ship();
+        return this.lives > 0 ? [this.player] : [];
     }
 }

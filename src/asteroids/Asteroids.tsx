@@ -3,7 +3,7 @@ import {IComponentProps} from "../Box";
 import {Game} from "./Game";
 import {Scene} from "./Scene";
 
-export class Asteroids extends React.Component<IComponentProps, {}> {
+export class Asteroids extends React.Component<IComponentProps, { paused: boolean, gameOver: boolean }> {
     lastTime = 0;
     canvasRef = React.createRef<HTMLCanvasElement>();
     scene?: Scene;
@@ -11,6 +11,7 @@ export class Asteroids extends React.Component<IComponentProps, {}> {
 
     constructor(props: IComponentProps) {
         super(props);
+        this.state = {paused: true, gameOver: false};
     }
 
     componentDidMount() {
@@ -40,7 +41,29 @@ export class Asteroids extends React.Component<IComponentProps, {}> {
         this.scene?.render(this.game);
     }
 
+    private resetGame = () => {
+
+    }
+
     render() {
-        return <canvas ref={this.canvasRef} width={this.props.width} height={this.props.height}/>
+        return <div>
+            <canvas ref={this.canvasRef} width={this.props.width} height={this.props.height}/>
+            {this.state.paused && <div className="info-overlay">
+                Paused
+                <div className="controls">
+                    <button onClick={() => this.setState({paused: false})}
+                    >Continue
+                    </button>
+                    <button onClick={this.resetGame}>Restart</button>
+                </div>
+            </div>}
+            {this.state.gameOver && <div className="info-overlay">
+                Game Over
+                <div className="controls">
+                    <button onClick={this.resetGame}>Restart</button>
+                </div>
+            </div>}
+
+        </div>
     }
 }
