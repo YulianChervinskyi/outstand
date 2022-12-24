@@ -6,17 +6,5 @@
     top: 100%;
     width: 100%;
     height: 5%;
-    -webkit-user-select: none;
-    -ms-user-select: none;
     user-select: none;
-}
-
-.mode-selector button {
-    display: none;
-    transition: 0.66s;
-    background-color: yellow;
-}
-
-.mode-selector button:hover {
-    padding: 0 2% 2% 2%;
 }

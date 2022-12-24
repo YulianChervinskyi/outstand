@@ -10,22 +10,18 @@ export interface IModeSelectorProps {
 export function ModeSelector(props: IModeSelectorProps) {
     const [btnDisplay, setBtnDisplay] = useState<boolean>(false);
 
-    // const handleClick = (value: BoxType) => {
-    //     props.onSelectMode(value);
-    //     setStyle({
-    //         filter: props.selected === value ? "none" : "grayscale(100%)",
-    //     });
-    // }
+    const btnStyle = (value: BoxType) => {
+        return {
+            transition: "0.66s",
+            display: btnDisplay ? "inline-block" : "none",
+            padding: value === props.selected ? "0 2% 2% 2%" : "",
+        }
+    };
 
     return (
-        <div className="mode-selector"
-             onMouseEnter={() => setBtnDisplay(true)}
-             onMouseLeave={() => setBtnDisplay(false)}>
+        <div className="mode-selector" onMouseEnter={() => setBtnDisplay(true)} onMouseLeave={() => setBtnDisplay(false)}>
             {Object.values(BoxType).map((value) =>
-                <button
-                    style={{filter: props.selected === value ? "none" : "grayscale(100%)",
-                        display: btnDisplay ? "inline-block" : "none"}}
-                    onClick={() => props.onSelectMode(value)}>
+                <button style={btnStyle(value)} onClick={() => props.onSelectMode(value)}>
                     {value}
                 </button>)}
         </div>
