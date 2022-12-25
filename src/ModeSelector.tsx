@@ -1,10 +1,10 @@
 import {BoxType} from "./Box";
-import './ModeSelector.css';
 import {imagesPng} from "./icons/images";
+import './ModeSelector.css';
 
 export interface IModeSelectorProps {
-    onSelectMode: (type: BoxType) => void,
-    selected: BoxType,
+    onSelectMode: (type: BoxType | undefined) => void,
+    selected: BoxType | undefined,
 }
 
 export function ModeSelector(props: IModeSelectorProps) {
@@ -13,10 +13,17 @@ export function ModeSelector(props: IModeSelectorProps) {
             {paddingBottom: "1%", filter: "none"} : {filter: "grayscale(100%)"};
     };
 
+    const handleClick = (value: BoxType) => {
+        if (value !== props.selected)
+            props.onSelectMode(value);
+        else
+            props.onSelectMode(undefined);
+    };
+
     return (
         <div className="mode-selector">
             {Object.values(BoxType).map((value, i) =>
-                <img src={imagesPng[i]} alt="" style={style(value)} onClick={() => props.onSelectMode(value)}/>)}
+                <img src={imagesPng[i]} alt="" style={style(value)} onClick={() => handleClick(value)}/>)}
         </div>
     );
 }
