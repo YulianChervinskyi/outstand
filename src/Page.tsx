@@ -52,7 +52,7 @@ export class Page extends React.Component<{}, IState> {
         this.setState({...this.state, modeType: type});
     }
 
-    handleDoubleClick = (e: React.MouseEvent) => {
+    handleClick = (e: React.MouseEvent) => {
         if (this.state.modeType === undefined)
             return;
 
@@ -69,12 +69,13 @@ export class Page extends React.Component<{}, IState> {
         }
 
         this.updateState();
+        this.setState({...this.state, modeType: undefined});
         this.handleActive(this.counter);
     }
 
     render() {
         return (
-            <div className="App" onDoubleClick={this.handleDoubleClick}>
+            <div className="App" onClick={this.handleClick}>
                 {Object.entries(this.state.boxes).map(([key, b]) => <Box
                     x={b.x}
                     y={b.y}
