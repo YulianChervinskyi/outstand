@@ -49,7 +49,7 @@ export function Box(props: BoxProps) {
         top: pos.y,
         width: size.width,
         height: size.height,
-        zIndex: props.active ? 1 : 0,
+        zIndex: props.active ? 2 : 1,
         filter: props.active ? "none" : "grayscale(100%)",
     };
 
