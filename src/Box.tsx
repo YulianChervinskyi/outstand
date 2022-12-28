@@ -72,7 +72,7 @@ export function Box(props: BoxProps) {
 
     return (
         <div className="box" style={style} onMouseDown={handleMouseDown}>
-            <BoxHeader onClose={() => props.onClose(props.id)} onMove={handleMove} caption={props.type.toString()}/>
+            <BoxHeader onClose={() => props.onClose(props.id)} onMove={handleMove} caption={String(props.type)}/>
 
             {props.type === BoxType.Note
                 && <NoteEditor text={props.text} onChange={(e) => props.onChange(props.id, e)}/>}
