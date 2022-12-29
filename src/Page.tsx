@@ -68,14 +68,15 @@ export class Page extends React.Component<{}, IState> {
             type: this.state.modeType,
         }
 
-        this.updateState();
-        this.setState({...this.state, modeType: undefined});
         this.handleActive(this.counter);
+        this.setState({...this.state, modeType: undefined});
     }
 
     render() {
         return (
-            <div className="App" onClick={this.handleClick}>
+            <div className="App"
+                 onClick={this.handleClick}
+                 style={{cursor: this.state.modeType !== undefined ? "cell" : "default"}}>
                 {Object.entries(this.state.boxes).map(([key, b]) => <Box
                     x={b.x}
                     y={b.y}

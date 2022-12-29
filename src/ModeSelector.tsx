@@ -11,14 +11,14 @@ export function ModeSelector(props: IModeSelectorProps) {
     const style = (value: BoxType) => {
         return value === props.selected ?
             {paddingBottom: "1%", filter: "none"} : {filter: "grayscale(100%)"};
-    };
+    }
 
     const handleClick = (value: BoxType) => {
         if (value !== props.selected)
             props.onSelectMode(value);
         else
             props.onSelectMode(undefined);
-    };
+    }
 
     return (
         <div className="mode-selector">
