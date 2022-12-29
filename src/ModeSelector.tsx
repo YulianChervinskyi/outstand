@@ -1,9 +1,10 @@
 import {BoxType} from "./Box";
+import React from "react";
 import {imagesPng} from "./icons/images";
 import './ModeSelector.css';
 
 export interface IModeSelectorProps {
-    onSelectMode: (type: BoxType | undefined) => void,
+    onSelectMode: (type: BoxType | undefined, e: React.MouseEvent) => void,
     selected: BoxType | undefined,
 }
 
@@ -13,17 +14,21 @@ export function ModeSelector(props: IModeSelectorProps) {
             {paddingBottom: "1%", filter: "none"} : {filter: "grayscale(100%)"};
     }
 
-    const handleClick = (value: BoxType) => {
+    const handleClick = (value: BoxType, e: React.MouseEvent) => {
         if (value !== props.selected)
-            props.onSelectMode(value);
+            props.onSelectMode(value, e);
         else
-            props.onSelectMode(undefined);
+            props.onSelectMode(undefined, e);
     }
 
     return (
         <div className="mode-selector">
             {Object.values(BoxType).map((value, i) =>
-                <img src={imagesPng[i]} alt="" style={style(value)} onClick={() => handleClick(value)}/>)}
+                <img src={imagesPng[i]}
+                     alt=""
+                     style={style(value)}
+                     onClick={(e: React.MouseEvent) => handleClick(value, e)}
+                />)}
         </div>
     );
 }

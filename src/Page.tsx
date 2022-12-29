@@ -48,8 +48,9 @@ export class Page extends React.Component<{}, IState> {
         this.updateState();
     }
 
-    handleSelectMode = (type: BoxType | undefined) => {
+    handleSelectMode = (type: BoxType | undefined, e: React.MouseEvent) => {
         this.setState({...this.state, modeType: type});
+        e.stopPropagation();
     }
 
     handleClick = (e: React.MouseEvent) => {
@@ -69,7 +70,7 @@ export class Page extends React.Component<{}, IState> {
         }
 
         this.handleActive(this.counter);
-        this.setState({...this.state, modeType: undefined});
+        this.handleSelectMode(undefined, e);
     }
 
     render() {
