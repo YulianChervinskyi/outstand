@@ -1,5 +1,6 @@
 import React from "react";
 import {Box, BoxType} from "./Box";
+import {iconsPng} from "./icons/images";
 import {ModeSelector} from "./ModeSelector";
 
 interface IBoxData {
@@ -77,7 +78,7 @@ export class Page extends React.Component<{}, IState> {
         return (
             <div className="App"
                  onClick={this.handleClick}
-                 style={{cursor: this.state.modeType !== undefined ? "cell" : "default"}}>
+                 style={{cursor: this.state.modeType !== undefined ? `url(${iconsPng[this.state.modeType]}), auto` : "default"}}>
                 {Object.entries(this.state.boxes).map(([key, b]) => <Box
                     x={b.x}
                     y={b.y}

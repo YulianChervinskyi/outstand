@@ -1,6 +1,6 @@
 import {BoxType} from "./Box";
 import React from "react";
-import {imagesPng} from "./icons/images";
+import {iconsPng} from "./icons/images";
 import './ModeSelector.css';
 
 export interface IModeSelectorProps {
@@ -23,8 +23,8 @@ export function ModeSelector(props: IModeSelectorProps) {
 
     return (
         <div className="mode-selector">
-            {Object.values(BoxType).map((value, i) =>
-                <img src={imagesPng[i]}
+            {Object.values(BoxType).map((value) =>
+                <img src={iconsPng[value]}
                      alt=""
                      style={style(value)}
                      onClick={(e: React.MouseEvent) => handleClick(value, e)}
