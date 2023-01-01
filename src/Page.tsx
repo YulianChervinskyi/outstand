@@ -1,5 +1,7 @@
 import React from "react";
 import {Box, BoxType} from "./Box";
+import {iconsPng} from "./icons/images";
+import {ModeSelector} from "./ModeSelector";
 
 interface IBoxData {
     x: number,
@@ -13,7 +15,7 @@ interface IBoxData {
 
 interface IState {
     boxes: { [id: number]: IBoxData };
-    activeBox: number;
+    modeType: BoxType | undefined,
 }
 
 export class Page extends React.Component<{}, IState> {
@@ -24,7 +26,7 @@ export class Page extends React.Component<{}, IState> {
         super(props);
 
         const stateData = localStorage.getItem('state');
-        this.state = stateData ? JSON.parse(stateData) : {boxes: {}};
+        this.state = stateData ? JSON.parse(stateData) : {boxes: {}, modeType: undefined};
 
         const keys = Object.keys(this.state.boxes);
         this.counter = keys.length > 0 ? Number(keys[keys.length - 1]) : this.counter;
@@ -47,7 +49,15 @@ export class Page extends React.Component<{}, IState> {
         this.updateState();
     }
 
-    handleDoubleClick = (e: React.MouseEvent) => {
+    handleSelectMode = (type: BoxType | undefined, e: React.MouseEvent) => {
+        this.setState({...this.state, modeType: type});
+        e.stopPropagation();
+    }
+
+    handleClick = (e: React.MouseEvent) => {
+        if (this.state.modeType === undefined)
+            return;
+
         this.counter++;
 
         this.state.boxes[this.counter] = {
@@ -57,22 +67,18 @@ export class Page extends React.Component<{}, IState> {
             height: 200,
             active: true,
             text: '',
-            type: [
-                BoxType.Note,
-                BoxType.Calc,
-                BoxType.Tetris,
-                BoxType.Fpe,
-                BoxType.Asteroids,
-            ][Math.floor(Math.random() * 5)],
+            type: this.state.modeType,
         }
 
-        this.updateState();
         this.handleActive(this.counter);
+        this.handleSelectMode(undefined, e);
     }
 
     render() {
         return (
-            <div className="App" onDoubleClick={this.handleDoubleClick}>
+            <div className="App"
+                 onClick={this.handleClick}
+                 style={{cursor: this.state.modeType !== undefined ? `url(${iconsPng[this.state.modeType]}), auto` : "default"}}>
                 {Object.entries(this.state.boxes).map(([key, b]) => <Box
                     x={b.x}
                     y={b.y}
@@ -89,6 +95,7 @@ export class Page extends React.Component<{}, IState> {
                     key={key}
                     type={b.type}
                 />)}
+                <ModeSelector selected={this.state.modeType} onSelectMode={this.handleSelectMode}/>
             </div>
         );
     }

@@ -232,7 +232,7 @@ export class Tetris extends React.Component<IProps, IState> {
                 {s.paused && <div className="info-overlay">
                     Paused
                     <div className="controls">
-                        <button onClick={() => this.setState({...s, paused: false})}
+                        <button onClick={() => this.setState({paused: false})}
                         >Continue
                         </button>
                         <button onClick={this.resetGame}>Restart</button>
