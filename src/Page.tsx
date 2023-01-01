@@ -1,5 +1,6 @@
 import React from "react";
 import {Box, BoxType} from "./Box";
+import {iconsPng} from "./icons/images";
 import {ModeSelector} from "./ModeSelector";
 
 interface IBoxData {
@@ -14,7 +15,7 @@ interface IBoxData {
 
 interface IState {
     boxes: { [id: number]: IBoxData };
-    modeType: BoxType,
+    modeType: BoxType | undefined,
 }
 
 export class Page extends React.Component<{}, IState> {
@@ -25,7 +26,7 @@ export class Page extends React.Component<{}, IState> {
         super(props);
 
         const stateData = localStorage.getItem('state');
-        this.state = stateData ? JSON.parse(stateData) : {boxes: {}, modeType: BoxType.Note};
+        this.state = stateData ? JSON.parse(stateData) : {boxes: {}, modeType: undefined};
 
         const keys = Object.keys(this.state.boxes);
         this.counter = keys.length > 0 ? Number(keys[keys.length - 1]) : this.counter;
@@ -48,11 +49,15 @@ export class Page extends React.Component<{}, IState> {
         this.updateState();
     }
 
-    handleSelectMode = (type: BoxType) => {
+    handleSelectMode = (type: BoxType | undefined, e: React.MouseEvent) => {
         this.setState({...this.state, modeType: type});
+        e.stopPropagation();
     }
 
-    handleDoubleClick = (e: React.MouseEvent) => {
+    handleClick = (e: React.MouseEvent) => {
+        if (this.state.modeType === undefined)
+            return;
+
         this.counter++;
 
         this.state.boxes[this.counter] = {
@@ -65,13 +70,15 @@ export class Page extends React.Component<{}, IState> {
             type: this.state.modeType,
         }
 
-        this.updateState();
         this.handleActive(this.counter);
+        this.handleSelectMode(undefined, e);
     }
 
     render() {
         return (
-            <div className="App" onDoubleClick={this.handleDoubleClick}>
+            <div className="App"
+                 onClick={this.handleClick}
+                 style={{cursor: this.state.modeType !== undefined ? `url(${iconsPng[this.state.modeType]}), auto` : "default"}}>
                 {Object.entries(this.state.boxes).map(([key, b]) => <Box
                     x={b.x}
                     y={b.y}

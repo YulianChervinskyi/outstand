@@ -49,7 +49,7 @@ export function Box(props: BoxProps) {
         top: pos.y,
         width: size.width,
         height: size.height,
-        zIndex: props.active ? 1 : 0,
+        zIndex: props.active ? 2 : 1,
         filter: props.active ? "none" : "grayscale(100%)",
     };
 
@@ -72,7 +72,7 @@ export function Box(props: BoxProps) {
 
     return (
         <div className="box" style={style} onMouseDown={handleMouseDown}>
-            <BoxHeader onClose={() => props.onClose(props.id)} onMove={handleMove} caption={props.type.toString()}/>
+            <BoxHeader onClose={() => props.onClose(props.id)} onMove={handleMove} caption={String(props.type)}/>
 
             {props.type === BoxType.Note
                 && <NoteEditor text={props.text} onChange={(e) => props.onChange(props.id, e)}/>}
