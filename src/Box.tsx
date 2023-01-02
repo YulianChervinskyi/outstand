@@ -96,7 +96,7 @@ export function Box(props: BoxProps) {
                               onChange={(e) => props.onChange(props.id, e)}/>}
 
             {props.type === BoxType.Minesweeper
-                && <Minesweeper width={width} height={height} text={props.text} active={props.active}
+                && <Minesweeper width={width} height={height} text={props.text}
                               onChange={(e) => props.onChange(props.id, e)}/>}
 
             <BoxResizer width={size.width} height={size.height} onResize={handleResize}/>

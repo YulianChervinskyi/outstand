@@ -10,5 +10,6 @@ export const iconsPng = {
     [BoxType.Calc]: calc,
     [BoxType.Tetris]: tetris,
     [BoxType.Fpe]: fpe,
-    [BoxType.Asteroids]: asteroids
+    [BoxType.Asteroids]: asteroids,
+    [BoxType.Minesweeper]: asteroids,
 };

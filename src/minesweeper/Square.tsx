@@ -1,23 +1,25 @@
 import React from "react";
 
-interface ISquare {
-    squares:{
-        [id:number]:{
-            value: string,
-            unOpen: boolean,
-        }}
+interface ISquareData {
+    value: string,
+    clicked: boolean,
 }
 
-export class Square extends React.Component<ISquare> {
+interface ISquare {
+    squares: { [id: number]: ISquareData }
+}
 
-    constructor(props:ISquare) {
+export class Square extends React.Component<{}, ISquare> {
+
+
+    constructor(props: {}) {
         super(props);
-        this.state = {};
+        this.state = {squares: {}};
     }
 
     render() {
         return (
-            <div/>
+            <div></div>
         );
     }
 }
