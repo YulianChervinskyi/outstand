@@ -7,25 +7,27 @@ import {EObjectType} from "./types";
 
 export class Game {
 
-    objects: SceneObject[] = [];
     player = new Ship();
+    objects: SceneObject[] = [this.player];
     controls = new Controls();
     paused = false;
     lives = 4;
-    pauseState = false;
 
-    constructor() {
-        this.objects.push(this.player);
+    constructor(private readonly onGameOver: () => void) {
+    }
+
+    pause(value: boolean) {
+        this.paused = value;
+    }
+
+    reset() {
+        this.objects = [this.player];
+        this.lives = 4;
     }
 
     update(seconds: number, active?: boolean) {
         const objectsToAdd: SceneObject[] = [];
         const idsToDelete: number[] = [];
-
-        if (active && !this.pauseState && this.controls.states.pause)
-            this.paused = !this.paused
-
-        this.pauseState = this.controls.states.pause;
 
         if (this.paused)
             return;
@@ -99,6 +101,10 @@ export class Game {
     private destroyPlayer() {
         this.lives--;
         this.player = new Ship();
+
+        if (this.lives === 0)
+            this.onGameOver();
+
         return this.lives > 0 ? [this.player] : [];
     }
 }

@@ -7,14 +7,15 @@ export class Asteroids extends React.Component<IComponentProps, { paused: boolea
     lastTime = 0;
     canvasRef = React.createRef<HTMLCanvasElement>();
     scene?: Scene;
-    game = new Game();
+    game = new Game(() => this.setState({gameOver: true}));
 
     constructor(props: IComponentProps) {
         super(props);
-        this.state = {paused: true, gameOver: false};
+        this.state = {paused: false, gameOver: false};
     }
 
     componentDidMount() {
+        document.body.addEventListener("keydown", this.handleKeyDown);
         if (this.canvasRef.current) {
             this.scene = new Scene(this.canvasRef.current);
             requestAnimationFrame(this.frame);
@@ -22,7 +23,18 @@ export class Asteroids extends React.Component<IComponentProps, { paused: boolea
     }
 
     componentWillUnmount() {
+        document.body.removeEventListener("keydown", this.handleKeyDown);
         this.scene = undefined;
+    }
+
+    handleKeyDown = (e: KeyboardEvent) => {
+        if (!this.props.active || this.state.gameOver)
+            return;
+
+        switch (e.key) {
+            case "Escape":
+                this.handlePause();
+        }
     }
 
     frame = (time: number) => {
@@ -41,8 +53,14 @@ export class Asteroids extends React.Component<IComponentProps, { paused: boolea
         this.scene?.render(this.game);
     }
 
-    private resetGame = () => {
+    private handlePause = () => {
+        this.game.pause(!this.state.paused);
+        this.setState({paused: !this.state.paused});
+    }
 
+    private handleReset = () => {
+        this.game.reset();
+        this.setState({paused: false, gameOver: false});
     }
 
     render() {
@@ -51,16 +69,14 @@ export class Asteroids extends React.Component<IComponentProps, { paused: boolea
             {this.state.paused && <div className="info-overlay">
                 Paused
                 <div className="controls">
-                    <button onClick={() => this.setState({paused: false})}
-                    >Continue
-                    </button>
-                    <button onClick={this.resetGame}>Restart</button>
+                    <button onClick={this.handlePause}>Continue</button>
+                    <button onClick={this.handleReset}>Restart</button>
                 </div>
             </div>}
             {this.state.gameOver && <div className="info-overlay">
                 Game Over
                 <div className="controls">
-                    <button onClick={this.resetGame}>Restart</button>
+                    <button onClick={this.handleReset}>Restart</button>
                 </div>
             </div>}
 
