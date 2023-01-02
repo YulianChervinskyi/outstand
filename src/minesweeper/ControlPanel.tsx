@@ -1,6 +1,5 @@
-import React, {useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import './ControlPanel.css';
-import {useRef, useEffect} from "react";
 
 enum DifficultyType {
     Easy = "Easy",
@@ -12,10 +11,11 @@ export function ControlPanel() {
     const [currentDifficulty, setCurrentDifficulty] = useState(DifficultyType.Easy);
     const [isMenuVisible, setIsMenuVisible] = useState(false);
 
-    const ref = useRef<any>(null);
+    const ref = useRef<HTMLDivElement>(null);
 
     const handleClickOutside = (event: MouseEvent) => {
-        if (ref.current && !ref.current.contains(event.target)) {
+        if (ref.current && !ref.current.contains(event.target as HTMLElement)) {
+            console.log("click outside after check");
             setIsMenuVisible(false);
         }
     };
@@ -34,9 +34,9 @@ export function ControlPanel() {
 
     return (
         <div className="controlPanel">
-            <div className="menu">
+            <div className="menu" ref={ref}>
                 <button onClick={() => setIsMenuVisible(!isMenuVisible)}>{currentDifficulty}</button>
-                <div style={{display: isMenuVisible ? "block" : "none"}} ref={ref}>
+                <div style={{display: isMenuVisible ? "block" : "none"}} >
                     {Object.values(DifficultyType).map((value) =>
                         <button onClick={() => handleSelectDifficulty(value)}>
                             {value}
