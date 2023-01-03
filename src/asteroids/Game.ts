@@ -12,6 +12,8 @@ export class Game {
     controls = new Controls();
     paused = false;
     lives = 4;
+    score = 0;
+    level = 1;
 
     constructor(private readonly onGameOver: () => void) {
     }
@@ -23,6 +25,8 @@ export class Game {
     reset() {
         this.objects = [this.player];
         this.lives = 4;
+        this.score = 0;
+        this.paused = false;
     }
 
     update(seconds: number, active?: boolean) {
@@ -57,6 +61,7 @@ export class Game {
                             const [a, b] = (o1.type === EObjectType.asteroid ? [o1, o2] : [o2, o1]) as [Asteroid, Bullet];
                             a.split(b.angle);
                             idsToDelete.push(i, j);
+                            this.score += 10;
                         } else if (types.includes(EObjectType.ship)) {
                             const [a, s] = (o1.type === EObjectType.asteroid ? [o1, o2] : [o2, o1]) as [Asteroid, Ship];
                             a.explode();
@@ -72,8 +77,12 @@ export class Game {
         for (let i = 0; i < this.objects.length; i++) {
             const object = this.objects[i];
             objectsToAdd.push(...object.update(seconds));
-            if (object.ttl && object.ttl <= 0)
+            if (object.ttl && object.ttl <= 0) {
                 idsToDelete.push(i);
+                if (object.type === EObjectType.bullet) {
+                    this.score = Math.max(0, this.score - 1);
+                }
+            }
         }
 
         for (let i = idsToDelete.length - 1; i >= 0; i--) {

@@ -1,13 +1,15 @@
 import React from "react";
 import {IComponentProps} from "../Box";
 import {Game} from "./Game";
+import {GameInfo} from "./GameInfo";
 import {Scene} from "./Scene";
 
 export class Asteroids extends React.Component<IComponentProps, { paused: boolean, gameOver: boolean }> {
     lastTime = 0;
     canvasRef = React.createRef<HTMLCanvasElement>();
-    scene?: Scene;
     game = new Game(() => this.setState({gameOver: true}));
+    scene?: Scene;
+    gameInfo?:GameInfo;
 
     constructor(props: IComponentProps) {
         super(props);
@@ -17,7 +19,8 @@ export class Asteroids extends React.Component<IComponentProps, { paused: boolea
     componentDidMount() {
         document.body.addEventListener("keydown", this.handleKeyDown);
         if (this.canvasRef.current) {
-            this.scene = new Scene(this.canvasRef.current);
+            this.scene = new Scene(this.canvasRef.current, this.game);
+            this.gameInfo = new GameInfo(this.canvasRef.current, this.game);
             requestAnimationFrame(this.frame);
         }
     }
@@ -50,7 +53,8 @@ export class Asteroids extends React.Component<IComponentProps, { paused: boolea
 
     private tick = (seconds: number) => {
         this.game.update(seconds, this.props.active);
-        this.scene?.render(this.game);
+        this.scene?.render();
+        this.gameInfo?.render();
     }
 
     private handlePause = () => {

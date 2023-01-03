@@ -4,10 +4,10 @@ import {IPoint, ISceneObject} from "./types";
 export class Scene {
     private readonly ctx = this.canvas.getContext('2d')!;
 
-    constructor(private readonly canvas: HTMLCanvasElement) {
+    constructor(private readonly canvas: HTMLCanvasElement, private readonly game: Game) {
     }
 
-    render(game: Game) {
+    render() {
         const w = this.canvas.width;
         const h = this.canvas.height;
         const cx = w / 2;
@@ -17,7 +17,7 @@ export class Scene {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.translate(cx, cy);
 
-        for (const object of game.objects) {
+        for (const object of this.game.objects) {
             this.fixObjectPosition(object, cx, cy);
             this.drawObject(object, w, h);
         }
