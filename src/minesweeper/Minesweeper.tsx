@@ -10,7 +10,7 @@ export interface IProps {
 }
 
 interface IState {
-    counter: number,
+    timer: number,
     currDifficulty: DifficultyType,
     flagNumber: number,
     board: number[][],
@@ -19,11 +19,12 @@ interface IState {
 export class Minesweeper extends React.Component<IProps, IState> {
     intervalId: NodeJS.Timeout | undefined = undefined;
     isGameStarted = true;
+    counter = 0;
 
     constructor(props: IProps) {
         super(props);
         this.state = {
-            counter: 0,
+            timer: 0,
             currDifficulty: DifficultyType.Easy,
             flagNumber: 10,
             board: Array(10).fill(Array(10).fill(-1)),
@@ -32,11 +33,10 @@ export class Minesweeper extends React.Component<IProps, IState> {
 
     componentDidMount() {
         this.intervalId = setInterval(() => {
-            this.setState(prevState => {
-                if (!this.isGameStarted || prevState.counter + 1 === 999)
-                    clearInterval(this.intervalId);
-                return {...prevState, counter: this.isGameStarted ? prevState.counter + 1 : 0};
-            });
+            this.counter++;
+            this.setState({timer: this.counter});
+            if (this.counter === 999)
+                clearInterval(this.intervalId);
         }, 1000);
     }
 
@@ -51,7 +51,7 @@ export class Minesweeper extends React.Component<IProps, IState> {
         return (
             <div style={{width: "100%", height: "100%", backgroundColor: "#819462"}}>
                 <ControlPanel
-                    time={this.state.counter}
+                    time={this.state.timer}
                     flagNumber={this.state.flagNumber}
                     changeDifficulty={(difficulty) => this.setState({currDifficulty: difficulty})}
                 />
