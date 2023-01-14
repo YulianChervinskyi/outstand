@@ -23,7 +23,7 @@ export enum cellState {
     Flagged = "Flagged",
 }
 
-export const cell = {
+export interface cell {
     value: cellValue,
     state: cellState,
 }

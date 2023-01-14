@@ -1,0 +1,14 @@
+.game-field {
+    position: relative;
+    height: 90%;
+    width: 100%;
+}
+
+.game-field-row {
+    width: 100%;
+}
+
+.game-field-cell {
+    margin: 0;
+    padding: 1px;
+}

@@ -13,7 +13,7 @@ export interface IProps {
 interface IState {
     timer: number,
     flagNumber: number,
-    gameField: number[][],
+    gameField: cell[][],
 }
 
 export class Minesweeper extends React.Component<IProps, IState> {
@@ -30,15 +30,16 @@ export class Minesweeper extends React.Component<IProps, IState> {
         };
     }
 
-    handleChangeDifficulty(difficulty: DifficultyType) {
+    handleChangeDifficulty = (difficulty: DifficultyType) => {
+        console.log(difficulty);
         this.setState({
             flagNumber: gameProps[difficulty].mines,
-            gameField: this.createGameField(difficulty)
+            gameField: this.createGameField(difficulty),
         });
     }
 
-    createGameField(difficulty: DifficultyType) {
-        const field: number[][] = Array(gameProps[difficulty].height).fill(Array(gameProps[difficulty].width).fill(cell.value.V0));
+    createGameField = (difficulty: DifficultyType) => {
+        const field: cell[][] = Array(gameProps[difficulty].height).fill(Array(gameProps[difficulty].width).fill(0));
         return field;
     }
 
@@ -59,7 +60,7 @@ export class Minesweeper extends React.Component<IProps, IState> {
 
     render() {
         return (
-            <div style={{width: "100%", height: "100%", backgroundColor: "#819462"}}>
+            <div className="minesweeper" style={{width: this.props.width, height: this.props.height, backgroundColor: "#819462"}}>
                 <ControlPanel
                     timer={this.state.timer}
                     flagNumber={this.state.flagNumber}
