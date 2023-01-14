@@ -1,7 +1,8 @@
 import React from "react";
 
 interface IGameField {
-    gameFieldActivated: (isActivated: boolean) => void;
+    gameStarted: (isGameStarted: boolean) => void,
+    gameField: number[][],
 }
 
 export function GameField (props: IGameField) {

@@ -1,20 +1,15 @@
 import React, {useState} from "react";
+import {DifficultyType} from "./config";
 import './ControlPanel.css';
 
 export interface IControlPanel {
-    time: number,
+    timer: number,
     flagNumber: number,
     changeDifficulty: (difficulty: DifficultyType) => void,
 }
 
-export enum DifficultyType {
-    Easy = "Easy",
-    Normal = "Normal",
-    Hard = "Hard",
-}
-
 export function ControlPanel(props: IControlPanel) {
-    const [difficulty, setDifficulty] = useState(DifficultyType.Easy);
+    const [difficulty, setDifficulty] = useState(DifficultyType.Normal);
 
     const handleChangeDifficulty = (value: DifficultyType) => {
         setDifficulty(value);
@@ -23,7 +18,7 @@ export function ControlPanel(props: IControlPanel) {
 
     return (
         <div className="controlPanel">
-            <div>{props.time}</div>
+            <div>{props.timer}</div>
             <select value={difficulty}
                     onChange={(e) => handleChangeDifficulty(e.target.value as DifficultyType)}>
                 {Object.values(DifficultyType).map((value) =>

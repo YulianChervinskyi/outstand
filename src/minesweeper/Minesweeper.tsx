@@ -1,5 +1,6 @@
 import {GameField} from "./GameField";
-import {ControlPanel, DifficultyType} from "./ControlPanel";
+import {ControlPanel} from "./ControlPanel";
+import {cell, DifficultyType, gameProps} from "./config";
 import React from "react";
 
 export interface IProps {
@@ -11,53 +12,62 @@ export interface IProps {
 
 interface IState {
     timer: number,
-    currDifficulty: DifficultyType,
     flagNumber: number,
-    board: number[][],
+    gameField: number[][],
 }
 
 export class Minesweeper extends React.Component<IProps, IState> {
     intervalId: NodeJS.Timeout | undefined = undefined;
-    isGameStarted = true;
+    isGameStarted = false;
     counter = 0;
 
     constructor(props: IProps) {
         super(props);
         this.state = {
             timer: 0,
-            currDifficulty: DifficultyType.Easy,
-            flagNumber: 10,
-            board: Array(10).fill(Array(10).fill(-1)),
+            flagNumber: gameProps[DifficultyType.Normal].mines,
+            gameField: this.createGameField(DifficultyType.Normal),
         };
     }
 
+    handleChangeDifficulty(difficulty: DifficultyType) {
+        this.setState({
+            flagNumber: gameProps[difficulty].mines,
+            gameField: this.createGameField(difficulty)
+        });
+    }
+
+    createGameField(difficulty: DifficultyType) {
+        const field: number[][] = Array(gameProps[difficulty].height).fill(Array(gameProps[difficulty].width).fill(cell.value.V0));
+        return field;
+    }
+
     componentDidMount() {
-        this.intervalId = setInterval(() => {
-            this.counter++;
-            this.setState({timer: this.counter});
-            if (this.counter === 999)
-                clearInterval(this.intervalId);
-        }, 1000);
+        this.intervalId = this.isGameStarted ?
+            setInterval(() => {
+                this.counter++;
+                this.setState({timer: this.counter});
+                if (this.counter === 999)
+                    clearInterval(this.intervalId);
+            }, 1000) : undefined;
     }
 
     componentWillUnmount() {
         if (this.intervalId)
             clearInterval(this.intervalId);
-
-        this.intervalId = undefined;
     }
 
     render() {
         return (
             <div style={{width: "100%", height: "100%", backgroundColor: "#819462"}}>
                 <ControlPanel
-                    time={this.state.timer}
+                    timer={this.state.timer}
                     flagNumber={this.state.flagNumber}
-                    changeDifficulty={(difficulty) => this.setState({currDifficulty: difficulty})}
+                    changeDifficulty={this.handleChangeDifficulty}
                 />
                 <GameField
-                    // parameters={this.gameParameters}
-                    gameFieldActivated={(value) => this.isGameStarted = value}
+                    gameStarted={(value) => this.isGameStarted = value}
+                    gameField={this.state.gameField}
                 />
             </div>
         );
