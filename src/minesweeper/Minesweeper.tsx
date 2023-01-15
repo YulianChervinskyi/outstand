@@ -43,12 +43,21 @@ export class Minesweeper extends React.Component<IProps, IState> {
     resetGame = () => {
         this.counter = 0;
         this.isGameOn = false;
-        this.componentWillUnmount();
+        this.stopTimer();
     }
 
-    handleGameStarted = () => {
+    handleCellClick = () => {
+        if (this.isGameOn)
+            return;
+
         this.isGameOn = true;
-        this.componentDidMount();
+
+        this.intervalId = setInterval(() => {
+            this.counter++;
+            this.setState({timer: this.counter});
+            if (this.counter === 999)
+                this.stopTimer();
+        }, 1000);
     }
 
     createGameField = (difficulty: EDifficultyType) => {
@@ -60,23 +69,15 @@ export class Minesweeper extends React.Component<IProps, IState> {
         return field;
     }
 
-    componentDidMount() {
-        if (this.isGameOn && !this.intervalId) {
-            this.intervalId = setInterval(() => {
-                this.counter++;
-                this.setState({timer: this.counter});
-                if (this.counter === 999)
-                    this.componentWillUnmount();
-            }, 1000);
+    stopTimer() {
+        if (this.intervalId) {
+            clearInterval(this.intervalId);
+            this.intervalId = undefined;
         }
     }
 
     componentWillUnmount() {
-        if (!this.intervalId && this.isGameOn)
-            return;
-
-        clearInterval(this.intervalId);
-        this.intervalId = undefined;
+        this.stopTimer();
     }
 
     render() {
@@ -89,9 +90,8 @@ export class Minesweeper extends React.Component<IProps, IState> {
                     changeDifficulty={this.handleChangeDifficulty}
                 />
                 <GameField
-                    gameStarted={this.handleGameStarted}
+                    onCellClick={this.handleCellClick}
                     gameField={this.state.gameField}
-                    isGameOn={this.isGameOn}
                 />
             </div>
         );

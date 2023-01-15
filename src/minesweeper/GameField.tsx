@@ -2,15 +2,13 @@ import "./GameField.css";
 import {ICell, ECellState} from "./config";
 
 interface IGameField {
-    gameStarted: () => void,
+    onCellClick: () => void,
     gameField: ICell[][],
-    isGameOn: boolean,
 }
 
 export function GameField(props: IGameField) {
     const handleClick = () => {
-        if (!props.isGameOn)
-            props.gameStarted();
+         props.onCellClick();
     }
 
     return (
