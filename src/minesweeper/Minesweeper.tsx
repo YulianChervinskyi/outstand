@@ -1,6 +1,6 @@
 import {GameField} from "./GameField";
 import {ControlPanel} from "./ControlPanel";
-import {cell, DifficultyType, gameProps} from "./config";
+import {ICell, ECellState, ECellValue, EDifficultyType, gameProps} from "./config";
 import React from "react";
 
 export interface IProps {
@@ -13,62 +13,85 @@ export interface IProps {
 interface IState {
     timer: number,
     flagNumber: number,
-    gameField: cell[][],
+    gameField: ICell[][],
 }
 
 export class Minesweeper extends React.Component<IProps, IState> {
     intervalId: NodeJS.Timeout | undefined = undefined;
-    isGameStarted = false;
-    counter = 0;
+    isGameOn: boolean = false;
+    counter: number = 0;
 
     constructor(props: IProps) {
         super(props);
         this.state = {
             timer: 0,
-            flagNumber: gameProps[DifficultyType.Normal].mines,
-            gameField: this.createGameField(DifficultyType.Normal),
+            flagNumber: gameProps[EDifficultyType.Normal].mines,
+            gameField: this.createGameField(EDifficultyType.Normal),
         };
     }
 
-    handleChangeDifficulty = (difficulty: DifficultyType) => {
-        console.log(difficulty);
+    handleChangeDifficulty = (difficulty: EDifficultyType) => {
+        this.resetGame();
+
         this.setState({
+            timer: this.counter,
             flagNumber: gameProps[difficulty].mines,
             gameField: this.createGameField(difficulty),
         });
     }
 
-    createGameField = (difficulty: DifficultyType) => {
-        const field: cell[][] = Array(gameProps[difficulty].height).fill(Array(gameProps[difficulty].width).fill(0));
+    resetGame = () => {
+        this.counter = 0;
+        this.isGameOn = false;
+        this.componentWillUnmount();
+    }
+
+    handleGameStarted = () => {
+        this.isGameOn = true;
+        this.componentDidMount();
+    }
+
+    createGameField = (difficulty: EDifficultyType) => {
+        const field: ICell[][] = Array<ICell[]>(gameProps[difficulty].height).fill(
+            Array<ICell>(gameProps[difficulty].width).fill(
+                {value: ECellValue.V0, state: ECellState.Open}
+            )
+        );
         return field;
     }
 
     componentDidMount() {
-        this.intervalId = this.isGameStarted ?
-            setInterval(() => {
+        if (this.isGameOn && !this.intervalId) {
+            this.intervalId = setInterval(() => {
                 this.counter++;
                 this.setState({timer: this.counter});
                 if (this.counter === 999)
-                    clearInterval(this.intervalId);
-            }, 1000) : undefined;
+                    this.componentWillUnmount();
+            }, 1000);
+        }
     }
 
     componentWillUnmount() {
-        if (this.intervalId)
-            clearInterval(this.intervalId);
+        if (!this.intervalId && this.isGameOn)
+            return;
+
+        clearInterval(this.intervalId);
+        this.intervalId = undefined;
     }
 
     render() {
         return (
-            <div className="minesweeper" style={{width: this.props.width, height: this.props.height, backgroundColor: "#819462"}}>
+            <div className="minesweeper"
+                 style={{width: this.props.width, height: this.props.height, backgroundColor: "#819462"}}>
                 <ControlPanel
                     timer={this.state.timer}
                     flagNumber={this.state.flagNumber}
                     changeDifficulty={this.handleChangeDifficulty}
                 />
                 <GameField
-                    gameStarted={(value) => this.isGameStarted = value}
+                    gameStarted={this.handleGameStarted}
                     gameField={this.state.gameField}
+                    isGameOn={this.isGameOn}
                 />
             </div>
         );

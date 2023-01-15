@@ -1,10 +1,10 @@
-export enum DifficultyType {
+export enum EDifficultyType {
     Easy = "Easy",
     Normal = "Normal",
     Hard = "Hard",
 }
 
-export enum cellValue {
+export enum ECellValue {
     V0 = 0,
     V1 = 1,
     V2 = 2,
@@ -17,19 +17,19 @@ export enum cellValue {
     Bomb = 9,
 }
 
-export enum cellState {
+export enum ECellState {
     Open = "Open",
     Closed = "Closed",
     Flagged = "Flagged",
 }
 
-export interface cell {
-    value: cellValue,
-    state: cellState,
+export interface ICell {
+    value: ECellValue,
+    state: ECellState,
 }
 
 export const gameProps = {
-    [DifficultyType.Easy]: {height: 8, width: 8, mines: 10},
-    [DifficultyType.Normal]: {height: 16, width: 16, mines: 40},
-    [DifficultyType.Hard]: {height: 16, width: 30, mines: 99},
+    [EDifficultyType.Easy]: {height: 8, width: 8, mines: 10},
+    [EDifficultyType.Normal]: {height: 16, width: 16, mines: 40},
+    [EDifficultyType.Hard]: {height: 16, width: 30, mines: 99},
 }
