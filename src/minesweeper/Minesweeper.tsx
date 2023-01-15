@@ -1,6 +1,6 @@
 import {GameField} from "./GameField";
 import {ControlPanel} from "./ControlPanel";
-import {ICell, ECellState, ECellValue, EDifficultyType, gameProps} from "./config";
+import {ECellState, EDifficultyType, gameProps, ICell} from "./config";
 import React from "react";
 
 export interface IProps {
@@ -25,8 +25,8 @@ export class Minesweeper extends React.Component<IProps, IState> {
         super(props);
         this.state = {
             timer: 0,
-            flagNumber: gameProps[EDifficultyType.Normal].mines,
-            gameField: this.createGameField(EDifficultyType.Normal),
+            flagNumber: gameProps[EDifficultyType.Medium].mines,
+            gameField: this.createGameField(EDifficultyType.Medium),
         };
     }
 
@@ -38,12 +38,6 @@ export class Minesweeper extends React.Component<IProps, IState> {
             flagNumber: gameProps[difficulty].mines,
             gameField: this.createGameField(difficulty),
         });
-    }
-
-    resetGame = () => {
-        this.counter = 0;
-        this.isGameOn = false;
-        this.stopTimer();
     }
 
     handleCellClick = () => {
@@ -61,11 +55,26 @@ export class Minesweeper extends React.Component<IProps, IState> {
     }
 
     createGameField = (difficulty: EDifficultyType) => {
-        const field: ICell[][] = Array<ICell[]>(gameProps[difficulty].height).fill(
-            Array<ICell>(gameProps[difficulty].width).fill(
-                {value: ECellValue.V0, state: ECellState.Open}
-            )
-        );
+        const field: ICell[][] = [];
+
+        for (let y = 0; y < gameProps[difficulty].height; y++) {
+            field.push([]);
+            for (let x = 0; x < gameProps[difficulty].width; x++) {
+                field[y].push({value: 0, state: ECellState.Open});
+            }
+        }
+
+        for (let i = 0; i < gameProps[difficulty].mines; i++) {
+            const x = Math.floor(Math.random() * gameProps[difficulty].width);
+            const y = Math.floor(Math.random() * gameProps[difficulty].height);
+
+            if (field[y][x].value === 9) {
+                i--;
+            } else {
+                field[y][x].value = 9;
+            }
+        }
+
         return field;
     }
 
@@ -75,6 +84,13 @@ export class Minesweeper extends React.Component<IProps, IState> {
             this.intervalId = undefined;
         }
     }
+
+    resetGame = () => {
+        this.counter = 0;
+        this.isGameOn = false;
+        this.stopTimer();
+    }
+
 
     componentWillUnmount() {
         this.stopTimer();
