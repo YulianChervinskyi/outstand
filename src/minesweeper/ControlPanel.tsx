@@ -9,7 +9,7 @@ export interface IControlPanel {
 }
 
 export function ControlPanel(props: IControlPanel) {
-    const [difficulty, setDifficulty] = useState(EDifficultyType.Medium);
+    const [difficulty, setDifficulty] = useState(EDifficultyType.Easy);
 
     const handleChangeDifficulty = (value: EDifficultyType) => {
         setDifficulty(value);
