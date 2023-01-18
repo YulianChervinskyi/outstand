@@ -56,29 +56,28 @@ export class Minesweeper extends React.Component<IProps, IState> {
 
     createGameField = (difficulty: EDifficultyType) => {
         const field: ICell[][] = [];
+        const {width, height, mines} = gameProps[difficulty];
 
-        for (let y = 0; y < gameProps[difficulty].height; y++) {
+        for (let y = 0; y < height; y++) {
             field.push([]);
-            for (let x = 0; x < gameProps[difficulty].width; x++) {
+            for (let x = 0; x < width; x++) {
                 field[y].push({value: 0, state: ECellState.Open});
             }
         }
 
-        for (let i = 0; i < gameProps[difficulty].mines; i++) {
-            const x = Math.floor(Math.random() * gameProps[difficulty].width);
-            const y = Math.floor(Math.random() * gameProps[difficulty].height);
+        for (let i = 0; i < mines; i++) {
+            const x = Math.floor(Math.random() * width);
+            const y = Math.floor(Math.random() * height);
 
             if (field[y][x].value === 9) {
                 i--;
             } else {
                 field[y][x].value = 9;
 
-                for (let i = -1; i < 2; i++) {
-                    const newY = y + i;
-                    for (let j = -1; j < 2; j++) {
-                        const newX = x + j;
-                        if ((newY >= 0 && newY <= gameProps[difficulty].height - 1) && (newX >= 0 && newX <= gameProps[difficulty].width - 1) && field[newY][newX].value !== 9) {
-                            field[newY][newX].value += 1;
+                for (let i = y - 1; i < y + 2; i++) {
+                    for (let j = x - 1; j < x + 2; j++) {
+                        if ((i >= 0 && i <= height - 1) && (j >= 0 && j <= width - 1) && field[i][j].value !== 9) {
+                            field[i][j].value += 1;
                         }
                     }
                 }
