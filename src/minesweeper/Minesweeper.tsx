@@ -41,7 +41,11 @@ export class Minesweeper extends React.Component<IProps, IState> {
     }
 
     handleCellClick = (x: number, y: number) => {
-        openNearbyCells(this.state.gameField, x, y);
+        if (this.state.gameField[y][x].value) {
+            this.state.gameField[y][x].state = ECellState.Open;
+        } else {
+            checkNearbyCells(openNearbyCells, this.state.gameField, x, y);
+        }
 
         if (this.isGameOn)
             return;
@@ -75,8 +79,7 @@ export class Minesweeper extends React.Component<IProps, IState> {
                 i--;
             } else {
                 field[y][x].value = 9;
-                // checkNearbyCells(markCellsNearbyMine, field, x, y);
-                markCellsNearbyMine(y, x, field);
+                checkNearbyCells(markCellsNearbyMine, field, x, y);
             }
         }
 
@@ -119,34 +122,26 @@ export class Minesweeper extends React.Component<IProps, IState> {
     }
 }
 
-function markCellsNearbyMine(y: number, x: number, field: ICell[][]) {
+function markCellsNearbyMine(field: ICell[][], x: number, y: number) {
+    if (field[y] && field[y][x] && field[y][x].value !== 9) {
+        field[y][x].value += 1;
+    }
+}
+
+function checkNearbyCells(callback: (field: ICell[][], x: number, y: number) => void, field: ICell[][], x: number, y: number) {
     for (let i = y - 1; i < y + 2; i++) {
         for (let j = x - 1; j < x + 2; j++) {
-            if (field[i] && field[i][j] && field[i][j].value !== 9) {
-                field[i][j].value += 1;
-            }
+            callback(field, j, i);
         }
     }
 }
 
-// function checkNearbyCells(callback:(field: ICell[][], x: number, y: number) => void, field: ICell[][], x: number, y: number) {
-//     for (let i = y - 1; i < y + 2; i++) {
-//         for (let j = x - 1; j < x + 2; j++) {
-//             callback(field, j, i);
-//         }
-//     }
-// }
-
 function openNearbyCells(field: ICell[][], x: number, y: number) {
-    for (let i = y - 1; i < y + 2; i++) {
-        for (let j = x - 1; j < x + 2; j++) {
-            if (field[i] && field[i][j] && field[i][j].state === ECellState.Closed && !field[y][x].value) {
-                if (!field[i][j].value) {
-                    openNearbyCells(field, j, i);
-                }
-                field[i][j].state = ECellState.Open;
-            }
+    if (field[y] && field[y][x] && field[y][x].state === ECellState.Closed) {
+        if (!field[y][x].value) {
             field[y][x].state = ECellState.Open;
+            checkNearbyCells(openNearbyCells, field, x, y);
         }
+        field[y][x].state = ECellState.Open;
     }
 }
