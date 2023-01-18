@@ -41,7 +41,7 @@ export class Minesweeper extends React.Component<IProps, IState> {
     }
 
     handleCellClick = (x: number, y: number) => {
-        this.openNearbyCells(x, y);
+        this.openCell(x, y);
 
         if (this.isGameOn)
             return;
@@ -75,7 +75,7 @@ export class Minesweeper extends React.Component<IProps, IState> {
                 i--;
             } else {
                 field[y][x].value = 9;
-                doWithNearbyCells(field, x, y, markCellsNearbyMine);
+                processCellsAround(x, y, (xx, yy) => incCellValue(field, xx, yy));
             }
         }
 
@@ -100,7 +100,7 @@ export class Minesweeper extends React.Component<IProps, IState> {
         this.stopTimer();
     }
 
-    openNearbyCells(x: number, y: number) {
+    openCell(x: number, y: number) {
         const field = this.state.gameField;
         if (!field[y])
             return;
@@ -115,11 +115,7 @@ export class Minesweeper extends React.Component<IProps, IState> {
         if (field[y][x].value > 0)
             return;
 
-        for (let i = y - 1; i < y + 2; i++) {
-            for (let j = x - 1; j < x + 2; j++) {
-                this.openNearbyCells(j, i);
-            }
-        }
+        processCellsAround(x, y, (xx, yy) => this.openCell(xx, yy));
     }
 
     render() {
@@ -140,16 +136,16 @@ export class Minesweeper extends React.Component<IProps, IState> {
     }
 }
 
-function markCellsNearbyMine(field: ICell[][], x: number, y: number) {
+function incCellValue(field: ICell[][], x: number, y: number) {
     if (field[y] && field[y][x] && field[y][x].value !== 9) {
         field[y][x].value += 1;
     }
 }
 
-function doWithNearbyCells(field: ICell[][], x: number, y: number, action: (field: ICell[][], x: number, y: number) => void) {
+function processCellsAround(x: number, y: number, action: (x: number, y: number) => void) {
     for (let i = y - 1; i < y + 2; i++) {
         for (let j = x - 1; j < x + 2; j++) {
-            action(field, j, i);
+            action(j, i);
         }
     }
 }
