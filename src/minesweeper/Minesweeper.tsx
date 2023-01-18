@@ -85,7 +85,6 @@ export class Minesweeper extends React.Component<IProps, IState> {
             }
         }
 
-
         return field;
     }
 
