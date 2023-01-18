@@ -41,11 +41,7 @@ export class Minesweeper extends React.Component<IProps, IState> {
     }
 
     handleCellClick = (x: number, y: number) => {
-        if (this.state.gameField[y][x].value) {
-            this.state.gameField[y][x].state = ECellState.Open;
-        } else {
-            checkNearbyCells(openNearbyCells, this.state.gameField, x, y);
-        }
+        this.openNearbyCells(x, y);
 
         if (this.isGameOn)
             return;
@@ -79,7 +75,7 @@ export class Minesweeper extends React.Component<IProps, IState> {
                 i--;
             } else {
                 field[y][x].value = 9;
-                checkNearbyCells(markCellsNearbyMine, field, x, y);
+                doWithNearbyCells(field, x, y, markCellsNearbyMine);
             }
         }
 
@@ -102,6 +98,28 @@ export class Minesweeper extends React.Component<IProps, IState> {
 
     componentWillUnmount() {
         this.stopTimer();
+    }
+
+    openNearbyCells(x: number, y: number) {
+        const field = this.state.gameField;
+        if (!field[y])
+            return;
+
+        const cell = field[y][x];
+        if (cell?.state !== ECellState.Closed)
+            return;
+
+        field[y][x].state = ECellState.Open;
+        this.setState({gameField: field});
+
+        if (field[y][x].value > 0)
+            return;
+
+        for (let i = y - 1; i < y + 2; i++) {
+            for (let j = x - 1; j < x + 2; j++) {
+                this.openNearbyCells(j, i);
+            }
+        }
     }
 
     render() {
@@ -128,20 +146,10 @@ function markCellsNearbyMine(field: ICell[][], x: number, y: number) {
     }
 }
 
-function checkNearbyCells(callback: (field: ICell[][], x: number, y: number) => void, field: ICell[][], x: number, y: number) {
+function doWithNearbyCells(field: ICell[][], x: number, y: number, action: (field: ICell[][], x: number, y: number) => void) {
     for (let i = y - 1; i < y + 2; i++) {
         for (let j = x - 1; j < x + 2; j++) {
-            callback(field, j, i);
+            action(field, j, i);
         }
-    }
-}
-
-function openNearbyCells(field: ICell[][], x: number, y: number) {
-    if (field[y] && field[y][x] && field[y][x].state === ECellState.Closed) {
-        if (!field[y][x].value) {
-            field[y][x].state = ECellState.Open;
-            checkNearbyCells(openNearbyCells, field, x, y);
-        }
-        field[y][x].state = ECellState.Open;
     }
 }
