@@ -41,8 +41,7 @@ export class Minesweeper extends React.Component<IProps, IState> {
     }
 
     handleCellClick = (x: number, y: number) => {
-
-        console.log("handleCellClick", x, y);
+        openNearbyCells(this.state.gameField, x, y);
 
         if (this.isGameOn)
             return;
@@ -64,7 +63,7 @@ export class Minesweeper extends React.Component<IProps, IState> {
         for (let y = 0; y < height; y++) {
             field.push([]);
             for (let x = 0; x < width; x++) {
-                field[y].push({value: 0, state: ECellState.Open});
+                field[y].push({value: 0, state: ECellState.Closed});
             }
         }
 
@@ -76,6 +75,7 @@ export class Minesweeper extends React.Component<IProps, IState> {
                 i--;
             } else {
                 field[y][x].value = 9;
+                // checkNearbyCells(markCellsNearbyMine, field, x, y);
                 markCellsNearbyMine(y, x, field);
             }
         }
@@ -125,6 +125,28 @@ function markCellsNearbyMine(y: number, x: number, field: ICell[][]) {
             if (field[i] && field[i][j] && field[i][j].value !== 9) {
                 field[i][j].value += 1;
             }
+        }
+    }
+}
+
+// function checkNearbyCells(callback:(field: ICell[][], x: number, y: number) => void, field: ICell[][], x: number, y: number) {
+//     for (let i = y - 1; i < y + 2; i++) {
+//         for (let j = x - 1; j < x + 2; j++) {
+//             callback(field, j, i);
+//         }
+//     }
+// }
+
+function openNearbyCells(field: ICell[][], x: number, y: number) {
+    for (let i = y - 1; i < y + 2; i++) {
+        for (let j = x - 1; j < x + 2; j++) {
+            if (field[i] && field[i][j] && field[i][j].state === ECellState.Closed && !field[y][x].value) {
+                if (!field[i][j].value) {
+                    openNearbyCells(field, j, i);
+                }
+                field[i][j].state = ECellState.Open;
+            }
+            field[y][x].state = ECellState.Open;
         }
     }
 }

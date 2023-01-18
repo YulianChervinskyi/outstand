@@ -1,5 +1,5 @@
 import "./GameField.css";
-import {ICell, ECellState} from "./config";
+import {ECellState, ICell} from "./config";
 
 interface IGameField {
     onCellClick: (x: number, y: number) => void,
@@ -19,7 +19,8 @@ export function GameField(props: IGameField) {
                      key={y}>
                     {row.map((cell, x) =>
                         <button className="game-field-cell"
-                                style={{width: 100 / row.length + "%"}}
+                                style={{width: 100 / row.length + "%",
+                                    backgroundColor: cell.state === ECellState.Open ? "darkgray" : "buttonface"}}
                                 onClick={() => handleClick(x,y)}
                                 key={x}>
                             {cell.state === ECellState.Open && cell.value ||
