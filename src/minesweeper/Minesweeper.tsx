@@ -72,8 +72,19 @@ export class Minesweeper extends React.Component<IProps, IState> {
                 i--;
             } else {
                 field[y][x].value = 9;
+
+                for (let i = 0; i <= 2; i++) {
+                    const newY = y + Math.floor(Math.cos(Math.PI / 2 * i));
+                    for (let j = 2; j >= 0; j--) {
+                        const newX = x + Math.floor(Math.cos(Math.PI / 2 * j));
+                        if ((newY >= 0 && newY <= gameProps[difficulty].height - 1) && (newX >= 0 && newX <= gameProps[difficulty].width - 1) && field[newY][newX].value !== 9) {
+                            field[newY][newX].value += 1;
+                        }
+                    }
+                }
             }
         }
+
 
         return field;
     }
