@@ -40,7 +40,10 @@ export class Minesweeper extends React.Component<IProps, IState> {
         });
     }
 
-    handleCellClick = () => {
+    handleCellClick = (x: number, y: number) => {
+
+        console.log("handleCellClick", x, y);
+
         if (this.isGameOn)
             return;
 
