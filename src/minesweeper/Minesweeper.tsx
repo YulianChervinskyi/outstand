@@ -11,9 +11,11 @@ export interface IProps {
 }
 
 interface IState {
+    difficulty: EDifficultyType,
     timer: number,
     flagNumber: number,
     gameField: ICell[][],
+    gameOver: boolean,
 }
 
 export class Minesweeper extends React.Component<IProps, IState> {
@@ -24,20 +26,16 @@ export class Minesweeper extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
         this.state = {
+            difficulty: EDifficultyType.Medium,
             timer: 0,
             flagNumber: gameProps[EDifficultyType.Medium].mines,
             gameField: this.createGameField(EDifficultyType.Medium),
+            gameOver: false,
         };
     }
 
     handleChangeDifficulty = (difficulty: EDifficultyType) => {
-        this.resetGame();
-
-        this.setState({
-            timer: this.counter,
-            flagNumber: gameProps[difficulty].mines,
-            gameField: this.createGameField(difficulty),
-        });
+        this.resetGame(difficulty);
     }
 
     handleCellClick = (x: number, y: number) => {
@@ -89,9 +87,17 @@ export class Minesweeper extends React.Component<IProps, IState> {
         }
     }
 
-    resetGame = () => {
+    resetGame = (difficulty: EDifficultyType) => {
         this.counter = 0;
         this.isGameOn = false;
+        this.setState({
+            difficulty: difficulty,
+            timer: this.counter,
+            flagNumber: gameProps[difficulty].mines,
+            gameField: this.createGameField(difficulty),
+            gameOver: false
+        });
+
         this.stopTimer();
     }
 
@@ -112,6 +118,9 @@ export class Minesweeper extends React.Component<IProps, IState> {
         field[y][x].state = ECellState.Open;
         this.setState({gameField: field});
 
+        if (field[y][x].value === 9)
+            this.setState({gameOver: true});
+
         if (field[y][x].value > 0)
             return;
 
@@ -131,6 +140,14 @@ export class Minesweeper extends React.Component<IProps, IState> {
                     onCellClick={this.handleCellClick}
                     gameField={this.state.gameField}
                 />
+
+                {this.state.gameOver && <div className="info-overlay">
+                    Game Over
+                    <div className="controls">
+                        <button onClick={() => this.resetGame(this.state.difficulty)}>Restart</button>
+                    </div>
+                </div>}
+
             </div>
         );
     }
