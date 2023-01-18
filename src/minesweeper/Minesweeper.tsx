@@ -2,6 +2,7 @@ import {GameField} from "./GameField";
 import {ControlPanel} from "./ControlPanel";
 import {ECellState, EDifficultyType, gameProps, ICell} from "./config";
 import React from "react";
+import hahaha from "./assets/hahaha.mp3";
 
 export interface IProps {
     width: number,
@@ -17,6 +18,8 @@ interface IState {
     gameField: ICell[][],
     gameOver: boolean,
 }
+
+let audio: HTMLAudioElement | undefined;
 
 export class Minesweeper extends React.Component<IProps, IState> {
     intervalId: NodeJS.Timeout | undefined = undefined;
@@ -99,6 +102,7 @@ export class Minesweeper extends React.Component<IProps, IState> {
         });
 
         this.stopTimer();
+        stopSound();
     }
 
 
@@ -118,8 +122,10 @@ export class Minesweeper extends React.Component<IProps, IState> {
         field[y][x].state = ECellState.Open;
         this.setState({gameField: field});
 
-        if (field[y][x].value === 9)
+        if (field[y][x].value === 9) {
             this.setState({gameOver: true});
+            playSound(hahaha).catch(console.error);
+        }
 
         if (field[y][x].value > 0)
             return;
@@ -164,5 +170,18 @@ function processCellsAround(x: number, y: number, action: (x: number, y: number)
         for (let j = x - 1; j < x + 2; j++) {
             action(j, i);
         }
+    }
+}
+
+function playSound(file: string) {
+    stopSound();
+    audio = new Audio(file);
+    return audio.play();
+}
+
+function stopSound() {
+    if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
     }
 }
