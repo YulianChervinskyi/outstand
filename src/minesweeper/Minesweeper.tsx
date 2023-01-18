@@ -73,14 +73,7 @@ export class Minesweeper extends React.Component<IProps, IState> {
                 i--;
             } else {
                 field[y][x].value = 9;
-
-                for (let i = y - 1; i < y + 2; i++) {
-                    for (let j = x - 1; j < x + 2; j++) {
-                        if ((i >= 0 && i <= height - 1) && (j >= 0 && j <= width - 1) && field[i][j].value !== 9) {
-                            field[i][j].value += 1;
-                        }
-                    }
-                }
+                markCellsNearbyMine(y, x, field);
             }
         }
 
@@ -120,5 +113,15 @@ export class Minesweeper extends React.Component<IProps, IState> {
                 />
             </div>
         );
+    }
+}
+
+function markCellsNearbyMine(y: number, x: number, field: ICell[][]) {
+    for (let i = y - 1; i < y + 2; i++) {
+        for (let j = x - 1; j < x + 2; j++) {
+            if (field[i] && field[i][j] && field[i][j].value !== 9) {
+                field[i][j].value += 1;
+            }
+        }
     }
 }
