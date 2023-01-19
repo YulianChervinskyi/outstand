@@ -2,7 +2,7 @@ import {GameField} from "./GameField";
 import {ControlPanel} from "./ControlPanel";
 import {ECellState, EDifficultyType, gameProps, ICell} from "./config";
 import React from "react";
-import hahaha from "./assets/hahaha.mp3";
+import laugh from "./assets/hahaha.mp3";
 
 export interface IProps {
     width: number,
@@ -116,6 +116,7 @@ export class Minesweeper extends React.Component<IProps, IState> {
 
     componentWillUnmount() {
         this.stopTimer();
+        stopSound();
     }
 
     openCell(x: number, y: number) {
@@ -133,7 +134,7 @@ export class Minesweeper extends React.Component<IProps, IState> {
 
         if (field[y][x].value === 9) {
             this.setState({gameOver: true});
-            playSound(hahaha).catch(console.error);
+            playSound(laugh).catch(console.error);
         }
 
         if (field[y][x].value > 0)
@@ -151,13 +152,13 @@ export class Minesweeper extends React.Component<IProps, IState> {
         if (this.state.flagNumber === 0 && field[y][x].state === ECellState.Closed)
             return;
 
-        field[y][x].state = (field[y][x].state === ECellState.Closed) ?
-            ECellState.Flagged : ECellState.Closed;
+        field[y][x].state = field[y][x].state === ECellState.Closed
+            ? ECellState.Flagged
+            : ECellState.Closed;
 
         this.setState({
             gameField: field,
-            flagNumber: field[y][x].state === ECellState.Flagged ?
-                this.state.flagNumber - 1 : this.state.flagNumber + 1,
+            flagNumber: this.state.flagNumber + (field[y][x].state !== ECellState.Flagged ? 1 : -1),
         });
     }
 
