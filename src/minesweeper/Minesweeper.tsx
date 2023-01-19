@@ -3,6 +3,7 @@ import {ControlPanel} from "./ControlPanel";
 import {ECellState, EDifficultyType, gameProps, ICell} from "./config";
 import React from "react";
 import laugh from "./assets/hahaha.mp3";
+import victory from "./assets/victorySound.mp3";
 
 export interface IProps {
     width: number,
@@ -12,7 +13,6 @@ export interface IProps {
 }
 
 interface IState {
-    difficulty: EDifficultyType,
     timer: number,
     flagNumber: number,
     gameField: ICell[][],
@@ -22,17 +22,19 @@ interface IState {
 let audio: HTMLAudioElement | undefined;
 
 export class Minesweeper extends React.Component<IProps, IState> {
+    difficulty: EDifficultyType = EDifficultyType.Medium;
     intervalId: NodeJS.Timeout | undefined = undefined;
+    winCounter: number = gameProps[this.difficulty].height * gameProps[this.difficulty].width;
+    gameEndText: string = "";
+    timerCounter: number = 0;
     isGameStarted: boolean = false;
-    counter: number = 0;
 
     constructor(props: IProps) {
         super(props);
         this.state = {
-            difficulty: EDifficultyType.Medium,
             timer: 0,
-            flagNumber: gameProps[EDifficultyType.Medium].mines,
-            gameField: this.createGameField(EDifficultyType.Medium),
+            flagNumber: gameProps[this.difficulty].mines,
+            gameField: this.createGameField(this.difficulty),
             gameOver: false,
         };
     }
@@ -58,9 +60,9 @@ export class Minesweeper extends React.Component<IProps, IState> {
         this.isGameStarted = true;
 
         this.intervalId = setInterval(() => {
-            this.counter++;
-            this.setState({timer: this.counter});
-            if (this.counter === 999)
+            this.timerCounter++;
+            this.setState({timer: this.timerCounter});
+            if (this.timerCounter === 999)
                 this.stopTimer();
         }, 1000);
     }
@@ -99,11 +101,12 @@ export class Minesweeper extends React.Component<IProps, IState> {
     }
 
     resetGame = (difficulty: EDifficultyType) => {
-        this.counter = 0;
+        this.timerCounter = 0;
         this.isGameStarted = false;
+        this.difficulty = difficulty;
+        this.winCounter = gameProps[this.difficulty].height * gameProps[this.difficulty].width;
         this.setState({
-            difficulty: difficulty,
-            timer: this.counter,
+            timer: this.timerCounter,
             flagNumber: gameProps[difficulty].mines,
             gameField: this.createGameField(difficulty),
             gameOver: false
@@ -129,13 +132,15 @@ export class Minesweeper extends React.Component<IProps, IState> {
         if (cell?.state !== ECellState.Closed)
             return;
 
+        this.winCounter--;
         field[y][x].state = ECellState.Open;
         this.setState({gameField: field});
 
-        if (field[y][x].value === 9) {
-            this.setState({gameOver: true});
-            playSound(laugh).catch(console.error);
-        }
+        if (field[y][x].value === 9)
+            this.gameOver();
+
+        if (this.winCounter === gameProps[this.difficulty].mines)
+            this.victory();
 
         if (field[y][x].value > 0)
             return;
@@ -162,6 +167,34 @@ export class Minesweeper extends React.Component<IProps, IState> {
         });
     }
 
+    showAllMines = () => {
+        const field = this.state.gameField;
+        const height = gameProps[this.difficulty].height;
+        const width = gameProps[this.difficulty].width;
+
+        for (let y = 0; y < height; y++) {
+            for (let x = 0; x < width; x++) {
+                if (field[y][x].value === 9)
+                    field[y][x].state = ECellState.Open;
+            }
+        }
+    }
+
+    gameOver = () => {
+        this.gameEndText = "Game over";
+        this.showAllMines();
+        this.stopTimer();
+        playSound(laugh).catch(console.error);
+        this.setState({gameOver: true});
+    }
+
+    victory = () => {
+        this.gameEndText = "Victory!";
+        this.stopTimer();
+        playSound(victory).catch(console.error);
+        this.setState({gameOver: true});
+    }
+
     render() {
         return (
             <div className="minesweeper"
@@ -178,9 +211,9 @@ export class Minesweeper extends React.Component<IProps, IState> {
                 />
 
                 {this.state.gameOver && <div className="info-overlay">
-                    Game Over
+                    {this.gameEndText}
                     <div className="controls">
-                        <button onClick={() => this.resetGame(this.state.difficulty)}>Restart</button>
+                        <button onClick={() => this.resetGame(this.difficulty)}>Restart</button>
                     </div>
                 </div>}
 
