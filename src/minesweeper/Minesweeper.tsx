@@ -23,7 +23,7 @@ let audio: HTMLAudioElement | undefined;
 
 export class Minesweeper extends React.Component<IProps, IState> {
     intervalId: NodeJS.Timeout | undefined = undefined;
-    isGameOn: boolean = false;
+    isGameStarted: boolean = false;
     counter: number = 0;
 
     constructor(props: IProps) {
@@ -41,17 +41,21 @@ export class Minesweeper extends React.Component<IProps, IState> {
         this.resetGame(difficulty);
     }
 
-    handleCellClick = (x: number, y: number, e: React.MouseEvent) => {
-        if (e.type === 'click') {
-            this.openCell(x, y);
-        } else if (e.type === 'contextmenu') {
-            this.flagCell(x, y, e);
-        }
+    handleCellOpen = (x: number, y: number) => {
+        this.openCell(x, y);
+        this.startGame();
+    }
 
-        if (this.isGameOn)
+    handleCellFlag = (x: number, y: number) => {
+        this.flagCell(x, y);
+        this.startGame();
+    }
+
+    startGame = () => {
+        if (this.isGameStarted)
             return;
 
-        this.isGameOn = true;
+        this.isGameStarted = true;
 
         this.intervalId = setInterval(() => {
             this.counter++;
@@ -96,7 +100,7 @@ export class Minesweeper extends React.Component<IProps, IState> {
 
     resetGame = (difficulty: EDifficultyType) => {
         this.counter = 0;
-        this.isGameOn = false;
+        this.isGameStarted = false;
         this.setState({
             difficulty: difficulty,
             timer: this.counter,
@@ -138,10 +142,8 @@ export class Minesweeper extends React.Component<IProps, IState> {
         processCellsAround(x, y, (xx, yy) => this.openCell(xx, yy));
     }
 
-    flagCell = (x: number, y: number, e: React.MouseEvent) => {
+    flagCell = (x: number, y: number) => {
         const field = this.state.gameField;
-
-        e.preventDefault();
 
         if (field[y][x].state === ECellState.Open)
             return;
@@ -169,7 +171,8 @@ export class Minesweeper extends React.Component<IProps, IState> {
                     changeDifficulty={this.handleChangeDifficulty}
                 />
                 <GameField
-                    onCellClick={this.handleCellClick}
+                    onCellOpen={this.handleCellOpen}
+                    onCellFlag={this.handleCellFlag}
                     gameField={this.state.gameField}
                 />
 

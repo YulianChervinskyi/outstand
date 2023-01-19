@@ -3,11 +3,21 @@ import React from "react";
 import "./GameField.css";
 
 interface IGameField {
-    onCellClick: (x: number, y: number, e: React.MouseEvent) => void,
+    onCellOpen: (x: number, y: number) => void,
+    onCellFlag: (x: number, y: number) => void,
     gameField: ICell[][],
 }
 
 export function GameField(props: IGameField) {
+    const handleContextMenu = (x: number, y: number, e: React.MouseEvent) => {
+        e.preventDefault();
+        props.onCellFlag(x, y);
+    }
+
+    const handleClick = (x: number, y: number) => {
+        props.onCellOpen(x, y);
+    }
+
     return (
         <div className="game-field">
             {props.gameField.map((row, y) =>
@@ -20,8 +30,8 @@ export function GameField(props: IGameField) {
                                     width: 100 / row.length + "%",
                                     backgroundColor: cell.state === ECellState.Open ? "darkgray" : "buttonface"
                                 }}
-                                onClick={(e) => props.onCellClick(x, y, e)}
-                                onContextMenu={(e) => props.onCellClick(x, y, e)}
+                                onClick={() => handleClick(x, y)}
+                                onContextMenu={(e) => handleContextMenu(x, y, e)}
                                 key={x}>
                             {cell.state === ECellState.Open && cell.value ||
                                 cell.state === ECellState.Flagged && "F"}
