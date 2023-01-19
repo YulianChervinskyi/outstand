@@ -41,8 +41,12 @@ export class Minesweeper extends React.Component<IProps, IState> {
         this.resetGame(difficulty);
     }
 
-    handleCellClick = (x: number, y: number) => {
-        this.openCell(x, y);
+    handleCellClick = (x: number, y: number, e: React.MouseEvent) => {
+        if (e.type === 'click') {
+            this.openCell(x, y);
+        } else if (e.type === 'contextmenu') {
+            this.flagCell(x, y, e);
+        }
 
         if (this.isGameOn)
             return;
@@ -112,6 +116,7 @@ export class Minesweeper extends React.Component<IProps, IState> {
 
     openCell(x: number, y: number) {
         const field = this.state.gameField;
+
         if (!field[y])
             return;
 
@@ -131,6 +136,27 @@ export class Minesweeper extends React.Component<IProps, IState> {
             return;
 
         processCellsAround(x, y, (xx, yy) => this.openCell(xx, yy));
+    }
+
+    flagCell = (x: number, y: number, e: React.MouseEvent) => {
+        const field = this.state.gameField;
+
+        e.preventDefault();
+
+        if (field[y][x].state === ECellState.Open)
+            return;
+
+        if (this.state.flagNumber === 0 && field[y][x].state === ECellState.Closed)
+            return;
+
+        field[y][x].state = (field[y][x].state === ECellState.Closed) ?
+            ECellState.Flagged : ECellState.Closed;
+
+        this.setState({
+            gameField: field,
+            flagNumber: field[y][x].state === ECellState.Flagged ?
+                this.state.flagNumber - 1 : this.state.flagNumber + 1,
+        });
     }
 
     render() {
