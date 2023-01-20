@@ -4,6 +4,7 @@ import calc from "./calculator.png";
 import tetris from "./tetris.png";
 import fpe from "./fpe.png";
 import asteroids from "./asteroids.png";
+import minesweeper from "./minesweeper.png";
 
 export const iconsPng = {
     [BoxType.Note]: note,
@@ -11,5 +12,5 @@ export const iconsPng = {
     [BoxType.Tetris]: tetris,
     [BoxType.Fpe]: fpe,
     [BoxType.Asteroids]: asteroids,
-    [BoxType.Minesweeper]: asteroids,
+    [BoxType.Minesweeper]: minesweeper,
 };
