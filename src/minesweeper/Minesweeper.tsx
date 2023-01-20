@@ -41,7 +41,8 @@ export class Minesweeper extends React.Component<IProps, IState> {
     }
 
     handleChangeDifficulty = (difficulty: EDifficultyType) => {
-        this.resetGame(difficulty);
+        this.difficulty = difficulty;
+        this.resetGame();
     }
 
     handleCellOpen = (x: number, y: number) => {
@@ -101,18 +102,16 @@ export class Minesweeper extends React.Component<IProps, IState> {
         }
     }
 
-    resetGame = (difficulty: EDifficultyType) => {
+    resetGame = () => {
         this.timerCounter = 0;
         this.isGameStarted = false;
-        this.difficulty = difficulty;
         this.closedCells = gameProps[this.difficulty].height * gameProps[this.difficulty].width - gameProps[this.difficulty].mines;
         this.setState({
             timer: this.timerCounter,
-            flagNumber: gameProps[difficulty].mines,
-            gameField: this.createGameField(difficulty),
+            flagNumber: gameProps[this.difficulty].mines,
+            gameField: this.createGameField(this.difficulty),
             gameOver: false
         });
-
         this.stopTimer();
         stopSound();
     }
@@ -201,6 +200,7 @@ export class Minesweeper extends React.Component<IProps, IState> {
                 <ControlPanel
                     timer={this.state.timer}
                     flagNumber={this.state.flagNumber}
+                    difficulty={this.difficulty}
                     changeDifficulty={this.handleChangeDifficulty}
                 />
                 <GameField
@@ -212,7 +212,7 @@ export class Minesweeper extends React.Component<IProps, IState> {
                 {this.state.gameOver && <div className="info-overlay">
                     {this.state.gameEndText}
                     <div className="controls">
-                        <button onClick={() => this.resetGame(this.difficulty)}>Restart</button>
+                        <button onClick={() => this.resetGame()}>Restart</button>
                     </div>
                 </div>}
 

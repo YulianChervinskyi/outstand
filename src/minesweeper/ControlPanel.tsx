@@ -5,11 +5,12 @@ import './ControlPanel.css';
 export interface IControlPanel {
     timer: number,
     flagNumber: number,
+    difficulty: EDifficultyType,
     changeDifficulty: (difficulty: EDifficultyType) => void,
 }
 
 export function ControlPanel(props: IControlPanel) {
-    const [difficulty, setDifficulty] = useState(EDifficultyType.Medium);
+    const [difficulty, setDifficulty] = useState(props.difficulty);
 
     const handleChangeDifficulty = (value: EDifficultyType) => {
         setDifficulty(value);
