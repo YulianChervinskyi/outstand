@@ -40,19 +40,24 @@ export class Minesweeper extends React.Component<IProps, IState> {
         };
     }
 
+    componentWillUnmount() {
+        this.stopTimer();
+        stopSound();
+    }
+
     handleChangeDifficulty = (difficulty: EDifficultyType) => {
         this.difficulty = difficulty;
         this.resetGame();
     }
 
     handleCellOpen = (x: number, y: number) => {
-        this.openCell(x, y);
         this.startGame();
+        this.openCell(x, y);
     }
 
     handleCellFlag = (x: number, y: number) => {
-        this.flagCell(x, y);
         this.startGame();
+        this.flagCell(x, y);
     }
 
     startGame = () => {
@@ -112,12 +117,6 @@ export class Minesweeper extends React.Component<IProps, IState> {
             gameField: this.createGameField(this.difficulty),
             gameOver: false
         });
-        this.stopTimer();
-        stopSound();
-    }
-
-
-    componentWillUnmount() {
         this.stopTimer();
         stopSound();
     }
