@@ -32,10 +32,10 @@ export class Minesweeper extends React.Component<IProps, IState> {
 
     constructor(props: IProps) {
         super(props);
-        const data = JSON.parse(this.props.text || '{}');
+        const data = JSON.parse(this.props.text || '{}') as IState;
         const difficultyProps = gameProps[EDifficultyType.Medium];
 
-        this.cellsCounter = data?.closedCells || difficultyProps.height * difficultyProps.width - difficultyProps.mines;
+        this.cellsCounter = data?.cellsCounter || difficultyProps.height * difficultyProps.width - difficultyProps.mines;
         this.timerCounter = data?.timer || 0;
 
         this.state = {
