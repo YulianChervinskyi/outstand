@@ -96,7 +96,21 @@ export class Game {
     }
 
     serialize() {
-        return {text: ""};
+        return JSON.stringify(this);
+    }
+
+    deserialize(text: string) {
+        const data = JSON.parse(text);
+        this.objects = data.objects.map((o: any) => {
+            switch (o.type) {
+                case EObjectType.asteroid:
+                    return Asteroid.deserialize(o);
+                case EObjectType.bullet:
+                    return Bullet.deserialize(o);
+                case EObjectType.ship:
+                    return Ship.deserialize(o);
+            }
+        }
     }
 
     private spawnAsteroids(seconds: number) {

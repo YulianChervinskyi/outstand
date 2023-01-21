@@ -53,4 +53,11 @@ export class Asteroid extends MovingObject {
             this.generatedObjects.push(new Particle(COLOR, params));
         }
     }
+
+    static deserialize(o: any) {
+        const asteroid = new Asteroid(o.x, o.y, o.spin, o.speed, o.body.points.length);
+        asteroid.ttl = o.ttl;
+        asteroid.body = o.body;
+        return asteroid;
+    }
 }
