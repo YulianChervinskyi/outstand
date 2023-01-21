@@ -53,6 +53,9 @@ export class Asteroids extends React.Component<IComponentProps, { paused: boolea
 
     private tick = (seconds: number) => {
         this.game.update(seconds, this.props.active);
+        if (this.props.active)
+            this.props.onChange(this.game.serialize());
+
         this.scene?.render();
         this.gameInfo?.render();
     }

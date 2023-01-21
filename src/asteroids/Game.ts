@@ -95,6 +95,10 @@ export class Game {
         this.objects.push(...objectsToAdd);
     }
 
+    serialize() {
+        return {text: ""};
+    }
+
     private spawnAsteroids(seconds: number) {
         const spawnRate = 0.1;
         const spawnChance = spawnRate * seconds;
