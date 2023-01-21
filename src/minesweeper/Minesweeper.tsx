@@ -16,6 +16,8 @@ interface IState {
     timer: number,
     flagNumber: number,
     gameEndText: string,
+    cellsCounter: number,
+    difficulty: EDifficultyType,
     gameField: ICell[][],
     gameOver: boolean,
 }
@@ -23,21 +25,33 @@ interface IState {
 let audio: HTMLAudioElement | undefined;
 
 export class Minesweeper extends React.Component<IProps, IState> {
-    difficulty: EDifficultyType = EDifficultyType.Medium;
-    intervalId: NodeJS.Timeout | undefined = undefined;
-    closedCells: number = (gameProps[this.difficulty].height * gameProps[this.difficulty].width) - gameProps[this.difficulty].mines;
-    timerCounter: number = 0;
-    isGameStarted: boolean = false;
+    intervalId: NodeJS.Timeout | undefined;
+    cellsCounter = 0;
+    timerCounter = 0;
+    isGameStarted = false;
 
     constructor(props: IProps) {
         super(props);
+        const data = JSON.parse(this.props.text || '{}');
+
+        this.cellsCounter = data?.closedCells || gameProps[EDifficultyType.Medium].height * gameProps[EDifficultyType.Medium].width - gameProps[EDifficultyType.Medium].mines;
+        this.timerCounter = data?.timer || 0;
+
         this.state = {
-            timer: 0,
-            gameEndText: "",
-            flagNumber: gameProps[this.difficulty].mines,
-            gameField: this.createGameField(this.difficulty),
-            gameOver: false,
+            timer: data?.timer || 0,
+            gameOver: data?.gameOver || false,
+            gameEndText: data?.gameEndText || "",
+            difficulty: data?.difficulty || EDifficultyType.Medium,
+            flagNumber: data?.flagNumber || gameProps[EDifficultyType.Medium].mines,
+            gameField: data?.gameField || this.createGameField(EDifficultyType.Medium),
+            cellsCounter: data?.closedCells || gameProps[EDifficultyType.Medium].height * gameProps[EDifficultyType.Medium].width - gameProps[EDifficultyType.Medium].mines,
         };
+    }
+
+    setState<K extends keyof IState>(state: Pick<IState, K> | IState | null) {
+        super.setState(state, () => {
+            this.props.onChange({text: JSON.stringify(this.state)});
+        });
     }
 
     componentWillUnmount() {
@@ -46,8 +60,7 @@ export class Minesweeper extends React.Component<IProps, IState> {
     }
 
     handleChangeDifficulty = (difficulty: EDifficultyType) => {
-        this.difficulty = difficulty;
-        this.resetGame();
+        this.resetGame(difficulty);
     }
 
     handleCellOpen = (x: number, y: number) => {
@@ -107,14 +120,16 @@ export class Minesweeper extends React.Component<IProps, IState> {
         }
     }
 
-    resetGame = () => {
+    resetGame = (difficulty: EDifficultyType) => {
         this.timerCounter = 0;
         this.isGameStarted = false;
-        this.closedCells = gameProps[this.difficulty].height * gameProps[this.difficulty].width - gameProps[this.difficulty].mines;
+        this.cellsCounter = gameProps[difficulty].height * gameProps[difficulty].width - gameProps[difficulty].mines;
         this.setState({
             timer: this.timerCounter,
-            flagNumber: gameProps[this.difficulty].mines,
-            gameField: this.createGameField(this.difficulty),
+            difficulty: difficulty,
+            cellsCounter: this.cellsCounter,
+            flagNumber: gameProps[difficulty].mines,
+            gameField: this.createGameField(difficulty),
             gameOver: false
         });
         this.stopTimer();
@@ -131,14 +146,13 @@ export class Minesweeper extends React.Component<IProps, IState> {
         if (cell?.state !== ECellState.Closed)
             return;
 
-        this.closedCells--;
+        this.cellsCounter--;
         field[y][x].state = ECellState.Open;
-        this.setState({gameField: field});
+        this.setState({gameField: field, cellsCounter: this.cellsCounter});
 
         if (field[y][x].value === 9)
             this.gameOver();
-
-        if (this.closedCells === 0)
+        else if (this.cellsCounter === 0)
             this.victory();
 
         if (field[y][x].value > 0)
@@ -168,8 +182,8 @@ export class Minesweeper extends React.Component<IProps, IState> {
 
     showAllMines = () => {
         const field = this.state.gameField;
-        const height = gameProps[this.difficulty].height;
-        const width = gameProps[this.difficulty].width;
+        const height = gameProps[this.state.difficulty].height;
+        const width = gameProps[this.state.difficulty].width;
 
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
@@ -199,7 +213,7 @@ export class Minesweeper extends React.Component<IProps, IState> {
                 <ControlPanel
                     timer={this.state.timer}
                     flagNumber={this.state.flagNumber}
-                    difficulty={this.difficulty}
+                    difficulty={this.state.difficulty}
                     changeDifficulty={this.handleChangeDifficulty}
                 />
                 <GameField
@@ -211,7 +225,7 @@ export class Minesweeper extends React.Component<IProps, IState> {
                 {this.state.gameOver && <div className="info-overlay">
                     {this.state.gameEndText}
                     <div className="controls">
-                        <button onClick={() => this.resetGame()}>Restart</button>
+                        <button onClick={() => this.resetGame(this.state.difficulty)}>Restart</button>
                     </div>
                 </div>}
 
