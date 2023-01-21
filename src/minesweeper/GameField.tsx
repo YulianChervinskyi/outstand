@@ -1,6 +1,7 @@
-import {ECellState, ICell} from "./config";
+import {ICell} from "./config";
 import React from "react";
 import "./GameField.css";
+import {Cell} from "./Cell";
 
 interface IGameField {
     onCellOpen: (x: number, y: number) => void,
@@ -25,18 +26,17 @@ export function GameField(props: IGameField) {
                      style={{height: 100 / props.gameField.length + "%"}}
                      key={y}>
                     {row.map((cell, x) =>
-                        <button className="game-field-cell"
-                                style={{
-                                    width: 100 / row.length + "%",
-                                    backgroundColor: cell.state === ECellState.Open ? "darkgray" : "buttonface"
-                                }}
+                        <div style={{width: 100 / row.length + "%"}}>
+                            <Cell
+                                cell={cell}
                                 onClick={() => handleClick(x, y)}
                                 onContextMenu={(e) => handleContextMenu(x, y, e)}
-                                key={x}>
-                            {cell.state === ECellState.Open && cell.value ||
-                                cell.state === ECellState.Flagged && "F"}
-                        </button>)}
-                </div>)}
+                                key={x}
+                            />
+                        </div>
+                    )}
+                </div>)
+            }
         </div>
     );
 }
