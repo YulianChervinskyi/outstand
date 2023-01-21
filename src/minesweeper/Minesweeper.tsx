@@ -33,18 +33,19 @@ export class Minesweeper extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
         const data = JSON.parse(this.props.text || '{}');
+        const difficultyProps = gameProps[EDifficultyType.Medium];
 
-        this.cellsCounter = data?.closedCells || gameProps[EDifficultyType.Medium].height * gameProps[EDifficultyType.Medium].width - gameProps[EDifficultyType.Medium].mines;
+        this.cellsCounter = data?.closedCells || difficultyProps.height * difficultyProps.width - difficultyProps.mines;
         this.timerCounter = data?.timer || 0;
 
         this.state = {
-            timer: data?.timer || 0,
+            timer: this.timerCounter,
             gameOver: data?.gameOver || false,
             gameEndText: data?.gameEndText || "",
             difficulty: data?.difficulty || EDifficultyType.Medium,
-            flagNumber: data?.flagNumber || gameProps[EDifficultyType.Medium].mines,
+            flagNumber: data?.flagNumber || difficultyProps.mines,
             gameField: data?.gameField || this.createGameField(EDifficultyType.Medium),
-            cellsCounter: data?.closedCells || gameProps[EDifficultyType.Medium].height * gameProps[EDifficultyType.Medium].width - gameProps[EDifficultyType.Medium].mines,
+            cellsCounter: this.cellsCounter,
         };
     }
 
