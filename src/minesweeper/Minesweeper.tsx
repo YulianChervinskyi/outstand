@@ -81,10 +81,12 @@ export class Minesweeper extends React.Component<IProps, IState> {
         this.isGameStarted = true;
 
         this.intervalId = setInterval(() => {
+            if (this.timerCounter === 999) {
+                this.stopTimer();
+                return;
+            }
             this.timerCounter++;
             this.setState({timer: this.timerCounter});
-            if (this.timerCounter === 999)
-                this.stopTimer();
         }, 1000);
     }
 
