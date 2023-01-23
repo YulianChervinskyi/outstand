@@ -9,8 +9,13 @@
     width: 100%;
 }
 
+.game-field-row div {
+    display: flex;
+}
+
 .game-field-cell {
     width: 100%;
     height: 100%;
+    padding: 0;
     border: solid 1px gray;
 }
