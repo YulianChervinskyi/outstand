@@ -7,6 +7,7 @@ import {Calc} from "./calc/Calc";
 import {Fpe} from "./fpe/Fpe";
 import {NoteEditor} from "./NoteEditor";
 import {Tetris} from "./tetris/Tetris";
+import {Minesweeper} from "./minesweeper/Minesweeper";
 
 export interface IComponentProps {
     text: string,
@@ -22,6 +23,7 @@ export enum BoxType {
     Tetris = "Tetris",
     Fpe = "Fpe",
     Asteroids = "Asteroids",
+    Minesweeper = "Minesweeper",
 }
 
 interface BoxProps {
@@ -91,6 +93,10 @@ export function Box(props: BoxProps) {
 
             {props.type === BoxType.Asteroids
                 && <Asteroids width={width} height={height} text={props.text} active={props.active}
+                              onChange={(e) => props.onChange(props.id, e)}/>}
+
+            {props.type === BoxType.Minesweeper
+                && <Minesweeper width={width} height={height} text={props.text}
                               onChange={(e) => props.onChange(props.id, e)}/>}
 
             <BoxResizer width={size.width} height={size.height} onResize={handleResize}/>
