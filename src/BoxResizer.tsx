@@ -7,6 +7,7 @@ export interface IBoxResizerProps {
     width: number,
     height: number,
     onResize: (size: { width: number, height: number }) => void,
+    minSize?: { width: number, height: number },
 }
 
 export class BoxResizer extends React.Component<IBoxResizerProps, { dragging: boolean }> {
@@ -48,8 +49,8 @@ export class BoxResizer extends React.Component<IBoxResizerProps, { dragging: bo
             const y = this.startY - e.clientY;
 
             this.props.onResize({
-                width: Math.max(this.startWidth - x, MIN_WIDTH),
-                height: Math.max(this.startHeight - y, MIN_HEIGHT),
+                width: Math.max(this.startWidth - x, this.props.minSize?.width || MIN_WIDTH, MIN_WIDTH),
+                height: Math.max(this.startHeight - y, this.props.minSize?.height || MIN_HEIGHT, MIN_HEIGHT),
             });
         }
     }

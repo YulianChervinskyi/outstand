@@ -1,9 +1,6 @@
-export interface INoteEditorProps {
-    text: string,
-    onChange: (e: { text: string }) => void,
-}
+import {IComponentProps} from "../Box";
 
-export function NoteEditor(props: INoteEditorProps) {
+export function NoteEditor(props: IComponentProps) {
     return (
         <div className="note-editor">
             <textarea value={props.text}

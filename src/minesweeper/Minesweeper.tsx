@@ -1,16 +1,10 @@
+import {IComponentProps} from "../Box";
 import {GameField} from "./GameField";
 import {ControlPanel} from "./ControlPanel";
 import {ECellState, EDifficultyType, gameProps, ICell} from "./config";
 import React from "react";
 import laugh from "./assets/hahaha.mp3";
 import victory from "./assets/victorySound.mp3";
-
-export interface IProps {
-    width: number,
-    height: number,
-    text: string,
-    onChange: (e: { text: string }) => void,
-}
 
 interface IState {
     timer: number,
@@ -24,13 +18,13 @@ interface IState {
 
 let audio: HTMLAudioElement | undefined;
 
-export class Minesweeper extends React.Component<IProps, IState> {
+export class Minesweeper extends React.Component<IComponentProps, IState> {
     intervalId: NodeJS.Timeout | undefined;
     cellsCounter = 0;
     timerCounter = 0;
     isGameStarted = false;
 
-    constructor(props: IProps) {
+    constructor(props: IComponentProps) {
         super(props);
         const data = JSON.parse(this.props.text || '{}') as IState;
         const difficultyProps = gameProps[EDifficultyType.Medium];

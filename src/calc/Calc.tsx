@@ -1,8 +1,9 @@
 import React from "react";
+import {IComponentProps} from "../Box";
 import {KeyLayout} from "./KeyLayout";
-import {Digit, ICalcProps, Operator} from "./types";
+import {Digit, Operator} from "./types";
 
-export function Calc(props: ICalcProps) {
+export function Calc(props: IComponentProps) {
     const data = JSON.parse(props.text || '{}');
 
     const [input, setInput] = React.useState<string>(data?.input || '0');

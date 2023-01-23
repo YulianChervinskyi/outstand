@@ -1,4 +1,5 @@
 import React from "react";
+import {IComponentProps} from "../Box";
 import {Board} from "./Board";
 import {BOARD_HEIGHT, BOARD_WIDTH, SHAPES} from "./config";
 import {Piece} from "./Piece";
@@ -13,14 +14,6 @@ function getRandomPiece(): IPiece {
         x: Math.floor(BOARD_WIDTH / 2 - shape.body.length / 2),
         y: 0,
     };
-}
-
-interface IProps {
-    width: number,
-    height: number,
-    text: string,
-    onChange: (e: { text: string }) => void,
-    active?: boolean,
 }
 
 interface IState {
@@ -47,10 +40,10 @@ const initialState = {
     speed: 1000,
 }
 
-export class Tetris extends React.Component<IProps, IState> {
+export class Tetris extends React.Component<IComponentProps, IState> {
     private timeoutId?: NodeJS.Timeout;
 
-    constructor(props: IProps) {
+    constructor(props: IComponentProps) {
         super(props);
         this.state = this.props.text ? JSON.parse(this.props.text) : initialState;
     }

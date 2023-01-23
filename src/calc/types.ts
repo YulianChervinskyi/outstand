@@ -1,3 +1,5 @@
+import React from "react";
+
 export enum Digit {
     D0 = "0",
     D1 = "1",
@@ -25,11 +27,4 @@ export interface IKeyLayoutProps {
     onPressOperator: (op: Operator) => void,
     onPressClear: () => void,
     style?: React.CSSProperties,
-}
-
-export interface ICalcProps {
-    width: number,
-    height: number,
-    text: string,
-    onChange: (e: { text: string }) => void,
 }

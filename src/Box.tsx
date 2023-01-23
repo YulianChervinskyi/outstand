@@ -5,7 +5,7 @@ import {BoxHeader} from "./BoxHeader";
 import {BoxResizer} from "./BoxResizer";
 import {Calc} from "./calc/Calc";
 import {Fpe} from "./fpe/Fpe";
-import {NoteEditor} from "./NoteEditor";
+import {NoteEditor} from "./NoteEditor/NoteEditor";
 import {Tetris} from "./tetris/Tetris";
 import {Minesweeper} from "./minesweeper/Minesweeper";
 
@@ -77,7 +77,8 @@ export function Box(props: BoxProps) {
             <BoxHeader onClose={() => props.onClose(props.id)} onMove={handleMove} caption={String(props.type)}/>
 
             {props.type === BoxType.Note
-                && <NoteEditor text={props.text} onChange={(e) => props.onChange(props.id, e)}/>}
+                && <NoteEditor width={width} height={height} text={props.text}
+                               onChange={(e) => props.onChange(props.id, e)}/>}
 
             {props.type === BoxType.Calc
                 && <Calc width={width} height={height} text={props.text}
@@ -97,7 +98,7 @@ export function Box(props: BoxProps) {
 
             {props.type === BoxType.Minesweeper
                 && <Minesweeper width={width} height={height} text={props.text}
-                              onChange={(e) => props.onChange(props.id, e)}/>}
+                                onChange={(e) => props.onChange(props.id, e)}/>}
 
             <BoxResizer width={size.width} height={size.height} onResize={handleResize}/>
         </div>
