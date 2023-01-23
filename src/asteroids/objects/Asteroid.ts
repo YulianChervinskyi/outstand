@@ -56,8 +56,12 @@ export class Asteroid extends MovingObject {
 
     static deserialize(o: any) {
         const asteroid = new Asteroid(o.x, o.y, o.spin, o.speed, o.body.points.length);
-        asteroid.ttl = o.ttl;
         asteroid.body = o.body;
+        asteroid.speed = o.speed;
+        asteroid.spin = o.spin;
+        asteroid.angle = o.angle;
+        asteroid.rotationSpeed = o.rotationSpeed;
+        asteroid.spinSpeed = o.spinSpeed;
         return asteroid;
     }
 }

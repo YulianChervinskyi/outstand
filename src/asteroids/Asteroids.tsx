@@ -14,6 +14,7 @@ export class Asteroids extends React.Component<IComponentProps, { paused: boolea
     constructor(props: IComponentProps) {
         super(props);
         this.state = {paused: false, gameOver: false};
+        this.props.text && this.game.deserialize(this.props.text);
     }
 
     componentDidMount() {
@@ -54,8 +55,8 @@ export class Asteroids extends React.Component<IComponentProps, { paused: boolea
     private tick = (seconds: number) => {
         this.game.update(seconds, this.props.active);
         if (this.props.active) {
-            const data = this.game.serialize();
-            this.props.onChange({text: this.game.serialize()});
+            const text = this.game.serialize();
+            this.props.onChange({text});
         }
 
         this.scene?.render();

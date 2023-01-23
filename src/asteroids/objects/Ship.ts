@@ -121,4 +121,10 @@ export class Ship extends MovingObject {
         }
     }
 
+    static deserialize(o: any) {
+        const ship = new Ship(o.x, o.y, o.angle);
+        ship.spin = o.spin;
+        ship.speed = o.speed;
+        return ship;
+    }
 }

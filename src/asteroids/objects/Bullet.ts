@@ -10,4 +10,8 @@ export class Bullet extends MovingObject {
     constructor(x: number = 0, y: number = 0, angle: number = 0, speed: number = 300, ttl: number = 1) {
         super(EObjectType.bullet, BODY, {x, y, angle, spin: angle, speed, ttl});
     }
+
+    static deserialize(o: any) {
+        return new Bullet(o.x, o.y, o.angle, o.speed, o.ttl);
+    }
 }

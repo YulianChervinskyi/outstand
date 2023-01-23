@@ -1,6 +1,7 @@
 import {Controls} from "./Controls";
 import {Asteroid} from "./objects/Asteroid";
 import {Bullet} from "./objects/Bullet";
+import {Particle} from "./objects/Particle";
 import {SceneObject} from "./objects/SceneObject";
 import {Ship} from "./objects/Ship";
 import {EObjectType} from "./types";
@@ -109,8 +110,15 @@ export class Game {
                     return Bullet.deserialize(o);
                 case EObjectType.ship:
                     return Ship.deserialize(o);
+                case EObjectType.particle:
+                    return Particle.deserialize(o);
             }
-        }
+        });
+        this.player = this.objects.find(o => o.type === EObjectType.ship) as Ship;
+        this.lives = data.lives;
+        this.score = data.score;
+        this.level = data.level;
+        this.paused = data.paused;
     }
 
     private spawnAsteroids(seconds: number) {
