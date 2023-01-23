@@ -6,8 +6,9 @@ const MIN_HEIGHT = 165;
 export interface IBoxResizerProps {
     width: number,
     height: number,
-    onResize: (size: { width: number, height: number }) => void,
-    minSize?: { width: number, height: number },
+    onResize: (size: { w: number, h: number }) => void,
+    minSize?: { w: number, h: number },
+    aspectRatio?: { w: number, h: number },
 }
 
 export class BoxResizer extends React.Component<IBoxResizerProps, { dragging: boolean }> {
@@ -22,6 +23,16 @@ export class BoxResizer extends React.Component<IBoxResizerProps, { dragging: bo
     private startY: number = 0;
     private startWidth: number = this.props.width;
     private startHeight: number = this.props.height;
+
+    componentDidUpdate(prevProps: Readonly<IBoxResizerProps>, prevState: Readonly<{ dragging: boolean }>, snapshot?: any) {
+        if (prevProps.minSize?.w === this.props.minSize?.w && prevProps.minSize?.h === this.props.minSize?.h)
+            return;
+
+        this.props.onResize({
+            w: Math.max(this.props.width, this.props.minSize?.w || MIN_WIDTH, MIN_WIDTH),
+            h: Math.max(this.props.height, this.props.minSize?.h || MIN_HEIGHT, MIN_HEIGHT),
+        });
+    }
 
     private handleMouseDown = (e: React.MouseEvent) => {
         this.startX = e.clientX;
@@ -49,8 +60,8 @@ export class BoxResizer extends React.Component<IBoxResizerProps, { dragging: bo
             const y = this.startY - e.clientY;
 
             this.props.onResize({
-                width: Math.max(this.startWidth - x, this.props.minSize?.width || MIN_WIDTH, MIN_WIDTH),
-                height: Math.max(this.startHeight - y, this.props.minSize?.height || MIN_HEIGHT, MIN_HEIGHT),
+                w: Math.max(this.startWidth - x, this.props.minSize?.w || MIN_WIDTH, MIN_WIDTH),
+                h: Math.max(this.startHeight - y, this.props.minSize?.h || MIN_HEIGHT, MIN_HEIGHT),
             });
         }
     }

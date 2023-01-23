@@ -41,6 +41,8 @@ export class Minesweeper extends React.Component<IComponentProps, IState> {
             gameField: data?.gameField || this.createGameField(EDifficultyType.Medium),
             cellsCounter: this.cellsCounter,
         };
+
+        this.setMinSize(this.state.difficulty);
     }
 
     setState<K extends keyof IState>(state: Pick<IState, K> | IState | null) {
@@ -54,21 +56,27 @@ export class Minesweeper extends React.Component<IComponentProps, IState> {
         stopSound();
     }
 
-    handleChangeDifficulty = (difficulty: EDifficultyType) => {
+    private handleChangeDifficulty = (difficulty: EDifficultyType) => {
+        this.setMinSize(difficulty);
         this.resetGame(difficulty);
     }
 
-    handleCellOpen = (x: number, y: number) => {
+    private setMinSize(difficulty: EDifficultyType) {
+        const factor = 20;
+        this.props.onChangeMinSize({w: gameProps[difficulty].width * factor, h: gameProps[difficulty].height * factor});
+    }
+
+    private handleCellOpen = (x: number, y: number) => {
         this.startGame();
         this.openCell(x, y);
     }
 
-    handleCellFlag = (x: number, y: number) => {
+    private handleCellFlag = (x: number, y: number) => {
         this.startGame();
         this.flagCell(x, y);
     }
 
-    startGame = () => {
+    private startGame = () => {
         if (this.isGameStarted)
             return;
 
@@ -84,7 +92,7 @@ export class Minesweeper extends React.Component<IComponentProps, IState> {
         }, 1000);
     }
 
-    createGameField = (difficulty: EDifficultyType) => {
+    private createGameField = (difficulty: EDifficultyType) => {
         const field: ICell[][] = [];
         const {width, height, mines} = gameProps[difficulty];
 
@@ -110,14 +118,14 @@ export class Minesweeper extends React.Component<IComponentProps, IState> {
         return field;
     }
 
-    stopTimer() {
+    private stopTimer() {
         if (this.intervalId) {
             clearInterval(this.intervalId);
             this.intervalId = undefined;
         }
     }
 
-    resetGame = (difficulty: EDifficultyType) => {
+    private resetGame = (difficulty: EDifficultyType) => {
         this.timerCounter = 0;
         this.isGameStarted = false;
         this.cellsCounter = gameProps[difficulty].height * gameProps[difficulty].width - gameProps[difficulty].mines;
@@ -133,7 +141,7 @@ export class Minesweeper extends React.Component<IComponentProps, IState> {
         stopSound();
     }
 
-    openCell(x: number, y: number) {
+    private openCell(x: number, y: number) {
         const field = this.state.gameField;
 
         if (!field[y])
@@ -158,7 +166,7 @@ export class Minesweeper extends React.Component<IComponentProps, IState> {
         processCellsAround(x, y, (xx, yy) => this.openCell(xx, yy));
     }
 
-    flagCell = (x: number, y: number) => {
+    private flagCell = (x: number, y: number) => {
         const field = this.state.gameField;
 
         if (field[y][x].state === ECellState.Open)
@@ -177,7 +185,7 @@ export class Minesweeper extends React.Component<IComponentProps, IState> {
         });
     }
 
-    showAllMines = () => {
+    private showAllMines = () => {
         const field = this.state.gameField;
         const height = gameProps[this.state.difficulty].height;
         const width = gameProps[this.state.difficulty].width;
@@ -190,14 +198,14 @@ export class Minesweeper extends React.Component<IComponentProps, IState> {
         }
     }
 
-    gameOver = () => {
+    private gameOver = () => {
         this.showAllMines();
         this.stopTimer();
         playSound(laugh).catch(console.error);
         this.setState({gameOver: true, gameEndText: "Game over!"});
     }
 
-    victory = () => {
+    private victory = () => {
         this.stopTimer();
         playSound(victory).catch(console.error);
         this.setState({gameOver: true, gameEndText: "Victory!"});

@@ -88,7 +88,7 @@ export class Page extends React.Component<{}, IState> {
                     text={b.text}
                     onChange={(id, e) => this.changeBoxState(id, e)}
                     onMove={(id, pos) => this.changeBoxState(id, pos)}
-                    onResize={(id, size) => this.changeBoxState(id, size)}
+                    onResize={(id, size) => this.changeBoxState(id, {width: size.w, height: size.h})}
                     onClose={this.handleClose}
                     onActive={this.handleActive}
                     id={Number(key)}

@@ -15,6 +15,7 @@ export interface IComponentProps {
     width: number,
     height: number,
     active?: boolean,
+    onChangeMinSize: (e: { w: number, h: number }) => void,
 }
 
 export enum BoxType {
@@ -36,26 +37,27 @@ interface BoxProps {
     onChange: (id: number, e: { text: string }) => void,
     onMove: (id: number, pos: { x: number, y: number }) => void,
     onClose: (id: number) => void,
-    onResize: (id: number, size: { width: number, height: number }) => void,
+    onResize: (id: number, size: { w: number, h: number }) => void,
     onActive: (id: number) => void,
     id: number,
     type: BoxType,
 }
 
 export function Box(props: BoxProps) {
-    const [size, setSize] = useState({width: props.width, height: props.height});
+    const [size, setSize] = useState({w: props.width, h: props.height});
     const [pos, setPos] = useState({x: props.x, y: props.y});
+    const [minSize, setMinSize] = useState<{ w: number, h: number } | undefined>();
 
     const style = {
         left: pos.x,
         top: pos.y,
-        width: size.width,
-        height: size.height,
+        width: size.w,
+        height: size.h,
         zIndex: props.active ? 2 : 1,
         filter: props.active ? "none" : "grayscale(100%)",
     };
 
-    const handleResize = (size: { width: number, height: number }) => {
+    const handleResize = (size: { w: number, h: number }) => {
         setSize(size);
         props.onResize(props.id, size);
     };
@@ -69,8 +71,8 @@ export function Box(props: BoxProps) {
         props.onActive(props.id);
     };
 
-    const width = size.width - 10;
-    const height = size.height - 24;
+    const width = size.w - 10;
+    const height = size.h - 24;
 
     return (
         <div className="box" style={style} onMouseDown={handleMouseDown}>
@@ -78,29 +80,35 @@ export function Box(props: BoxProps) {
 
             {props.type === BoxType.Note
                 && <NoteEditor width={width} height={height} text={props.text}
-                               onChange={(e) => props.onChange(props.id, e)}/>}
+                               onChange={(e) => props.onChange(props.id, e)}
+                               onChangeMinSize={setMinSize}/>}
 
             {props.type === BoxType.Calc
                 && <Calc width={width} height={height} text={props.text}
-                         onChange={(e) => props.onChange(props.id, e)}/>}
+                         onChange={(e) => props.onChange(props.id, e)}
+                         onChangeMinSize={setMinSize}/>}
 
             {props.type === BoxType.Tetris
                 && <Tetris width={width} height={height} text={props.text} active={props.active}
-                           onChange={(e) => props.onChange(props.id, e)}/>}
+                           onChange={(e) => props.onChange(props.id, e)}
+                           onChangeMinSize={setMinSize}/>}
 
             {props.type === BoxType.Fpe
                 && <Fpe width={width} height={height} text={props.text} active={props.active}
-                        onChange={(e) => props.onChange(props.id, e)}/>}
+                        onChange={(e) => props.onChange(props.id, e)}
+                        onChangeMinSize={setMinSize}/>}
 
             {props.type === BoxType.Asteroids
                 && <Asteroids width={width} height={height} text={props.text} active={props.active}
-                              onChange={(e) => props.onChange(props.id, e)}/>}
+                              onChange={(e) => props.onChange(props.id, e)}
+                              onChangeMinSize={setMinSize}/>}
 
             {props.type === BoxType.Minesweeper
                 && <Minesweeper width={width} height={height} text={props.text}
-                                onChange={(e) => props.onChange(props.id, e)}/>}
+                                onChange={(e) => props.onChange(props.id, e)}
+                                onChangeMinSize={setMinSize}/>}
 
-            <BoxResizer width={size.width} height={size.height} onResize={handleResize}/>
+            <BoxResizer width={size.w} height={size.h} onResize={handleResize} minSize={minSize}/>
         </div>
     );
 }
