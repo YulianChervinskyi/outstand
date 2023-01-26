@@ -2,7 +2,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    max-font-size: 10;
     padding: 0;
     height: 100%;
     width: 33.3%;
@@ -19,12 +18,10 @@
 }
 
 .indicator img {
-    width: 20%;
-    height: 50%;
+    width: 15%;
+    height: 75%;
     max-height: 40px;
     max-width: 40px;
-    min-height: 15px;
-    min-width: 15px;
     margin: 0 2% 0 0;
 }
 
