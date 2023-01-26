@@ -1,9 +1,61 @@
+.indicator {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-font-size: 10;
+    padding: 0;
+    height: 100%;
+    width: 33.3%;
+}
+
 .controlPanel {
     display: flex;
-    justify-content: space-around;
-    align-items: center;
+    flex-direction: row;
     width: 100%;
     height: 10%;
     background-color: darkorchid;
+    font-weight: bold;
+    color: aliceblue;
 }
 
+.indicator img {
+    width: 20%;
+    height: 50%;
+    max-height: 40px;
+    max-width: 40px;
+    min-height: 15px;
+    min-width: 15px;
+    margin: 0 2% 0 0;
+}
+
+.indicator p {
+    cursor: pointer;
+    margin: 0;
+    padding: 0 5px 0 5px;
+    border-radius: 3px;
+}
+
+.indicator p:hover {
+    background-color: aliceblue;
+    color: darkorchid;
+}
+
+.info-overlay-alter {
+    text-align: center;
+    z-index: 1;
+}
+
+.info-overlay-alter .controls {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 40%;
+}
+
+.controls img {
+    width: 30%;
+    height: 80%;
+    margin-left: -5%;
+}

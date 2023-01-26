@@ -2,8 +2,8 @@ import {GameField} from "./GameField";
 import {ControlPanel} from "./ControlPanel";
 import {ECellState, EDifficultyType, gameProps, ICell} from "./config";
 import React from "react";
-import laugh from "./assets/hahaha.mp3";
-import victory from "./assets/victorySound.mp3";
+import laugh from "./assets/sounds/hahaha.mp3";
+import victory from "./assets/sounds/victorySound.mp3";
 
 export interface IProps {
     width: number,
@@ -33,7 +33,7 @@ export class Minesweeper extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
         const data = JSON.parse(this.props.text || '{}') as IState;
-        const difficultyProps = gameProps[EDifficultyType.Medium];
+        const difficultyProps = gameProps[EDifficultyType.Easy];
 
         this.cellsCounter = data?.cellsCounter || difficultyProps.height * difficultyProps.width - difficultyProps.mines;
         this.timerCounter = data?.timer || 0;
@@ -42,9 +42,9 @@ export class Minesweeper extends React.Component<IProps, IState> {
             timer: this.timerCounter,
             gameOver: data?.gameOver || false,
             gameEndText: data?.gameEndText || "",
-            difficulty: data?.difficulty || EDifficultyType.Medium,
+            difficulty: data?.difficulty || EDifficultyType.Easy,
             flagNumber: data?.flagNumber || difficultyProps.mines,
-            gameField: data?.gameField || this.createGameField(EDifficultyType.Medium),
+            gameField: data?.gameField || this.createGameField(EDifficultyType.Easy),
             cellsCounter: this.cellsCounter,
         };
     }
@@ -212,7 +212,11 @@ export class Minesweeper extends React.Component<IProps, IState> {
     render() {
         return (
             <div className="minesweeper"
-                 style={{width: this.props.width, height: this.props.height, backgroundColor: "#819462"}}>
+                 style={{
+                     width: this.props.width,
+                     height: this.props.height,
+                     fontSize: this.props.height < 600 ? this.props.height * 0.05 : 30,
+                 }}>
                 <ControlPanel
                     timer={this.state.timer}
                     flagNumber={this.state.flagNumber}
@@ -224,7 +228,6 @@ export class Minesweeper extends React.Component<IProps, IState> {
                     onCellFlag={this.handleCellFlag}
                     gameField={this.state.gameField}
                 />
-
                 {this.state.gameOver && <div className="info-overlay">
                     {this.state.gameEndText}
                     <div className="controls">

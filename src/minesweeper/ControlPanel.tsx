@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {EDifficultyType} from "./config";
+import {EDifficultyType, difficultiesPng, timer, flag} from "./config";
 import './ControlPanel.css';
 
 export interface IControlPanel {
@@ -11,22 +11,43 @@ export interface IControlPanel {
 
 export function ControlPanel(props: IControlPanel) {
     const [difficulty, setDifficulty] = useState(props.difficulty);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const handleChangeDifficulty = (value: EDifficultyType) => {
-        setDifficulty(value);
         props.changeDifficulty(value);
+        setIsMenuOpen(!isMenuOpen);
+        setDifficulty(value);
     }
 
     return (
         <div className="controlPanel">
-            <div>{props.timer}</div>
-            <select value={difficulty}
-                    onChange={(e) => handleChangeDifficulty(e.target.value as EDifficultyType)}>
-                {Object.values(EDifficultyType).map((value) =>
-                    <option>{value}</option>
-                )}
-            </select>
-            <div>{props.flagNumber}</div>
+            <div className="indicator">
+                <img src={timer} alt=""/>
+                {props.timer}
+            </div>
+            <div className="indicator">
+                <p onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                    {difficulty}
+                </p>
+            </div>
+            <div className="indicator">
+                <img src={flag} alt=""/>
+                {props.flagNumber}
+            </div>
+
+            {isMenuOpen && <div className="info-overlay info-overlay-alter">
+                Choose difficulty
+                <div className="controls">
+                    {Object.values(EDifficultyType).map((value) =>
+                        <img
+                            src={difficultiesPng[value]}
+                            onClick={() => handleChangeDifficulty(value)}
+                            alt=""
+                        />
+                    )}
+                </div>
+            </div>}
+
         </div>
     );
 }
