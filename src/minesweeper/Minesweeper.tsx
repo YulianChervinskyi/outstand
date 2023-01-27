@@ -1,9 +1,8 @@
+import React from "react";
+import "./Minesweeper.css";
 import {GameField} from "./GameField";
 import {ControlPanel} from "./ControlPanel";
-import {ECellState, EDifficultyType, gameProps, ICell} from "./config";
-import React from "react";
-import laugh from "./assets/sounds/hahaha.mp3";
-import victory from "./assets/sounds/victorySound.mp3";
+import {ECellState, EDifficultyType, EScreenText, ICell, gameProps, difficultiesPng, laugh, victory} from "./config";
 
 export interface IProps {
     width: number,
@@ -15,7 +14,7 @@ export interface IProps {
 interface IState {
     timer: number,
     flagNumber: number,
-    gameEndText: string,
+    gameEndText: EScreenText,
     cellsCounter: number,
     difficulty: EDifficultyType,
     gameField: ICell[][],
@@ -200,13 +199,13 @@ export class Minesweeper extends React.Component<IProps, IState> {
         this.showAllMines();
         this.stopTimer();
         playSound(laugh).catch(console.error);
-        this.setState({gameOver: true, gameEndText: "Game over!"});
+        this.setState({gameOver: true, gameEndText: EScreenText.GameOver});
     }
 
     victory = () => {
         this.stopTimer();
         playSound(victory).catch(console.error);
-        this.setState({gameOver: true, gameEndText: "Victory!"});
+        this.setState({gameOver: true, gameEndText: EScreenText.Victory});
     }
 
     render() {
@@ -221,7 +220,7 @@ export class Minesweeper extends React.Component<IProps, IState> {
                     timer={this.state.timer}
                     flagNumber={this.state.flagNumber}
                     difficulty={this.state.difficulty}
-                    changeDifficulty={this.handleChangeDifficulty}
+                    changeDifficulty={(text) => this.setState({gameOver: true, gameEndText: text})}
                 />
                 <GameField
                     onCellOpen={this.handleCellOpen}
@@ -230,14 +229,26 @@ export class Minesweeper extends React.Component<IProps, IState> {
                 />
                 {this.state.gameOver && <div className="info-overlay">
                     {this.state.gameEndText}
-                    <div className="controls">
-                        <button onClick={() => this.resetGame(this.state.difficulty)}>Restart</button>
-                    </div>
+                    {this.state.gameEndText === EScreenText.Difficulty
+                        && <div className="menu-options">
+                            {Object.values(EDifficultyType).map((value) =>
+                                <img src={difficultiesPng[value]}
+                                     onClick={() => this.handleChangeDifficulty(value)}
+                                     id="option"
+                                     alt=""
+                                />
+                            )}
+                        </div>
+                        || <div className="controls">
+                            <button onClick={() => this.resetGame(this.state.difficulty)}>Restart</button>
+                        </div>
+                    }
                 </div>}
             </div>
         );
     }
 }
+
 
 function incCellValue(field: ICell[][], x: number, y: number) {
     if (field[y] && field[y][x] && field[y][x].value !== 9) {

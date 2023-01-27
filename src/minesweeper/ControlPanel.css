@@ -38,21 +38,3 @@
     background-color: aliceblue;
     color: darkorchid;
 }
-
-.menu {
-    text-align: center;
-}
-
-.menu .menu-options {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 40%;
-}
-
-#option {
-    width: 25%;
-    margin-left: -5%;
-}

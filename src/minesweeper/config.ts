@@ -3,13 +3,21 @@ import timer from "./assets/icons/timer.png";
 import easy from "./assets/icons/difficulties/easy.png";
 import medium from "./assets/icons/difficulties/medium.png";
 import hard from "./assets/icons/difficulties/hard.png";
+import laugh from "./assets/sounds/hahaha.mp3";
+import victory from "./assets/sounds/victorySound.mp3";
 
-export {flag, timer};
+export {flag, timer, laugh, victory};
 
 export enum EDifficultyType {
     Easy = "Easy",
     Medium = "Medium",
     Hard = "Hard",
+}
+
+export enum EScreenText {
+    Victory = "Victory!",
+    GameOver = "Game over!",
+    Difficulty = "Choose difficulty",
 }
 
 export enum ECellState {
