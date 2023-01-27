@@ -28,6 +28,11 @@ export class Minesweeper extends React.Component<IProps, IState> {
     cellsCounter = 0;
     timerCounter = 0;
     isGameStarted = false;
+    style = {
+        width: this.props.width,
+        height: this.props.height,
+        fontSize: this.props.height < 600 ? this.props.height * 0.05 : 30,
+    };
 
     constructor(props: IProps) {
         super(props);
@@ -237,12 +242,7 @@ export class Minesweeper extends React.Component<IProps, IState> {
 
     render() {
         return (
-            <div className="minesweeper"
-                 style={{
-                     width: this.props.width,
-                     height: this.props.height,
-                     fontSize: this.props.height < 600 ? this.props.height * 0.05 : 30,
-                 }}>
+            <div className="minesweeper" style={this.style}>
                 <ControlPanel
                     timer={this.state.timer}
                     flagNumber={this.state.flagNumber}
