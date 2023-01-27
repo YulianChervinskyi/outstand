@@ -18,31 +18,32 @@
 }
 
 .indicator img {
-    width: 15%;
     height: 75%;
     max-height: 40px;
-    max-width: 40px;
-    margin: 0 2% 0 0;
+    margin-right: 0.1vw;
 }
 
 .indicator p {
+    width: 3vh;
+}
+
+.indicator .menu-button {
     cursor: pointer;
     margin: 0;
     padding: 0 5px 0 5px;
     border-radius: 3px;
 }
 
-.indicator p:hover {
+.indicator .menu-button:hover {
     background-color: aliceblue;
     color: darkorchid;
 }
 
-.info-overlay-alter {
+.menu {
     text-align: center;
-    z-index: 1;
 }
 
-.info-overlay-alter .controls {
+.menu .menu-options {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -51,8 +52,7 @@
     height: 40%;
 }
 
-.controls img {
-    width: 30%;
-    height: 80%;
+#option {
+    width: 25%;
     margin-left: -5%;
 }

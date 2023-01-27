@@ -15,39 +15,43 @@ export function ControlPanel(props: IControlPanel) {
 
     const handleChangeDifficulty = (value: EDifficultyType) => {
         props.changeDifficulty(value);
-        setIsMenuOpen(!isMenuOpen);
         setDifficulty(value);
+    }
+
+    const handleOptionClick = (value: EDifficultyType) => {
+        handleChangeDifficulty(value);
+        setIsMenuOpen(!isMenuOpen);
     }
 
     return (
         <div className="controlPanel">
             <div className="indicator">
                 <img src={timer} alt=""/>
-                {props.timer}
+                <p>{props.timer}</p>
             </div>
             <div className="indicator">
-                <p onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                <div className="menu-button" onClick={() => setIsMenuOpen(!isMenuOpen)}>
                     {difficulty}
-                </p>
+                </div>
             </div>
             <div className="indicator">
                 <img src={flag} alt=""/>
-                {props.flagNumber}
+                <p>{props.flagNumber}</p>
             </div>
 
-            {isMenuOpen && <div className="info-overlay info-overlay-alter">
-                Choose difficulty
-                <div className="controls">
-                    {Object.values(EDifficultyType).map((value) =>
-                        <img
-                            src={difficultiesPng[value]}
-                            onClick={() => handleChangeDifficulty(value)}
-                            alt=""
-                        />
-                    )}
-                </div>
-            </div>}
-
+            {isMenuOpen && <div className="info-overlay menu" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                    Choose difficulty
+                    <div className="menu-options">
+                        {Object.values(EDifficultyType).map((value) =>
+                            <img
+                                src={difficultiesPng[value]}
+                                onClick={() => handleOptionClick(value)}
+                                id="option"
+                                alt=""
+                            />
+                        )}
+                    </div>
+                </div>}
         </div>
     );
 }

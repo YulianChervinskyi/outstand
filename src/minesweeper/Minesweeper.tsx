@@ -234,7 +234,6 @@ export class Minesweeper extends React.Component<IProps, IState> {
                         <button onClick={() => this.resetGame(this.state.difficulty)}>Restart</button>
                     </div>
                 </div>}
-
             </div>
         );
     }
