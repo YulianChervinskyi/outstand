@@ -27,14 +27,14 @@
     width: 3vh;
 }
 
-.indicator .menu-button {
+.indicator .change-difficulty {
     cursor: pointer;
     margin: 0;
     padding: 0 5px 0 5px;
     border-radius: 3px;
 }
 
-.indicator .menu-button:hover {
+.indicator .change-difficulty:hover {
     background-color: aliceblue;
     color: darkorchid;
 }

@@ -17,7 +17,7 @@ export function ControlPanel(props: IControlPanel) {
                 <p>{props.timer}</p>
             </div>
             <div className="indicator">
-                <div className="menu-button" onClick={() => props.changeDifficulty(EScreenText.Difficulty)}>
+                <div className="change-difficulty" onClick={() => props.changeDifficulty(EScreenText.Difficulty)}>
                     {props.difficulty}
                 </div>
             </div>

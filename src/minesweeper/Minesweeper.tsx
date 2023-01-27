@@ -2,7 +2,7 @@ import React from "react";
 import "./Minesweeper.css";
 import {GameField} from "./GameField";
 import {ControlPanel} from "./ControlPanel";
-import {ECellState, EDifficultyType, EScreenText, ICell, gameProps, difficultiesPng, laugh, victory} from "./config";
+import {difficultiesPng, ECellState, EDifficultyType, EScreenText, gameProps, ICell, laugh, victory} from "./config";
 
 export interface IProps {
     width: number,
@@ -208,6 +208,33 @@ export class Minesweeper extends React.Component<IProps, IState> {
         this.setState({gameOver: true, gameEndText: EScreenText.Victory});
     }
 
+    overlayOnScreen = () => {
+        const overlayText = this.state.gameEndText;
+
+        if (!overlayText)
+            return;
+
+        if (overlayText !== EScreenText.Difficulty) {
+            return (
+                <div className="controls">
+                    <button onClick={() => this.resetGame(this.state.difficulty)}>Restart</button>
+                </div>
+            );
+        }
+
+        return (
+            <div className="menu-options">
+                {Object.values(EDifficultyType).map((value) =>
+                    <img src={difficultiesPng[value]}
+                         onClick={() => this.handleChangeDifficulty(value)}
+                         id="option"
+                         alt=""
+                    />
+                )}
+            </div>
+        );
+    }
+
     render() {
         return (
             <div className="minesweeper"
@@ -229,20 +256,7 @@ export class Minesweeper extends React.Component<IProps, IState> {
                 />
                 {this.state.gameOver && <div className="info-overlay">
                     {this.state.gameEndText}
-                    {this.state.gameEndText === EScreenText.Difficulty
-                        && <div className="menu-options">
-                            {Object.values(EDifficultyType).map((value) =>
-                                <img src={difficultiesPng[value]}
-                                     onClick={() => this.handleChangeDifficulty(value)}
-                                     id="option"
-                                     alt=""
-                                />
-                            )}
-                        </div>
-                        || <div className="controls">
-                            <button onClick={() => this.resetGame(this.state.difficulty)}>Restart</button>
-                        </div>
-                    }
+                    {this.overlayOnScreen()}
                 </div>}
             </div>
         );
