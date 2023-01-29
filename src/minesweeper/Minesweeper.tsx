@@ -1,8 +1,18 @@
 import React from "react";
 import "./Minesweeper.css";
+import {Face} from "./Face";
 import {GameField} from "./GameField";
 import {ControlPanel} from "./ControlPanel";
-import {difficultiesPng, ECellState, EDifficultyType, EScreenText, gameProps, ICell, laugh, victory} from "./config";
+import {
+    ECellState,
+    EDifficultyType,
+    EOverlayText,
+    difficulties,
+    gameProps,
+    ICell,
+    laugh,
+    victory
+} from "./config";
 
 export interface IProps {
     width: number,
@@ -14,7 +24,7 @@ export interface IProps {
 interface IState {
     timer: number,
     flagNumber: number,
-    gameEndText: EScreenText,
+    overlayText: EOverlayText | undefined,
     cellsCounter: number,
     difficulty: EDifficultyType,
     gameField: ICell[][],
@@ -25,14 +35,10 @@ let audio: HTMLAudioElement | undefined;
 
 export class Minesweeper extends React.Component<IProps, IState> {
     intervalId: NodeJS.Timeout | undefined;
+    showDifficulties = false;
+    isGameStarted = false;
     cellsCounter = 0;
     timerCounter = 0;
-    isGameStarted = false;
-    style = {
-        width: this.props.width,
-        height: this.props.height,
-        fontSize: this.props.height < 600 ? this.props.height * 0.05 : 30,
-    };
 
     constructor(props: IProps) {
         super(props);
@@ -45,7 +51,7 @@ export class Minesweeper extends React.Component<IProps, IState> {
         this.state = {
             timer: this.timerCounter,
             gameOver: data?.gameOver || false,
-            gameEndText: data?.gameEndText || "",
+            overlayText: data?.overlayText || undefined,
             difficulty: data?.difficulty || EDifficultyType.Easy,
             flagNumber: data?.flagNumber || difficultyProps.mines,
             gameField: data?.gameField || this.createGameField(EDifficultyType.Easy),
@@ -130,6 +136,7 @@ export class Minesweeper extends React.Component<IProps, IState> {
     resetGame = (difficulty: EDifficultyType) => {
         this.timerCounter = 0;
         this.isGameStarted = false;
+        this.showDifficulties = false;
         this.cellsCounter = gameProps[difficulty].height * gameProps[difficulty].width - gameProps[difficulty].mines;
         this.setState({
             timer: this.timerCounter,
@@ -137,7 +144,7 @@ export class Minesweeper extends React.Component<IProps, IState> {
             cellsCounter: this.cellsCounter,
             flagNumber: gameProps[difficulty].mines,
             gameField: this.createGameField(difficulty),
-            gameOver: false
+            gameOver: false,
         });
         this.stopTimer();
         stopSound();
@@ -204,65 +211,65 @@ export class Minesweeper extends React.Component<IProps, IState> {
         this.showAllMines();
         this.stopTimer();
         playSound(laugh).catch(console.error);
-        this.setState({gameOver: true, gameEndText: EScreenText.GameOver});
+        this.setState({gameOver: true, overlayText: EOverlayText.GameOver});
     }
 
     victory = () => {
         this.stopTimer();
         playSound(victory).catch(console.error);
-        this.setState({gameOver: true, gameEndText: EScreenText.Victory});
+        this.setState({gameOver: true, overlayText: EOverlayText.Victory});
     }
 
-    overlayOnScreen = () => {
-        const overlayText = this.state.gameEndText;
-
-        if (!overlayText)
-            return;
-
-        if (overlayText !== EScreenText.Difficulty) {
-            return (
-                <div className="controls">
-                    <button onClick={() => this.resetGame(this.state.difficulty)}>Restart</button>
-                </div>
-            );
-        }
-
-        return (
-            <div className="menu-options">
-                {Object.values(EDifficultyType).map((value) =>
-                    <img src={difficultiesPng[value]}
-                         onClick={() => this.handleChangeDifficulty(value)}
-                         id="option"
-                         alt=""
-                    />
-                )}
-            </div>
-        );
+    showDifficultiesMenu = (text: EOverlayText) => {
+        this.showDifficulties = true;
+        this.setState({overlayText: text});
     }
 
     render() {
         return (
-            <div className="minesweeper" style={this.style}>
+            <div className="minesweeper"
+                 style={{
+                     width: this.props.width,
+                     height: this.props.height,
+                     fontSize: this.props.height < 600 ? this.props.height * 0.05 : 30,
+                 }}>
+
                 <ControlPanel
                     timer={this.state.timer}
                     flagNumber={this.state.flagNumber}
                     difficulty={this.state.difficulty}
-                    changeDifficulty={(text) => this.setState({gameOver: true, gameEndText: text})}
+                    openDifficultiesMenu={this.showDifficultiesMenu}
                 />
+
                 <GameField
                     onCellOpen={this.handleCellOpen}
                     onCellFlag={this.handleCellFlag}
                     gameField={this.state.gameField}
                 />
+
                 {this.state.gameOver && <div className="info-overlay">
-                    {this.state.gameEndText}
-                    {this.overlayOnScreen()}
+                    {this.state.overlayText}
+                    <div className="controls">
+                        <button onClick={() => this.resetGame(this.state.difficulty)}>Restart</button>
+                    </div>
                 </div>}
+
+                {this.showDifficulties && <div className="info-overlay">
+                    {this.state.overlayText}
+                    <div className="menu-options">
+                        {Object.entries(difficulties).map((value) =>
+                            <Face background={value[1]}
+                                  difficulty={value[0] as EDifficultyType}
+                                  giveDifficulty={(diff) => this.handleChangeDifficulty(diff)}
+                            />
+                        )}
+                    </div>
+                </div>}
+
             </div>
         );
     }
 }
-
 
 function incCellValue(field: ICell[][], x: number, y: number) {
     if (field[y] && field[y][x] && field[y][x].value !== 9) {

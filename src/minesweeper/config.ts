@@ -1,8 +1,5 @@
 import flag from "./assets/icons/flag.png";
 import timer from "./assets/icons/timer.png";
-import easy from "./assets/icons/difficulties/easy.png";
-import medium from "./assets/icons/difficulties/medium.png";
-import hard from "./assets/icons/difficulties/hard.png";
 import laugh from "./assets/sounds/hahaha.mp3";
 import victory from "./assets/sounds/victorySound.mp3";
 
@@ -14,7 +11,7 @@ export enum EDifficultyType {
     Hard = "Hard",
 }
 
-export enum EScreenText {
+export enum EOverlayText {
     Victory = "Victory!",
     GameOver = "Game over!",
     Difficulty = "Choose difficulty",
@@ -37,8 +34,8 @@ export const gameProps = {
     [EDifficultyType.Hard]: {height: 16, width: 30, mines: 99},
 }
 
-export const difficultiesPng = {
-    [EDifficultyType.Easy]: easy,
-    [EDifficultyType.Medium]: medium,
-    [EDifficultyType.Hard]: hard,
+export const difficulties = {
+    [EDifficultyType.Easy]: "#edd0bbff",
+    [EDifficultyType.Medium]: "#ad620cff",
+    [EDifficultyType.Hard]: "#4d2408ff",
 };

@@ -1,13 +1,8 @@
 .info-overlay .menu-options {
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: space-around;
     align-items: center;
     width: 100%;
     height: 40%;
-}
-
-#option {
-    width: 30%;
-    margin-left: -5%;
 }

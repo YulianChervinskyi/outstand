@@ -1,4 +1,4 @@
-import {EDifficultyType, EScreenText, flag, timer} from "./config";
+import {EDifficultyType, EOverlayText, flag, timer} from "./config";
 import './ControlPanel.css';
 import React from "react";
 
@@ -6,7 +6,7 @@ export interface IControlPanel {
     timer: number,
     flagNumber: number,
     difficulty: EDifficultyType,
-    changeDifficulty: (text: EScreenText) => void,
+    openDifficultiesMenu: (text: EOverlayText) => void,
 }
 
 export function ControlPanel(props: IControlPanel) {
@@ -17,7 +17,7 @@ export function ControlPanel(props: IControlPanel) {
                 <p>{props.timer}</p>
             </div>
             <div className="indicator">
-                <div className="change-difficulty" onClick={() => props.changeDifficulty(EScreenText.Difficulty)}>
+                <div className="change-difficulty" onClick={() => props.openDifficultiesMenu(EOverlayText.Difficulty)}>
                     {props.difficulty}
                 </div>
             </div>
