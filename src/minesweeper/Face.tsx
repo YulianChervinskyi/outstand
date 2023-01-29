@@ -23,13 +23,10 @@ export function Face(props: IFaceProps) {
         const lY = eyeLRef.current?.offsetTop;
 
         const {left, top, width, height} = eyeLRef.current?.getBoundingClientRect();
+        console.log(left, top, e.clientX, e.clientY);
 
         const lAngle = Math.atan2(e.clientY - top, e.clientX - left) * 180 / Math.PI;
-
-        //setEyeLStyle({left: lX + width / 2 + Math.cos(lAngle), top: lY + height / 2 + Math.sin(lAngle)});
-
-        //console.log(lX + width / 2 + Math.cos(lAngle), lY + height / 2 + Math.sin(lAngle));
-        console.log(Math.floor(lAngle));
+        console.log(lAngle);
     }
 
     useEffect(() => {
