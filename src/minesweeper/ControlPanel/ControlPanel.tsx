@@ -1,4 +1,4 @@
-import {EDifficultyType, EOverlayText, flag, timer} from "./config";
+import {EDifficultyType, EOverlayText, flag, timer} from "../config";
 import './ControlPanel.css';
 import React from "react";
 

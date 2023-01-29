@@ -1,8 +1,8 @@
 import React from "react";
 import "./Minesweeper.css";
-import {Face} from "./Face";
-import {GameField} from "./GameField";
-import {ControlPanel} from "./ControlPanel";
+import {Face} from "./Faces/Face";
+import {GameField} from "./GameField/GameField";
+import {ControlPanel} from "./ControlPanel/ControlPanel";
 import {
     ECellState,
     EDifficultyType,

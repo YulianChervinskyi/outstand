@@ -1,4 +1,4 @@
-import {ICell, ECellState} from "./config";
+import {ICell, ECellState} from "../config";
 import "./GameField.css";
 import React from "react";
 

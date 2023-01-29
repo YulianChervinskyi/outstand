@@ -1,4 +1,4 @@
-import {ICell} from "./config";
+import {ICell} from "../config";
 import React from "react";
 import "./GameField.css";
 import {Cell} from "./Cell";
