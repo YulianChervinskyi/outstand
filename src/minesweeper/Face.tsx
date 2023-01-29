@@ -16,17 +16,34 @@ export function Face(props: IFaceProps) {
     const eyeRRef = useRef<HTMLDivElement | null>(null);
 
     const handleMouseMove = (e: MouseEvent) => {
-        if (!eyeLRef.current || !eyeRRef.current)
+        if (!eyeLRef.current?.parentElement || !eyeRRef.current?.parentElement)
             return;
 
-        const lX = eyeLRef.current?.offsetLeft;
-        const lY = eyeLRef.current?.offsetTop;
+        const pupil = eyeLRef.current.getBoundingClientRect();
 
-        const {left, top, width, height} = eyeLRef.current?.getBoundingClientRect();
-        console.log(left, top, e.clientX, e.clientY);
+        const lEye = eyeLRef.current.parentElement.getBoundingClientRect();
+        const lx = lEye.left + lEye.width / 2;
+        const ly = lEye.top + lEye.height / 2;
+        const lAngle = Math.atan2(e.clientY - ly, e.clientX - lx);
 
-        const lAngle = Math.atan2(e.clientY - top, e.clientX - left) * 180 / Math.PI;
-        console.log(lAngle);
+        const lRadiusX = Math.min(lEye.width / 2 - 0.8 * pupil.width, Math.abs(e.clientX - lx));
+        const lRadiusY = Math.min(lEye.height / 2 - 0.8 * pupil.height, Math.abs(e.clientY - ly));
+        setEyeLStyle({
+            left: lEye.width / 2 + lRadiusX * Math.cos(lAngle),
+            top: lEye.height / 2 + lRadiusY * Math.sin(lAngle)
+        });
+
+        const rEye = eyeRRef.current.parentElement.getBoundingClientRect();
+        const rx = rEye.left + rEye.width / 2;
+        const ry = rEye.top + rEye.height / 2;
+        const rAngle = Math.atan2(e.clientY - ry, e.clientX - rx);
+
+        const rRadiusX = Math.min(rEye.width / 2 - 0.8 * pupil.width, Math.abs(e.clientX - rx));
+        const rRadiusY = Math.min(rEye.height / 2 - 0.8 * pupil.height, Math.abs(e.clientY - ry));
+        setEyeRStyle({
+            left: rEye.width / 2 + rRadiusX * Math.cos(rAngle),
+            top: rEye.height / 2 + rRadiusY * Math.sin(rAngle)
+        });
     }
 
     useEffect(() => {
