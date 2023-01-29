@@ -225,6 +225,11 @@ export class Minesweeper extends React.Component<IProps, IState> {
         this.setState({overlayText: text});
     }
 
+    handleDiffMenuClick = () => {
+        this.showDifficulties = false;
+        this.setState({overlayText: undefined})
+    }
+
     render() {
         return (
             <div className="minesweeper"
@@ -254,10 +259,10 @@ export class Minesweeper extends React.Component<IProps, IState> {
                     </div>
                 </div>}
 
-                {this.showDifficulties && <div className="info-overlay">
+                {this.showDifficulties && <div className="info-overlay" onClick={this.handleDiffMenuClick}>
                     {this.state.overlayText}
                     <div className="menu-options">
-                        {Object.entries(difficulties).slice(0,1).map((value) =>
+                        {Object.entries(difficulties).map((value) =>
                             <Face background={value[1]}
                                   difficulty={value[0] as EDifficultyType}
                                   giveDifficulty={(diff) => this.handleChangeDifficulty(diff)}
