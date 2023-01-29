@@ -1,6 +1,6 @@
 import {EDifficultyType} from "./config";
 import "./Face.css";
-import React, {useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 
 export interface IFaceProps {
     background: string,
@@ -15,27 +15,31 @@ export function Face(props: IFaceProps) {
     const eyeLRef = useRef<HTMLDivElement | null>(null);
     const eyeRRef = useRef<HTMLDivElement | null>(null);
 
-    const handleMouseMove = () => {
-        document.body.onmousemove = (e: MouseEvent) => {
-            if (!eyeLRef.current || !eyeRRef.current)
-                return;
+    const handleMouseMove = (e: MouseEvent) => {
+        if (!eyeLRef.current || !eyeRRef.current)
+            return;
 
-            const lX = eyeLRef.current?.offsetLeft;
-            const lY = eyeLRef.current?.offsetTop;
+        const lX = eyeLRef.current?.offsetLeft;
+        const lY = eyeLRef.current?.offsetTop;
 
-            const lAngle = Math.atan2(e.clientY - lY, e.clientX - lX) * 180 / Math.PI;
+        const {left, top, width, height} = eyeLRef.current?.getBoundingClientRect();
 
-            // setEyeLStyle({left: lX + Math.cos(lAngle), top: lY + Math.sin(lAngle)});
-            // setEyeLStyle({left: lX, top: lY})
-            console.log(lX, lY);
-            document.body.onmousemove = () => {};
-        }
+        const lAngle = Math.atan2(e.clientY - top, e.clientX - left) * 180 / Math.PI;
+
+        //setEyeLStyle({left: lX + width / 2 + Math.cos(lAngle), top: lY + height / 2 + Math.sin(lAngle)});
+
+        //console.log(lX + width / 2 + Math.cos(lAngle), lY + height / 2 + Math.sin(lAngle));
+        console.log(Math.floor(lAngle));
     }
+
+    useEffect(() => {
+        window.addEventListener("mousemove", handleMouseMove);
+        return () => window.removeEventListener("mousemove", handleMouseMove);
+    }, []);
 
     return (
         <div className="face-shape rounded"
              style={{backgroundColor: props.background}}
-             onMouseMove={handleMouseMove}
              onClick={() => props.giveDifficulty(props.difficulty)}>
             <div className="half-face center-elements">
                 <div className="sclera rounded">
