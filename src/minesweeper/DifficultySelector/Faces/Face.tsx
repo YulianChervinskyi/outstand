@@ -1,6 +1,6 @@
 import "./Face.css";
 import {Eye} from "./Eye";
-import {EDifficultyType} from "../config";
+import {EDifficultyType} from "../../config";
 
 export interface IFaceProps {
     background: string,

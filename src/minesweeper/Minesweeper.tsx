@@ -1,18 +1,17 @@
 import React from "react";
 import "./Minesweeper.css";
-import {Face} from "./Faces/Face";
 import {GameField} from "./GameField/GameField";
 import {ControlPanel} from "./ControlPanel/ControlPanel";
 import {
     ECellState,
     EDifficultyType,
     EOverlayText,
-    difficulties,
     gameProps,
     ICell,
     laugh,
     victory
 } from "./config";
+import {DifficultySelector} from "./DifficultySelector/DifficultySelector";
 
 export interface IProps {
     width: number,
@@ -35,7 +34,7 @@ let audio: HTMLAudioElement | undefined;
 
 export class Minesweeper extends React.Component<IProps, IState> {
     intervalId: NodeJS.Timeout | undefined;
-    showDifficulties = false;
+    isDifficultySelector = false;
     isGameStarted = false;
     cellsCounter = 0;
     timerCounter = 0;
@@ -136,7 +135,7 @@ export class Minesweeper extends React.Component<IProps, IState> {
     resetGame = (difficulty: EDifficultyType) => {
         this.timerCounter = 0;
         this.isGameStarted = false;
-        this.showDifficulties = false;
+        this.isDifficultySelector = false;
         this.cellsCounter = gameProps[difficulty].height * gameProps[difficulty].width - gameProps[difficulty].mines;
         this.setState({
             timer: this.timerCounter,
@@ -220,14 +219,9 @@ export class Minesweeper extends React.Component<IProps, IState> {
         this.setState({gameOver: true, overlayText: EOverlayText.Victory});
     }
 
-    showDifficultiesMenu = (text: EOverlayText) => {
-        this.showDifficulties = true;
-        this.setState({overlayText: text});
-    }
-
-    handleDiffMenuClick = () => {
-        this.showDifficulties = false;
-        this.setState({overlayText: undefined})
+    showDifficultySelector = (isVisible: boolean) => {
+        this.isDifficultySelector = isVisible;
+        this.setState({overlayText: isVisible ? EOverlayText.Difficulty : undefined});
     }
 
     render() {
@@ -243,7 +237,7 @@ export class Minesweeper extends React.Component<IProps, IState> {
                     timer={this.state.timer}
                     flagNumber={this.state.flagNumber}
                     difficulty={this.state.difficulty}
-                    openDifficultiesMenu={this.showDifficultiesMenu}
+                    openDifficultySelector={this.showDifficultySelector}
                 />
 
                 <GameField
@@ -259,18 +253,13 @@ export class Minesweeper extends React.Component<IProps, IState> {
                     </div>
                 </div>}
 
-                {this.showDifficulties && <div className="info-overlay" onClick={this.handleDiffMenuClick}>
-                    {this.state.overlayText}
-                    <div className="menu-options">
-                        {Object.entries(difficulties).map((value) =>
-                            <Face background={value[1]}
-                                  difficulty={value[0] as EDifficultyType}
-                                  giveDifficulty={(diff) => this.handleChangeDifficulty(diff)}
-                            />
-                        )}
-                    </div>
-                </div>}
-
+                {this.isDifficultySelector &&
+                    <DifficultySelector
+                        text={this.state.overlayText}
+                        showSelector={this.showDifficultySelector}
+                        setDifficulty={this.handleChangeDifficulty}
+                    />
+                }
             </div>
         );
     }

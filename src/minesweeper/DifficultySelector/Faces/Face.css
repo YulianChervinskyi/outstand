@@ -13,6 +13,7 @@
     flex-direction: column;
     height: 75%;
     width: 25%;
+    cursor: pointer;
 }
 
 .face-shape .half-face {
