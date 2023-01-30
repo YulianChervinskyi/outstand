@@ -1,5 +1,5 @@
 import {difficulties, EDifficultyType, EOverlayText} from "../config";
-import {Face} from "./Faces/Face";
+import {Head} from "./Heads/Head";
 import React from "react";
 
 export interface IDifficultySelectorProps {
@@ -14,7 +14,7 @@ export function DifficultySelector(props: IDifficultySelectorProps) {
             {props.text}
             <div className="menu-options">
                 {Object.entries(difficulties).map((value) =>
-                    <Face background={value[1]}
+                    <Head background={value[1]}
                           difficulty={value[0] as EDifficultyType}
                           giveDifficulty={(diff) => props.setDifficulty(diff)}
                     />
