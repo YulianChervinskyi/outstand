@@ -10,8 +10,7 @@ interface IGameField {
 }
 
 export function GameField(props: IGameField) {
-    const handleContextMenu = (x: number, y: number, e: React.MouseEvent) => {
-        e.preventDefault();
+    const handleContextMenu = (x: number, y: number) => {
         props.onCellFlag(x, y);
     }
 
@@ -30,7 +29,7 @@ export function GameField(props: IGameField) {
                             <Cell
                                 cell={cell}
                                 onClick={() => handleClick(x, y)}
-                                onContextMenu={(e) => handleContextMenu(x, y, e)}
+                                onContextMenu={() => handleContextMenu(x, y)}
                                 key={x}
                             />
                         </div>

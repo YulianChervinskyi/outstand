@@ -1,7 +1,7 @@
 import React from "react";
 import "./Minesweeper.css";
-import {GameField} from "./GameField/GameField";
-import {ControlPanel} from "./ControlPanel/ControlPanel";
+import {GameField} from "./game_field/GameField";
+import {ControlPanel} from "./control_panel/ControlPanel";
 import {
     ECellState,
     EDifficultyType,
@@ -11,7 +11,7 @@ import {
     laugh,
     victory
 } from "./config";
-import {DifficultySelector} from "./DifficultySelector/DifficultySelector";
+import {DifficultySelector} from "./difficulty_selector/DifficultySelector";
 
 export interface IProps {
     width: number,
@@ -230,7 +230,7 @@ export class Minesweeper extends React.Component<IProps, IState> {
                  style={{
                      width: this.props.width,
                      height: this.props.height,
-                     fontSize: this.props.height < 600 ? this.props.height * 0.05 : 30,
+                     fontSize: this.props.height < 600 ? this.props.height * 0.04 : 30,
                  }}>
 
                 <ControlPanel

@@ -1,5 +1,5 @@
 import {difficulties, EDifficultyType, EOverlayText} from "../config";
-import {Head} from "./Heads/Head";
+import {Head} from "./heads/Head";
 import React from "react";
 
 export interface IDifficultySelectorProps {
