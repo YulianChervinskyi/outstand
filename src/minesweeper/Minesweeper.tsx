@@ -1,15 +1,15 @@
-import {IComponentProps} from "../Box";
-import {GameField} from "./GameField";
-import {ControlPanel} from "./ControlPanel";
-import {ECellState, EDifficultyType, gameProps, ICell} from "./config";
 import React from "react";
-import laugh from "./assets/hahaha.mp3";
-import victory from "./assets/victorySound.mp3";
+import {IComponentProps} from "../Box";
+import {ECellState, EDifficultyType, EOverlayText, gameProps, ICell, laugh, victory} from "./config";
+import {ControlPanel} from "./control_panel/ControlPanel";
+import {DifficultySelector} from "./difficulty_selector/DifficultySelector";
+import {GameField} from "./game_field/GameField";
+import "./Minesweeper.css";
 
 interface IState {
     timer: number,
     flagNumber: number,
-    gameEndText: string,
+    overlayText: EOverlayText | undefined,
     cellsCounter: number,
     difficulty: EDifficultyType,
     gameField: ICell[][],
@@ -20,14 +20,15 @@ let audio: HTMLAudioElement | undefined;
 
 export class Minesweeper extends React.Component<IComponentProps, IState> {
     intervalId: NodeJS.Timeout | undefined;
+    isDifficultySelector = false;
+    isGameStarted = false;
     cellsCounter = 0;
     timerCounter = 0;
-    isGameStarted = false;
 
     constructor(props: IComponentProps) {
         super(props);
         const data = JSON.parse(this.props.text || '{}') as IState;
-        const difficultyProps = gameProps[EDifficultyType.Medium];
+        const difficultyProps = gameProps[EDifficultyType.Easy];
 
         this.cellsCounter = data?.cellsCounter || difficultyProps.height * difficultyProps.width - difficultyProps.mines;
         this.timerCounter = data?.timer || 0;
@@ -35,10 +36,10 @@ export class Minesweeper extends React.Component<IComponentProps, IState> {
         this.state = {
             timer: this.timerCounter,
             gameOver: data?.gameOver || false,
-            gameEndText: data?.gameEndText || "",
-            difficulty: data?.difficulty || EDifficultyType.Medium,
+            overlayText: data?.overlayText || undefined,
+            difficulty: data?.difficulty || EDifficultyType.Easy,
             flagNumber: data?.flagNumber || difficultyProps.mines,
-            gameField: data?.gameField || this.createGameField(EDifficultyType.Medium),
+            gameField: data?.gameField || this.createGameField(EDifficultyType.Easy),
             cellsCounter: this.cellsCounter,
         };
 
@@ -128,6 +129,7 @@ export class Minesweeper extends React.Component<IComponentProps, IState> {
     private resetGame = (difficulty: EDifficultyType) => {
         this.timerCounter = 0;
         this.isGameStarted = false;
+        this.isDifficultySelector = false;
         this.cellsCounter = gameProps[difficulty].height * gameProps[difficulty].width - gameProps[difficulty].mines;
         this.setState({
             timer: this.timerCounter,
@@ -135,7 +137,7 @@ export class Minesweeper extends React.Component<IComponentProps, IState> {
             cellsCounter: this.cellsCounter,
             flagNumber: gameProps[difficulty].mines,
             gameField: this.createGameField(difficulty),
-            gameOver: false
+            gameOver: false,
         });
         this.stopTimer();
         stopSound();
@@ -192,7 +194,7 @@ export class Minesweeper extends React.Component<IComponentProps, IState> {
 
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
-                if (field[y][x].value === 9)
+                if (field[y][x].state !== ECellState.Flagged && field[y][x].value === 9)
                     field[y][x].state = ECellState.Open;
             }
         }
@@ -202,25 +204,36 @@ export class Minesweeper extends React.Component<IComponentProps, IState> {
         this.showAllMines();
         this.stopTimer();
         playSound(laugh).catch(console.error);
-        this.setState({gameOver: true, gameEndText: "Game over!"});
+        this.setState({gameOver: true, overlayText: EOverlayText.GameOver});
     }
 
     private victory = () => {
         this.stopTimer();
         playSound(victory).catch(console.error);
-        this.setState({gameOver: true, gameEndText: "Victory!"});
+        this.setState({gameOver: true, overlayText: EOverlayText.Victory});
+    }
+
+    showDifficultySelector = (isVisible: boolean) => {
+        this.isDifficultySelector = isVisible;
+        this.setState({overlayText: isVisible ? EOverlayText.Difficulty : undefined});
     }
 
     render() {
         return (
             <div className="minesweeper"
-                 style={{width: this.props.width, height: this.props.height, backgroundColor: "#819462"}}>
+                 style={{
+                     width: this.props.width,
+                     height: this.props.height,
+                     fontSize: this.props.height < 600 ? this.props.height * 0.04 : 30,
+                 }}>
+
                 <ControlPanel
                     timer={this.state.timer}
                     flagNumber={this.state.flagNumber}
                     difficulty={this.state.difficulty}
-                    changeDifficulty={this.handleChangeDifficulty}
+                    openDifficultySelector={this.showDifficultySelector}
                 />
+
                 <GameField
                     onCellOpen={this.handleCellOpen}
                     onCellFlag={this.handleCellFlag}
@@ -228,12 +241,19 @@ export class Minesweeper extends React.Component<IComponentProps, IState> {
                 />
 
                 {this.state.gameOver && <div className="info-overlay">
-                    {this.state.gameEndText}
+                    {this.state.overlayText}
                     <div className="controls">
                         <button onClick={() => this.resetGame(this.state.difficulty)}>Restart</button>
                     </div>
                 </div>}
 
+                {this.isDifficultySelector &&
+                    <DifficultySelector
+                        text={this.state.overlayText}
+                        showSelector={this.showDifficultySelector}
+                        setDifficulty={this.handleChangeDifficulty}
+                    />
+                }
             </div>
         );
     }

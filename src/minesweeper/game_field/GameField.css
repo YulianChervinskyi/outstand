@@ -14,8 +14,17 @@
 }
 
 .game-field-cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 100%;
     height: 100%;
     padding: 0;
-    border: solid 1px gray;
+    font-weight: bold;
+    color: #4e0b7c;
+    border: solid 1px #75677e;
+}
+
+.game-field-cell img {
+    height: 60%;
 }

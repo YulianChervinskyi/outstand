@@ -1,9 +1,8 @@
-.controlPanel {
+.info-overlay .menu-options {
     display: flex;
+    flex-direction: row;
     justify-content: space-around;
     align-items: center;
     width: 100%;
-    height: 10%;
-    background-color: darkorchid;
+    height: 40%;
 }
-
