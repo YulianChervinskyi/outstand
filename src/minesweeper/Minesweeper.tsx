@@ -2,15 +2,7 @@ import React from "react";
 import "./Minesweeper.css";
 import {GameField} from "./game_field/GameField";
 import {ControlPanel} from "./control_panel/ControlPanel";
-import {
-    ECellState,
-    EDifficultyType,
-    EOverlayText,
-    gameProps,
-    ICell,
-    laugh,
-    victory
-} from "./config";
+import {ECellState, EDifficultyType, EOverlayText, gameProps, ICell, laugh, victory} from "./config";
 import {DifficultySelector} from "./difficulty_selector/DifficultySelector";
 
 export interface IProps {
@@ -200,7 +192,7 @@ export class Minesweeper extends React.Component<IProps, IState> {
 
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
-                if (field[y][x].value === 9)
+                if (field[y][x].state !== ECellState.Flagged && field[y][x].value === 9)
                     field[y][x].state = ECellState.Open;
             }
         }

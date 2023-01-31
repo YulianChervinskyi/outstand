@@ -24,8 +24,7 @@ export function Cell(props: ICellProps) {
              onContextMenu={(e) => handleContextMenu(e)}
              key={props.key}>
 
-            {props.cell.state === ECellState.Flagged &&
-                <img src={cellFlag} alt=""/>}
+            {props.cell.state === ECellState.Flagged && <img src={cellFlag} alt=""/>}
 
             {props.cell.state === ECellState.Open && props.cell.value > 0 &&
                 (props.cell.value > 8
