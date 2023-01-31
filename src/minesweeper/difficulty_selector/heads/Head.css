@@ -28,18 +28,28 @@
 }
 
 .head .v-half-head .mouth {
-    height: 35%;
+    height: 5%;
     width: 42.5%;
     margin-bottom: 10%;
     border-radius: 45%;
-    background-color: #a80808;
+    background-color: #7e1212;
     border: 0.7vh solid #a80808;
+}
+
+.head:hover .v-half-head .mouth {
+    height: 35%;
+    transition: all 0.2s ease-out;
 }
 
 .head .v-half-head .mouth .teeth {
     height: 40%;
     justify-content: space-around;
     width: 100%;
+    display: none;
+}
+
+.head:hover .v-half-head .teeth {
+    display: flex;
 }
 
 .head .v-half-head .mouth .tooth {
