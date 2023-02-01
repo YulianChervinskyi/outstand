@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import "./Head.css";
+import "./Head.scss";
 
 export function Eye() {
     const [eyeStyle, setEyeStyle] = useState({});

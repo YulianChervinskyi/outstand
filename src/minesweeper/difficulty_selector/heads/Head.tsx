@@ -1,6 +1,6 @@
 import {EDifficultyType} from "../../types";
 import {Eye} from "./Eye";
-import "./Head.css";
+import "./Head.scss";
 
 export interface IFaceProps {
     background: string,
@@ -15,15 +15,15 @@ export function Head(props: IFaceProps) {
             <div className="head rounded"
                  style={{backgroundColor: props.background}}
                  onClick={() => props.giveDifficulty(props.difficulty)}>
-                <div className="v-half-head center-elements">
+                <div className="center-elements">
                     <Eye/>
                     <Eye/>
                 </div>
-                <div className="v-half-head center-elements">
+                <div className="center-elements">
                     <div className="mouth">
                         <div className="teeth center-elements">
-                            <div id="left-tooth" className="tooth"></div>
-                            <div id="right-tooth" className="tooth"></div>
+                            <div/>
+                            <div/>
                         </div>
                     </div>
                 </div>
