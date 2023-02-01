@@ -251,6 +251,8 @@ export class Minesweeper extends React.Component<IProps, IState> {
                         text={this.state.overlayText}
                         showSelector={this.showDifficultySelector}
                         setDifficulty={this.handleChangeDifficulty}
+                        width={this.props.width}
+                        height={this.props.height}
                     />
                 }
             </div>
