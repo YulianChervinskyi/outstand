@@ -10,12 +10,15 @@ interface ICellProps {
 }
 
 export function Cell(props: ICellProps) {
-    const angle = useState(Math.random() * 360 * (Math.random() > 0.5 ? 1 : -1));
+    const [angle, setAngle] = useState<number | undefined>(undefined);
 
     const handleContextMenu = (e: React.MouseEvent) => {
         e.preventDefault();
         props.onContextMenu();
     }
+
+    if (angle === undefined)
+        setAngle(Math.random() * 360);
 
     return (
         <div className="game-field-cell"
