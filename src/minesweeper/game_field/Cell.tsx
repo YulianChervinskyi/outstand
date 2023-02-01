@@ -1,7 +1,7 @@
-import {ECellState, ICell} from "../types";
-import {flag, mine} from "../assets/index";
-import "./GameField.css";
 import React, {useState} from "react";
+import {img} from "../assets";
+import {ECellState, ICell} from "../types";
+import "./GameField.css";
 
 interface ICellProps {
     cell: ICell,
@@ -28,11 +28,11 @@ export function Cell(props: ICellProps) {
              onContextMenu={(e) => handleContextMenu(e)}
              key={props.key}>
 
-            {props.cell.state === ECellState.Flagged && <img src={flag} alt=""/>}
+            {props.cell.state === ECellState.Flagged && <img src={img.flag} alt=""/>}
 
             {props.cell.state === ECellState.Open && props.cell.value > 0 &&
                 (props.cell.value > 8
-                    ? <img src={mine} style={{transform: `rotate(${angle}deg)`}} alt=""/>
+                    ? <img src={img.mine} style={{transform: `rotate(${angle}deg)`}} alt=""/>
                     : props.cell.value)}
         </div>
     );

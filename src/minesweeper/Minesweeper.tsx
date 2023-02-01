@@ -1,10 +1,10 @@
 import React from "react";
-import {GameField} from "./game_field/GameField";
+import {snd} from "./assets";
+import {gameProps} from "./config";
 import {ControlPanel} from "./control_panel/ControlPanel";
 import {DifficultySelector} from "./difficulty_selector/DifficultySelector";
+import {GameField} from "./game_field/GameField";
 import {ECellState, EDifficultyType, EOverlayText, ICell} from "./types";
-import {loseSound, victorySound} from "./assets";
-import {gameProps} from "./config";
 
 export interface IProps {
     width: number,
@@ -202,13 +202,13 @@ export class Minesweeper extends React.Component<IProps, IState> {
     gameOver = () => {
         this.showAllMines();
         this.stopTimer();
-        playSound(loseSound).catch(console.error);
+        playSound(snd.losing).catch(console.error);
         this.setState({gameOver: true, overlayText: EOverlayText.GameOver});
     }
 
     victory = () => {
         this.stopTimer();
-        playSound(victorySound).catch(console.error);
+        playSound(snd.victory).catch(console.error);
         this.setState({gameOver: true, overlayText: EOverlayText.Victory});
     }
 

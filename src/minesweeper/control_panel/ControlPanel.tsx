@@ -1,5 +1,5 @@
+import {img} from "../assets";
 import {EDifficultyType} from "../types";
-import {flag, timer} from "../assets/index";
 import './ControlPanel.css';
 
 export interface IControlPanel {
@@ -13,7 +13,7 @@ export function ControlPanel(props: IControlPanel) {
     return (
         <div className="controlPanel">
             <div className="indicator">
-                <img src={timer} alt=""/>
+                <img src={img.timer} alt=""/>
                 <p>{props.timer}</p>
             </div>
             <div className="indicator">
@@ -22,7 +22,7 @@ export function ControlPanel(props: IControlPanel) {
                 </div>
             </div>
             <div className="indicator">
-                <img src={flag} alt=""/>
+                <img src={img.flag} alt=""/>
                 <p>{props.flagNumber}</p>
             </div>
         </div>
