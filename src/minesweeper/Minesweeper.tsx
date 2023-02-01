@@ -1,10 +1,11 @@
 import React from "react";
 import {IComponentProps} from "../Box";
-import {ECellState, EDifficultyType, EOverlayText, gameProps, ICell, laugh, victory} from "./config";
+import {snd} from "./assets";
+import {gameProps} from "./config";
 import {ControlPanel} from "./control_panel/ControlPanel";
 import {DifficultySelector} from "./difficulty_selector/DifficultySelector";
 import {GameField} from "./game_field/GameField";
-import "./Minesweeper.css";
+import {ECellState, EDifficultyType, EOverlayText, ICell} from "./types";
 
 interface IState {
     timer: number,
@@ -203,13 +204,13 @@ export class Minesweeper extends React.Component<IComponentProps, IState> {
     private gameOver = () => {
         this.showAllMines();
         this.stopTimer();
-        playSound(laugh).catch(console.error);
+        playSound(snd.losing).catch(console.error);
         this.setState({gameOver: true, overlayText: EOverlayText.GameOver});
     }
 
     private victory = () => {
         this.stopTimer();
-        playSound(victory).catch(console.error);
+        playSound(snd.victory).catch(console.error);
         this.setState({gameOver: true, overlayText: EOverlayText.Victory});
     }
 
@@ -224,7 +225,7 @@ export class Minesweeper extends React.Component<IComponentProps, IState> {
                  style={{
                      width: this.props.width,
                      height: this.props.height,
-                     fontSize: this.props.height < 600 ? this.props.height * 0.04 : 30,
+                     fontSize: Math.min(this.props.height * 0.05, this.props.width * 0.05),
                  }}>
 
                 <ControlPanel
@@ -252,6 +253,8 @@ export class Minesweeper extends React.Component<IComponentProps, IState> {
                         text={this.state.overlayText}
                         showSelector={this.showDifficultySelector}
                         setDifficulty={this.handleChangeDifficulty}
+                        width={this.props.width}
+                        height={this.props.height}
                     />
                 }
             </div>

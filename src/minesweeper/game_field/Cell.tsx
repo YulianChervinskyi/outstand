@@ -1,6 +1,7 @@
-import {cellFlag, cellMine, ECellState, ICell} from "../config";
+import React, {useEffect, useState} from "react";
+import {img} from "../assets";
+import {ECellState, ICell} from "../types";
 import "./GameField.css";
-import React, {useState} from "react";
 
 interface ICellProps {
     cell: ICell,
@@ -10,12 +11,16 @@ interface ICellProps {
 }
 
 export function Cell(props: ICellProps) {
-    const angle = useState(Math.random() * 360 * (Math.random() > 0.5 ? 1 : -1));
+    const [angle, setAngle] = useState(0);
 
     const handleContextMenu = (e: React.MouseEvent) => {
         e.preventDefault();
         props.onContextMenu();
     }
+
+    useEffect(() => {
+        setAngle(Math.random() * 360);
+    }, []);
 
     return (
         <div className="game-field-cell"
@@ -24,11 +29,11 @@ export function Cell(props: ICellProps) {
              onContextMenu={(e) => handleContextMenu(e)}
              key={props.key}>
 
-            {props.cell.state === ECellState.Flagged && <img src={cellFlag} alt=""/>}
+            {props.cell.state === ECellState.Flagged && <img src={img.flag} alt=""/>}
 
             {props.cell.state === ECellState.Open && props.cell.value > 0 &&
                 (props.cell.value > 8
-                    ? <img src={cellMine} style={{transform: `rotate(${angle}deg)`}} alt=""/>
+                    ? <img src={img.mine} style={{transform: `rotate(${angle}deg)`}} alt=""/>
                     : props.cell.value)}
         </div>
     );
