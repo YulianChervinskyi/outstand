@@ -8,18 +8,33 @@
     border-radius: 50%;
 }
 
+.container {
+    position: relative;
+    width: 100%;
+    /*max-height: 100%;*/
+    margin: 0 2% 0 2%;
+}
+
+.container:before {
+    content: "";
+    display: block;
+    padding-top: 100%;
+}
+
 .head {
+    position:  absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
     display: flex;
     flex-direction: column;
-    height: 75%;
-    width: 25%;
+    transition: width 2s, height 2s;
     cursor: pointer;
-    transition: width 0.5s, height 0.5s;
 }
 
 .head:hover {
-    width: 27.5%;
-    height: 80%;
+    margin: -2% -2% -2% -2%;
 }
 
 .head .v-half-head {
@@ -72,7 +87,6 @@
     height: 50%;
     width: 25%;
     position: relative;
-    border-radius: 50%;
     margin: 10% 5% 0 5%;
     background-color: honeydew;
 }

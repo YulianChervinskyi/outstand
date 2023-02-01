@@ -11,19 +11,20 @@ export interface IFaceProps {
 export function Head(props: IFaceProps) {
 
     return (
-        <div className="head rounded"
-             style={{backgroundColor: props.background}}
-             onClick={() => props.giveDifficulty(props.difficulty)}
-        >
-            <div className="v-half-head center-elements">
-                <Eye/>
-                <Eye/>
-            </div>
-            <div className="v-half-head center-elements">
-                <div className="mouth">
-                    <div className="teeth center-elements">
-                        <div id="left-tooth" className="tooth"></div>
-                        <div id="right-tooth" className="tooth"></div>
+        <div className="container">
+            <div className="head rounded"
+                 style={{backgroundColor: props.background}}
+                 onClick={() => props.giveDifficulty(props.difficulty)}>
+                <div className="v-half-head center-elements">
+                    <Eye/>
+                    <Eye/>
+                </div>
+                <div className="v-half-head center-elements">
+                    <div className="mouth">
+                        <div className="teeth center-elements">
+                            <div id="left-tooth" className="tooth"></div>
+                            <div id="right-tooth" className="tooth"></div>
+                        </div>
                     </div>
                 </div>
             </div>

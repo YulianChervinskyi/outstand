@@ -1,5 +1,4 @@
 import React from "react";
-import "./Minesweeper.css";
 import {GameField} from "./game_field/GameField";
 import {ControlPanel} from "./control_panel/ControlPanel";
 import {ECellState, EDifficultyType, EOverlayText, gameProps, ICell, laugh, victory} from "./config";
@@ -222,7 +221,7 @@ export class Minesweeper extends React.Component<IProps, IState> {
                  style={{
                      width: this.props.width,
                      height: this.props.height,
-                     fontSize: this.props.height < 600 ? this.props.height * 0.04 : 30,
+                     fontSize: Math.min(this.props.height * 0.05, this.props.width * 0.05),
                  }}>
 
                 <ControlPanel
