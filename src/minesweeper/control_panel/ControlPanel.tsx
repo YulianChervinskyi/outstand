@@ -1,6 +1,6 @@
-import {EDifficultyType, flag, timer} from "../config";
+import {EDifficultyType} from "../types";
+import {flag, timer} from "../assets/index";
 import './ControlPanel.css';
-import React from "react";
 
 export interface IControlPanel {
     timer: number,

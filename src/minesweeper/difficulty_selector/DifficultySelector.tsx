@@ -1,4 +1,5 @@
-import {difficulties, EDifficultyType, EOverlayText} from "../config";
+import {EOverlayText, EDifficultyType} from "../types";
+import {difficulties} from "../config";
 import "./DifficultySelector.css";
 import {Head} from "./heads/Head";
 import React from "react";

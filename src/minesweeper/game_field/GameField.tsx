@@ -1,7 +1,6 @@
-import {ICell} from "../config";
-import React from "react";
-import "./GameField.css";
+import {ICell} from "../types";
 import {Cell} from "./Cell";
+import "./GameField.css";
 
 interface IGameField {
     onCellOpen: (x: number, y: number) => void,
