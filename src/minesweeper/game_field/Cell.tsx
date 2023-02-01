@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {img} from "../assets";
 import {ECellState, ICell} from "../types";
 import "./GameField.css";
@@ -11,15 +11,16 @@ interface ICellProps {
 }
 
 export function Cell(props: ICellProps) {
-    const [angle, setAngle] = useState<number | undefined>(undefined);
+    const [angle, setAngle] = useState(0);
 
     const handleContextMenu = (e: React.MouseEvent) => {
         e.preventDefault();
         props.onContextMenu();
     }
 
-    if (angle === undefined)
+    useEffect(() => {
         setAngle(Math.random() * 360);
+    }, []);
 
     return (
         <div className="game-field-cell"
