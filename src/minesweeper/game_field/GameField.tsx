@@ -24,13 +24,11 @@ export function GameField(props: IGameField) {
                      style={{height: 100 / props.gameField.length + "%"}}
                      key={y}>
                     {row.map((cell, x) =>
-                        <div style={{width: 100 / row.length + "%"}}>
-                            <Cell
-                                cell={cell}
-                                onClick={() => handleClick(x, y)}
-                                onContextMenu={() => handleContextMenu(x, y)}
-                                key={x}
-                            />
+                        <div style={{width: 100 / row.length + "%"}} key={x}>
+                            <Cell cell={cell}
+                                  onClick={() => handleClick(x, y)}
+                                  onContextMenu={() => handleContextMenu(x, y)}
+                                  key={x}/>
                         </div>
                     )}
                 </div>)
