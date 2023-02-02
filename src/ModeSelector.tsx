@@ -23,11 +23,12 @@ export function ModeSelector(props: IModeSelectorProps) {
 
     return (
         <div className="mode-selector">
-            {Object.values(BoxType).map((value) =>
+            {Object.values(BoxType).map((value, key) =>
                 <img src={iconsPng[value]}
                      alt=""
                      style={style(value)}
                      onClick={(e: React.MouseEvent) => handleClick(value, e)}
+                     key={key}
                 />)}
         </div>
     );

@@ -29,10 +29,11 @@ export function DifficultySelector(props: IDifficultySelectorProps) {
             <div className="container">
                 {props.text}
                 <div className="difficulties-container" style={{width, height}}>
-                    {Object.entries(difficulties).map((value) =>
+                    {Object.entries(difficulties).map((value, key) =>
                         <Head background={value[1]}
                               difficulty={value[0] as EDifficultyType}
                               giveDifficulty={(diff) => props.setDifficulty(diff)}
+                              key={key}
                         />
                     )}
                 </div>

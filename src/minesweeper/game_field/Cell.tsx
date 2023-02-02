@@ -5,7 +5,6 @@ import "./GameField.css";
 
 interface ICellProps {
     cell: ICell,
-    key: number,
     onClick: () => void,
     onContextMenu: () => void,
 }
@@ -27,7 +26,7 @@ export function Cell(props: ICellProps) {
              style={{backgroundColor: props.cell.state === ECellState.Open ? "darkgray" : "#F0F0F0"}}
              onClick={props.onClick}
              onContextMenu={(e) => handleContextMenu(e)}
-             key={props.key}>
+        >
 
             {props.cell.state === ECellState.Flagged && <img src={img.flag} alt=""/>}
 
