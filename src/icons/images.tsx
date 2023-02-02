@@ -5,6 +5,7 @@ import tetris from "./tetris.png";
 import fpe from "./fpe.png";
 import asteroids from "./asteroids.png";
 import minesweeper from "./minesweeper.png";
+import bomberman from "./bomberman.png";
 
 export const iconsPng = {
     [BoxType.Note]: note,
@@ -13,4 +14,5 @@ export const iconsPng = {
     [BoxType.Fpe]: fpe,
     [BoxType.Asteroids]: asteroids,
     [BoxType.Minesweeper]: minesweeper,
+    [BoxType.Bomberman]: bomberman,
 };
