@@ -5,7 +5,7 @@ import {BoxHeader} from "./BoxHeader";
 import {BoxResizer} from "./BoxResizer";
 import {Calc} from "./calc/Calc";
 import {Fpe} from "./fpe/Fpe";
-import {NoteEditor} from "./NoteEditor/NoteEditor";
+import {NoteEditor} from "./note_editor/NoteEditor";
 import {Tetris} from "./tetris/Tetris";
 import {Minesweeper} from "./minesweeper/Minesweeper";
 
