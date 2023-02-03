@@ -1,5 +1,19 @@
-.field {
+.common-size {
   width: 100%;
+  height: 100%;
+}
+
+.field {
   height: 90%;
   background-color: #252533;
+  display: flex;
+  flex-direction: column;
+
+  .field-row {
+    display: flex;
+
+    .field-cell {
+      border: 1px solid #a2b7a2;
+    }
+  }
 }

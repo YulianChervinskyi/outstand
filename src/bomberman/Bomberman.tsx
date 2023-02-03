@@ -1,17 +1,10 @@
 import {IComponentProps} from "../Box";
 import {InfoPanel} from "./info_panel/InfoPanel";
-import {fieldSize} from "./config";
 import {Field} from "./field/Field";
 import "./Bomberman.scss";
 import React from "react";
 
-interface IState {
-
-}
-
-export class Bomberman extends React.Component<IComponentProps, IState> {
-
-
+export class Bomberman extends React.Component<IComponentProps, {}> {
     constructor(props: IComponentProps) {
         super(props);
         this.state = {};
