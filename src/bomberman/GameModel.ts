@@ -20,7 +20,7 @@ export class GameModel {
                 else if ((x + y <= 1) || (x + y) >= (this.height + this.width - 3))
                     this.field[y][x] = ECellType.Empty;
                 else
-                    this.field[y][x] = Math.random() < 0.8 ? ECellType.Wall : ECellType.Empty;
+                    this.field[y][x] = Math.random() < 0.7 ? ECellType.Wall : ECellType.Empty;
             }
         }
     }

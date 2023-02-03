@@ -1,4 +1,5 @@
 import {ECellType} from "./types";
+import {img} from "./assets";
 
 export const FIELD_SIZE = {
     w: 15,
@@ -7,11 +8,11 @@ export const FIELD_SIZE = {
 
 export const CELL_SIZE = 64;
 
-export const bckColors = {
-    [ECellType.Empty]: "#b6bab7",
-    [ECellType.Wall]: "#04075c",
-    [ECellType.AzovSteel]: "#1f2e23",
-    [ECellType.Bomb]: "#780615",
+export const cellFilling = {
+    [ECellType.Empty]: "#252533",
+    [ECellType.Wall]: img.wall,
+    [ECellType.AzovSteel]: img.azov_steel,
+    [ECellType.Bomb]: img.bomb,
     [ECellType.BonusBomb]: "#e80e2b",
     [ECellType.BonusFire]: "#b5b207",
     [ECellType.BonusSpeed]: "#9e90fc",

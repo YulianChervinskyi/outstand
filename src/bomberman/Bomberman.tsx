@@ -7,7 +7,6 @@ import "./Bomberman.scss";
 import React from "react";
 
 export class Bomberman extends React.Component<IComponentProps, {}> {
-
     model = new GameModel(FIELD_SIZE);
 
     constructor(props: IComponentProps) {
