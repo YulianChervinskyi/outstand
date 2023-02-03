@@ -15,7 +15,12 @@ export class GameModel {
         for (let y = 0; y < this.height; y++) {
             this.field.push([]);
             for (let x = 0; x < this.width; x++) {
-                this.field[y][x] = Math.floor(Math.random() * (Math.floor(7) - Math.ceil(0) + 1) + Math.ceil(0));
+                if (y % 2 && x % 2)
+                    this.field[y][x] = ECellType.AzovSteel;
+                else if ((x + y <= 1) || (x + y) >= (this.height + this.width - 3))
+                    this.field[y][x] = ECellType.Empty;
+                else
+                    this.field[y][x] = Math.random() < 0.8 ? ECellType.Wall : ECellType.Empty;
             }
         }
     }

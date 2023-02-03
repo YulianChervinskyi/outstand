@@ -1,7 +1,7 @@
 export enum ECellType {
-    Free = 0,
+    Empty = 0,
     Wall = 1,
-    UWall = 2,
+    AzovSteel = 2,
     Bomb = 3,
     BonusBomb = 4,
     BonusFire = 5,

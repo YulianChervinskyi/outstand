@@ -9,7 +9,7 @@ export function Field(props: {model: GameModel}) {
             {props.model.field.map((row, rowKey) =>
                 <div className="common-size field-row" key={rowKey}>
                     {row.map((cell, cellKey) =>
-                        <div className="common-size field-cell"
+                        <div className="field-cell"
                              key={cellKey}
                              style={{
                                  backgroundColor: `${bckColors[cell]}`,
