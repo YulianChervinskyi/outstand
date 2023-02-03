@@ -1,18 +1,24 @@
 import "./Field.scss";
 import {GameModel} from "../GameModel";
-import {FIELD_SIZE, bckColors} from "../config";
+import {bckColors, CELL_SIZE} from "../config";
 
-export function Field() {
-    const model = new GameModel(FIELD_SIZE);
+export function Field(props: {model: GameModel}) {
 
     return (
         <div className="common-size field">
-            {model.field.map((row, rowKey) =>
+            {props.model.field.map((row, rowKey) =>
                 <div className="common-size field-row" key={rowKey}>
                     {row.map((cell, cellKey) =>
                         <div className="common-size field-cell"
                              key={cellKey}
-                             style={{backgroundColor: `${bckColors[cell]}`}}/>
+                             style={{
+                                 backgroundColor: `${bckColors[cell]}`,
+                                 width: `${CELL_SIZE}px`,
+                                 height: `${CELL_SIZE}px`,
+                                 minWidth: `${CELL_SIZE}px`,
+                                 minHeight: `${CELL_SIZE}px`,
+                             }}
+                        />
                     )}
                 </div>
             )}

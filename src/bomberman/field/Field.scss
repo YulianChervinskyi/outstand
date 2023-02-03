@@ -8,12 +8,13 @@
   background-color: #252533;
   display: flex;
   flex-direction: column;
+  overflow: auto;
 
   .field-row {
     display: flex;
 
     .field-cell {
-      border: 1px solid #a2b7a2;
+      border: 1px solid black;
     }
   }
 }
