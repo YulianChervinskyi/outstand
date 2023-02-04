@@ -24,7 +24,8 @@
 }
 
 .indicator p {
-    width: 3vh;
+    width: 30%;
+    text-align: right;
 }
 
 .indicator .change-difficulty {
