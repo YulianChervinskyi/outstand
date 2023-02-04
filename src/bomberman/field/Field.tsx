@@ -8,7 +8,7 @@ export function Field(props: { model: GameModel }) {
     return (
         <div className="common-size field">
             {props.model.field.map((row, rowKey) =>
-                <div className="common-size field-row" key={rowKey}>
+                <div className="field-row" key={rowKey}>
                     {row.map((cell, cellKey) =>
                         <div className="field-cell"
                              key={cellKey}

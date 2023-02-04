@@ -1,20 +1,14 @@
-.common-size {
-  width: 100%;
-  height: 100%;
-}
-
-.field {
-  height: 90%;
-  background-color: #252533;
-  display: flex;
-  flex-direction: column;
-  overflow: auto;
-
-  .field-row {
+.bomberman {
+  .field {
+    width: 100%;
+    height: 90%;
+    background-color: #252533;
     display: flex;
+    flex-direction: column;
+    overflow: auto;
 
-    .field-cell {
-      border: 1px solid black;
+    .field-row {
+      display: flex;
     }
   }
 }
