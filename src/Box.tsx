@@ -71,8 +71,8 @@ export function Box(props: BoxProps) {
         props.onActive(props.id);
     };
 
-    const width = size.w - 10;
-    const height = size.h - 24;
+    const width = size.w;
+    const height = size.h - 20;
 
     return (
         <div className="box" style={style} onMouseDown={handleMouseDown}>
