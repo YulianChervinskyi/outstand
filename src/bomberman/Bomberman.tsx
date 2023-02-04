@@ -18,8 +18,8 @@ export class Bomberman extends React.Component<IComponentProps, {}> {
         return (
             <div className="bomberman"
                  style={{
-                     width: `calc(${this.props.width}px + 8px)`,
-                     height: `calc(${this.props.height}px + 5px)`,
+                     width: this.props.width,
+                     height: this.props.height,
                      fontSize: Math.min(this.props.height * 0.05, this.props.width * 0.05),
                  }}>
                 <InfoPanel/>
