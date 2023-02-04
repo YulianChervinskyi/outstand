@@ -65,7 +65,10 @@ export class Minesweeper extends React.Component<IComponentProps, IState> {
 
     private setMinSize(difficulty: EDifficultyType) {
         const factor = 20;
-        this.props.onChangeMinSize({w: gameProps[difficulty].width * factor, h: gameProps[difficulty].height * factor});
+        this.props.onChangeGeometry({
+            minSize: {w: gameProps[difficulty].width * factor, h: gameProps[difficulty].height * factor},
+            aspectRatio: {w: gameProps[difficulty].width, h: gameProps[difficulty].height},
+        });
     }
 
     private handleCellOpen = (x: number, y: number) => {

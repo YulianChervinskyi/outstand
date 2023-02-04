@@ -46,7 +46,7 @@ export class Tetris extends React.Component<IComponentProps, IState> {
     constructor(props: IComponentProps) {
         super(props);
         this.state = this.props.text ? JSON.parse(this.props.text) : initialState;
-        this.props.onChangeMinSize({w: 200, h: 300});
+        this.props.onChangeGeometry({minSize: {w: 200, h: 300}, aspectRatio: {w: 200, h: 300}});
     }
 
     componentDidMount() {
