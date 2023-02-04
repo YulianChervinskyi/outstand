@@ -5,7 +5,7 @@ import {BoxHeader} from "./BoxHeader";
 import {BoxResizer} from "./BoxResizer";
 import {Calc} from "./calc/Calc";
 import {Fpe} from "./fpe/Fpe";
-import {NoteEditor} from "./NoteEditor/NoteEditor";
+import {NoteEditor} from "./note_editor/NoteEditor";
 import {Tetris} from "./tetris/Tetris";
 import {Minesweeper} from "./minesweeper/Minesweeper";
 import {Bomberman} from "./bomberman/Bomberman";
@@ -73,8 +73,8 @@ export function Box(props: BoxProps) {
         props.onActive(props.id);
     };
 
-    const width = size.w - 10;
-    const height = size.h - 24;
+    const width = size.w;
+    const height = size.h - 20;
 
     return (
         <div className="box" style={style} onMouseDown={handleMouseDown}>
