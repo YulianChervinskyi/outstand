@@ -5,17 +5,17 @@ import {gameProps} from "./config";
 import {ControlPanel} from "./control_panel/ControlPanel";
 import {DifficultySelector} from "./difficulty_selector/DifficultySelector";
 import {GameField} from "./game_field/GameField";
-import {ECellState, EDifficultyType, EOverlayText, ICell} from "./types";
+import {ECellState, EDifficultyType, ICell} from "./types";
 
 interface IState {
     timer: number,
     flagNumber: number,
-    overlayText: EOverlayText | undefined,
     cellsCounter: number,
     difficulty: EDifficultyType,
     gameField: ICell[][],
     gamePause: boolean,
     gameOver: boolean,
+    victory: boolean,
 }
 
 let audio: HTMLAudioElement | undefined;
@@ -39,11 +39,11 @@ export class Minesweeper extends React.Component<IComponentProps, IState> {
             timer: this.timerCounter,
             gamePause: data?.gamePause || false,
             gameOver: data?.gameOver || false,
-            overlayText: data?.overlayText || undefined,
             difficulty: data?.difficulty || EDifficultyType.Easy,
             flagNumber: data?.flagNumber || difficultyProps.mines,
             gameField: data?.gameField || this.createGameField(EDifficultyType.Easy),
             cellsCounter: this.cellsCounter,
+            victory: data?.victory || false,
         };
 
         this.setMinSize(this.state.difficulty);
@@ -66,7 +66,10 @@ export class Minesweeper extends React.Component<IComponentProps, IState> {
     }
 
     private handleKeyDown = (e: KeyboardEvent) => {
-        if (!this.props.active || this.state.gameOver || this.state.gamePause && e.key !== 'Escape' || e.key !== 'Escape')
+        if (!this.props.active || this.state.gameOver || this.isDifficultySelector)
+            return;
+
+        if (e.key !== 'Escape')
             return;
 
         if (!this.state.gamePause)
@@ -74,7 +77,7 @@ export class Minesweeper extends React.Component<IComponentProps, IState> {
         else
             this.startTimer();
 
-        this.setState({gamePause: !this.state.gamePause, overlayText: EOverlayText.Pause});
+        this.setState({gamePause: !this.state.gamePause});
     }
 
     private handleContinue = () => {
@@ -192,9 +195,9 @@ export class Minesweeper extends React.Component<IComponentProps, IState> {
         this.setState({gameField: field, cellsCounter: this.cellsCounter});
 
         if (field[y][x].value === 9)
-            this.gameOver();
+            this.loseGame();
         else if (this.cellsCounter === 0)
-            this.victory();
+            this.winGame();
 
         if (field[y][x].value > 0)
             return;
@@ -234,22 +237,17 @@ export class Minesweeper extends React.Component<IComponentProps, IState> {
         }
     }
 
-    private gameOver = () => {
-        this.showAllMines();
-        this.stopTimer();
-        playSound(snd.losing).catch(console.error);
-        this.setState({gameOver: true, overlayText: EOverlayText.GameOver});
-    }
-
-    private victory = () => {
-        this.stopTimer();
+    private winGame = () => {
         playSound(snd.victory).catch(console.error);
-        this.setState({gameOver: true, overlayText: EOverlayText.Victory});
+        this.setState({victory: true, gameOver: true});
+        this.stopTimer();
     }
 
-    showDifficultySelector = (isVisible: boolean) => {
-        this.isDifficultySelector = isVisible;
-        this.setState({overlayText: isVisible ? EOverlayText.Difficulty : undefined});
+    private loseGame = () => {
+        this.showAllMines();
+        playSound(snd.losing).catch(console.error);
+        this.setState({victory: false, gameOver: true});
+        this.stopTimer();
     }
 
     render() {
@@ -265,7 +263,7 @@ export class Minesweeper extends React.Component<IComponentProps, IState> {
                     timer={this.state.timer}
                     flagNumber={this.state.flagNumber}
                     difficulty={this.state.difficulty}
-                    openDifficultySelector={this.showDifficultySelector}
+                    openDifficultySelector={() => this.isDifficultySelector = true}
                 />
 
                 <GameField
@@ -274,27 +272,27 @@ export class Minesweeper extends React.Component<IComponentProps, IState> {
                     gameField={this.state.gameField}
                 />
 
-                {(this.state.gamePause || this.state.gameOver) && <div className="info-overlay">
-                    {this.state.overlayText}
+                {this.state.gamePause && <div className="info-overlay">
+                    Paused
                     <div className="controls">
-                        {this.state.gamePause && <button onClick={this.handleContinue}>
-                            Continue
-                        </button>}
-                        <button onClick={() => this.resetGame(this.state.difficulty)}>
-                            Restart
-                        </button>
+                        <button onClick={this.handleContinue}>Continue</button>
+                        <button onClick={() => this.resetGame(this.state.difficulty)}>Restart</button>
                     </div>
                 </div>}
 
-                {this.isDifficultySelector &&
-                    <DifficultySelector
-                        text={this.state.overlayText}
-                        showSelector={this.showDifficultySelector}
-                        setDifficulty={this.handleChangeDifficulty}
-                        width={this.props.width}
-                        height={this.props.height}
-                    />
-                }
+                {this.state.gameOver && <div className="info-overlay">
+                    {this.state.victory ? "Victory!" : "Game over!"}
+                    <div className="controls">
+                        <button onClick={() => this.resetGame(this.state.difficulty)}>Restart</button>
+                    </div>
+                </div>}
+
+                {this.isDifficultySelector && <DifficultySelector
+                    onClose={() => this.isDifficultySelector = false}
+                    onChangeDifficulty={this.handleChangeDifficulty}
+                    width={this.props.width}
+                    height={this.props.height}
+                />}
             </div>
         );
     }

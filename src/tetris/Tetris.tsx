@@ -223,21 +223,22 @@ export class Tetris extends React.Component<IComponentProps, IState> {
         const s = this.state;
         return (
             <div className="tetris">
+
                 {s.paused && <div className="info-overlay">
                     Paused
                     <div className="controls">
-                        <button onClick={() => this.setState({paused: false})}
-                        >Continue
-                        </button>
+                        <button onClick={() => this.setState({paused: false})}>Continue</button>
                         <button onClick={this.resetGame}>Restart</button>
                     </div>
                 </div>}
+
                 {s.gameOver && <div className="info-overlay">
                     Game Over
                     <div className="controls">
                         <button onClick={this.resetGame}>Restart</button>
                     </div>
                 </div>}
+
                 <Board board={s.board} activePiece={new PieceModel(s.activePiece)}/>
                 <div className="tetris-info">
                     <div className="tetris-score">
