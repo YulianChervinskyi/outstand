@@ -1,4 +1,5 @@
 import React from "react";
+import {IGeometry} from "./Box";
 
 const MIN_WIDTH = 150;
 const MIN_HEIGHT = 165;
@@ -7,8 +8,7 @@ export interface IBoxResizerProps {
     width: number,
     height: number,
     onResize: (size: { w: number, h: number }) => void,
-    minSize?: { w: number, h: number },
-    aspectRatio?: { w: number, h: number },
+    geometry?: IGeometry,
 }
 
 export class BoxResizer extends React.Component<IBoxResizerProps, { dragging: boolean }> {
@@ -25,13 +25,13 @@ export class BoxResizer extends React.Component<IBoxResizerProps, { dragging: bo
     private startHeight: number = this.props.height;
 
     componentDidUpdate(prevProps: Readonly<IBoxResizerProps>, prevState: Readonly<{ dragging: boolean }>, snapshot?: any) {
-        if (prevProps.minSize?.w === this.props.minSize?.w && prevProps.minSize?.h === this.props.minSize?.h)
-            return;
-
-        this.props.onResize({
-            w: Math.max(this.props.width, this.props.minSize?.w || MIN_WIDTH, MIN_WIDTH),
-            h: Math.max(this.props.height, this.props.minSize?.h || MIN_HEIGHT, MIN_HEIGHT),
-        });
+        if (prevProps.geometry?.minSize?.w !== this.props.geometry?.minSize?.w ||
+            prevProps.geometry?.minSize?.h !== this.props.geometry?.minSize?.h ||
+            prevProps.geometry?.aspectRatio?.w !== this.props.geometry?.aspectRatio?.w ||
+            prevProps.geometry?.aspectRatio?.h !== this.props.geometry?.aspectRatio?.h) {
+            // initial resize
+            this.resize(this.props.width, this.props.height)
+        }
     }
 
     private handleMouseDown = (e: React.MouseEvent) => {
@@ -58,12 +58,24 @@ export class BoxResizer extends React.Component<IBoxResizerProps, { dragging: bo
         if (this.dragging) {
             const x = this.startX - e.clientX;
             const y = this.startY - e.clientY;
-
-            this.props.onResize({
-                w: Math.max(this.startWidth - x, this.props.minSize?.w || MIN_WIDTH, MIN_WIDTH),
-                h: Math.max(this.startHeight - y, this.props.minSize?.h || MIN_HEIGHT, MIN_HEIGHT),
-            });
+            this.resize(this.startWidth - x, this.startHeight - y)
         }
+    }
+
+    private resize = (w: number, h: number) => {
+        if (this.props.geometry?.aspectRatio) {
+            const {w: aw, h: ah} = this.props.geometry.aspectRatio;
+            if (w / h > aw / ah) {
+                w = h * aw / ah;
+            } else {
+                h = w * ah / aw;
+            }
+        }
+
+        this.props.onResize({
+            w: Math.max(w, this.props.geometry?.minSize?.w || MIN_WIDTH, MIN_WIDTH),
+            h: Math.max(h, this.props.geometry?.minSize?.h || MIN_HEIGHT, MIN_HEIGHT),
+        });
     }
 
     render() {

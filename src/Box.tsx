@@ -10,13 +10,23 @@ import {Tetris} from "./tetris/Tetris";
 import {Minesweeper} from "./minesweeper/Minesweeper";
 import {Bomberman} from "./bomberman/Bomberman";
 
+export interface ISize {
+    w: number,
+    h: number,
+}
+
+export interface IGeometry {
+    minSize?: ISize,
+    aspectRatio?: ISize,
+}
+
 export interface IComponentProps {
     text: string,
     onChange: (e: { text: string }) => void,
+    onChangeGeometry: (e: IGeometry) => void,
     width: number,
     height: number,
     active?: boolean,
-    onChangeMinSize: (e: { w: number, h: number }) => void,
 }
 
 export enum BoxType {
@@ -48,7 +58,7 @@ interface BoxProps {
 export function Box(props: BoxProps) {
     const [size, setSize] = useState({w: props.width, h: props.height});
     const [pos, setPos] = useState({x: props.x, y: props.y});
-    const [minSize, setMinSize] = useState<{ w: number, h: number } | undefined>();
+    const [geometry, setGeometry] = useState<IGeometry | undefined>(undefined);
 
     const style = {
         left: pos.x,
@@ -83,39 +93,40 @@ export function Box(props: BoxProps) {
             {props.type === BoxType.Note
                 && <NoteEditor width={width} height={height} text={props.text}
                                onChange={(e) => props.onChange(props.id, e)}
-                               onChangeMinSize={setMinSize}/>}
+                               onChangeGeometry={setGeometry}/>}
 
             {props.type === BoxType.Calc
                 && <Calc width={width} height={height} text={props.text}
                          onChange={(e) => props.onChange(props.id, e)}
-                         onChangeMinSize={setMinSize}/>}
+                         onChangeGeometry={setGeometry}/>}
 
             {props.type === BoxType.Tetris
                 && <Tetris width={width} height={height} text={props.text} active={props.active}
                            onChange={(e) => props.onChange(props.id, e)}
-                           onChangeMinSize={setMinSize}/>}
+                           onChangeGeometry={setGeometry}/>}
 
             {props.type === BoxType.Fpe
                 && <Fpe width={width} height={height} text={props.text} active={props.active}
                         onChange={(e) => props.onChange(props.id, e)}
-                        onChangeMinSize={setMinSize}/>}
+                        onChangeGeometry={setGeometry}/>}
 
             {props.type === BoxType.Asteroids
                 && <Asteroids width={width} height={height} text={props.text} active={props.active}
                               onChange={(e) => props.onChange(props.id, e)}
-                              onChangeMinSize={setMinSize}/>}
+                              onChangeGeometry={setGeometry}/>}
 
             {props.type === BoxType.Minesweeper
                 && <Minesweeper width={width} height={height} text={props.text}
                                 onChange={(e) => props.onChange(props.id, e)}
-                                onChangeMinSize={setMinSize}/>}
+                                onChangeGeometry={setGeometry}/>}
 
             {props.type === BoxType.Bomberman
                 && <Bomberman width={width} height={height} text={props.text}
                                 onChange={(e) => props.onChange(props.id, e)}
-                                onChangeMinSize={setMinSize}/>}
+                                onChangeGeometry={setGeometry}/>}
 
-            <BoxResizer width={size.w} height={size.h} onResize={handleResize} minSize={minSize}/>
+            <BoxResizer width={size.w} height={size.h} onResize={handleResize}
+                        geometry={geometry}/>
         </div>
     );
 }
