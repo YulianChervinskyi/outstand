@@ -5,6 +5,7 @@ export enum EDifficultyType {
 }
 
 export enum EOverlayText {
+    Pause = "Pause",
     Victory = "Victory!",
     GameOver = "Game over!",
     Difficulty = "Choose difficulty",

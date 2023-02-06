@@ -114,7 +114,7 @@ export function Box(props: BoxProps) {
                               onChangeGeometry={setGeometry}/>}
 
             {props.type === BoxType.Minesweeper
-                && <Minesweeper width={width} height={height} text={props.text}
+                && <Minesweeper width={width} height={height} text={props.text} active={props.active}
                                 onChange={(e) => props.onChange(props.id, e)}
                                 onChangeGeometry={setGeometry}/>}
 

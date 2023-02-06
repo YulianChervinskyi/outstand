@@ -74,3 +74,22 @@ h1 {
     border-radius: var(--border-radius);
 }
 
+.box .info-overlay .controls {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.box .info-overlay .controls button {
+    border: none;
+    border-radius: 5px;
+    font-size: 40%;
+    background: darkorange;
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 5px;
+    padding: 5px;
+}
