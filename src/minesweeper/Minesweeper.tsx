@@ -60,6 +60,14 @@ export class Minesweeper extends React.Component<IComponentProps, IState> {
         document.body.addEventListener("keydown", this.handleKeyDown);
     }
 
+    componentDidUpdate(prevProps: Readonly<IComponentProps>, prevState: Readonly<IState>, snapshot?: any) {
+        if (this.state.gamePause || this.state.gameOver || this.state.isDifficultySelector)
+            return;
+
+        if (prevProps.active && !this.props.active)
+            this.pauseGame();
+    }
+
     componentWillUnmount() {
         document.body.removeEventListener("keydown", this.handleKeyDown);
         this.stopTimer();
