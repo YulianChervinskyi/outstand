@@ -4,12 +4,6 @@ export enum EDifficultyType {
     Hard = "Hard",
 }
 
-export enum EOverlayText {
-    Victory = "Victory!",
-    GameOver = "Game over!",
-    Difficulty = "Choose difficulty",
-}
-
 export enum ECellState {
     Open = "Open",
     Closed = "Closed",

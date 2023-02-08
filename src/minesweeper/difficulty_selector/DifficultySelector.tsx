@@ -1,13 +1,12 @@
-import {EOverlayText, EDifficultyType} from "../types";
+import React from "react";
 import {difficulties} from "../config";
+import {EDifficultyType} from "../types";
 import "./DifficultySelector.scss";
 import {Head} from "./heads/Head";
-import React from "react";
 
 export interface IDifficultySelectorProps {
-    text: EOverlayText | undefined,
-    showSelector: (isVisible: boolean) => void,
-    setDifficulty: (difficulty: EDifficultyType) => void,
+    onClose: () => void,
+    onChangeDifficulty: (difficulty: EDifficultyType) => void,
     width: number,
     height: number,
 }
@@ -25,14 +24,14 @@ export function DifficultySelector(props: IDifficultySelectorProps) {
     }
 
     return (
-        <div className="difficulty-selector info-overlay" onClick={() => props.showSelector(false)}>
+        <div className="difficulty-selector info-overlay" onClick={props.onClose}>
             <div className="container">
-                {props.text}
+                Choose difficulty
                 <div className="difficulties-container" style={{width, height}}>
                     {Object.entries(difficulties).map((value, key) =>
                         <Head background={value[1]}
                               difficulty={value[0] as EDifficultyType}
-                              giveDifficulty={(diff) => props.setDifficulty(diff)}
+                              giveDifficulty={(diff) => props.onChangeDifficulty(diff)}
                               key={key}
                         />
                     )}

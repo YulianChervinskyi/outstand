@@ -1,4 +1,4 @@
-import './Box.css';
+import './Box.scss';
 import {useState} from "react";
 import {Asteroids} from "./asteroids/Asteroids";
 import {BoxHeader} from "./BoxHeader";
@@ -116,7 +116,7 @@ export function Box(props: BoxProps) {
                               onChangeGeometry={setGeometry}/>}
 
             {props.type === BoxType.Minesweeper
-                && <Minesweeper width={width} height={height} text={props.text}
+                && <Minesweeper width={width} height={height} text={props.text} active={props.active}
                                 onChange={(e) => props.onChange(props.id, e)}
                                 onChangeGeometry={setGeometry}/>}
 

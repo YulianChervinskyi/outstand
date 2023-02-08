@@ -1,4 +1,5 @@
 import {IComponentProps} from "../Box";
+import "./NoteEditor.scss";
 
 export function NoteEditor(props: IComponentProps) {
     return (

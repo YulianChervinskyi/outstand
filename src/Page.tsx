@@ -41,6 +41,9 @@ export class Page extends React.Component<{}, IState> {
     }
 
     handleActive = (id: number) => {
+        if (id === this.activeBoxId)
+            return;
+
         if (this.state.boxes[this.activeBoxId])
             this.state.boxes[this.activeBoxId].active = false;
 
@@ -50,7 +53,7 @@ export class Page extends React.Component<{}, IState> {
     }
 
     handleSelectMode = (type: BoxType | undefined, e: React.MouseEvent) => {
-        this.setState({...this.state, modeType: type});
+        this.setState({modeType: type});
         e.stopPropagation();
     }
 
