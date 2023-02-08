@@ -1,4 +1,4 @@
-import './Box.css';
+import './Box.scss';
 import {useState} from "react";
 import {Asteroids} from "./asteroids/Asteroids";
 import {BoxHeader} from "./BoxHeader";
