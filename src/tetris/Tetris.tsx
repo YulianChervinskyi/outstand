@@ -54,6 +54,14 @@ export class Tetris extends React.Component<IComponentProps, IState> {
         this.tick();
     }
 
+    componentDidUpdate(prevProps: Readonly<IComponentProps>, prevState: Readonly<IState>, snapshot?: any) {
+        if (this.state.paused || this.state.gameOver)
+            return;
+
+        if (prevProps.active && !this.props.active)
+            this.setState({...this.state, paused: !this.state.paused});
+    }
+
     componentWillUnmount() {
         document.body.removeEventListener("keydown", this.handleKeyDown);
         clearTimeout(this.timeoutId);
