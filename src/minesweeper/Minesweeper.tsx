@@ -12,6 +12,7 @@ interface IState {
     flagNumber: number,
     cellsCounter: number,
     difficulty: EDifficultyType,
+    isDifficultySelector: boolean,
     gameField: ICell[][],
     gamePause: boolean,
     gameOver: boolean,
@@ -22,7 +23,6 @@ let audio: HTMLAudioElement | undefined;
 
 export class Minesweeper extends React.Component<IComponentProps, IState> {
     intervalId: NodeJS.Timeout | undefined;
-    isDifficultySelector = false;
     isGameStarted = false;
     cellsCounter = 0;
     timerCounter = 0;
@@ -39,6 +39,7 @@ export class Minesweeper extends React.Component<IComponentProps, IState> {
             timer: this.timerCounter,
             gamePause: data?.gamePause || false,
             gameOver: data?.gameOver || false,
+            isDifficultySelector: data?.isDifficultySelector || false,
             difficulty: data?.difficulty || EDifficultyType.Easy,
             flagNumber: data?.flagNumber || difficultyProps.mines,
             gameField: data?.gameField || this.createGameField(EDifficultyType.Easy),
@@ -66,12 +67,16 @@ export class Minesweeper extends React.Component<IComponentProps, IState> {
     }
 
     private handleKeyDown = (e: KeyboardEvent) => {
-        if (!this.props.active || this.state.gameOver || this.isDifficultySelector)
+        if (!this.props.active || this.state.gameOver || this.state.isDifficultySelector)
             return;
 
         if (e.key !== 'Escape')
             return;
 
+        this.pauseGame();
+    }
+
+    private pauseGame = () => {
         if (!this.state.gamePause)
             this.stopTimer();
         else
@@ -123,7 +128,7 @@ export class Minesweeper extends React.Component<IComponentProps, IState> {
                 this.stopTimer();
                 return;
             }
-            console.log(`timer: ${this.timerCounter}`);
+
             this.timerCounter++;
             this.setState({timer: this.timerCounter});
         }, 1000);
@@ -165,13 +170,13 @@ export class Minesweeper extends React.Component<IComponentProps, IState> {
     private resetGame = (difficulty: EDifficultyType) => {
         this.timerCounter = 0;
         this.isGameStarted = false;
-        this.isDifficultySelector = false;
         this.cellsCounter = gameProps[difficulty].height * gameProps[difficulty].width - gameProps[difficulty].mines;
         this.setState({
             timer: this.timerCounter,
             difficulty: difficulty,
             cellsCounter: this.cellsCounter,
             flagNumber: gameProps[difficulty].mines,
+            isDifficultySelector: false,
             gameField: this.createGameField(difficulty),
             gameOver: false,
             gamePause: false,
@@ -263,7 +268,7 @@ export class Minesweeper extends React.Component<IComponentProps, IState> {
                     timer={this.state.timer}
                     flagNumber={this.state.flagNumber}
                     difficulty={this.state.difficulty}
-                    openDifficultySelector={() => this.isDifficultySelector = true}
+                    openDifficultySelector={() => this.setState({isDifficultySelector: true})}
                 />
 
                 <GameField
@@ -287,8 +292,8 @@ export class Minesweeper extends React.Component<IComponentProps, IState> {
                     </div>
                 </div>}
 
-                {this.isDifficultySelector && <DifficultySelector
-                    onClose={() => this.isDifficultySelector = false}
+                {this.state.isDifficultySelector && <DifficultySelector
+                    onClose={() => this.setState({isDifficultySelector: false})}
                     onChangeDifficulty={this.handleChangeDifficulty}
                     width={this.props.width}
                     height={this.props.height}
