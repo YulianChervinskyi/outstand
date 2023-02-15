@@ -121,7 +121,7 @@ export function Box(props: BoxProps) {
                                 onChangeGeometry={setGeometry}/>}
 
             {props.type === BoxType.Bomberman
-                && <Bomberman width={width} height={height} text={props.text}
+                && <Bomberman width={width} height={height} text={props.text} active={props.active}
                                 onChange={(e) => props.onChange(props.id, e)}
                                 onChangeGeometry={setGeometry}/>}
 

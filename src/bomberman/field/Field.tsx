@@ -1,10 +1,9 @@
 import "./Field.scss";
 import {GameModel} from "../GameModel";
-import {cellFilling, CELL_SIZE} from "../config";
+import {cellImg, CELL_SIZE} from "../config";
 import {ECellType} from "../types";
 
 export function Field(props: { model: GameModel }) {
-
     return (
         <div className="common-size field">
             {props.model.field.map((row, rowKey) =>
@@ -13,7 +12,7 @@ export function Field(props: { model: GameModel }) {
                         <div className="field-cell"
                              key={cellKey}
                              style={{
-                                 backgroundColor: cell === 0 && cell > 3 ? `${cellFilling[cell]}` : "unset",
+                                 backgroundColor: cell ? `${cellImg[cell]}` : "#252533",
                                  width: `${CELL_SIZE}px`,
                                  height: `${CELL_SIZE}px`,
                                  minWidth: `${CELL_SIZE}px`,
@@ -21,7 +20,7 @@ export function Field(props: { model: GameModel }) {
                              }}
                         >
                             {(cell === ECellType.Wall || cell === ECellType.AzovSteel || cell === ECellType.Bomb)
-                                && <img src={cellFilling[cell]} alt=""/>}
+                                && <img src={cellImg[cell]} alt=""/>}
                         </div>
                     )}
                 </div>

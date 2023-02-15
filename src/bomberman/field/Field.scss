@@ -1,14 +1,12 @@
-.bomberman {
-  .field {
-    width: 100%;
-    height: 90%;
-    background-color: #252533;
-    display: flex;
-    flex-direction: column;
-    overflow: auto;
+.field {
+  width: 100%;
+  height: 100%;
+  background-color: #252533;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
 
-    .field-row {
-      display: flex;
-    }
+  .field-row {
+    display: flex;
   }
 }

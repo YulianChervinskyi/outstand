@@ -8,8 +8,8 @@ export const FIELD_SIZE = {
 
 export const CELL_SIZE = 64;
 
-export const cellFilling = {
-    [ECellType.Empty]: "#252533",
+export const cellImg = {
+    [ECellType.Empty]: "",
     [ECellType.Wall]: img.wall,
     [ECellType.AzovSteel]: img.azov_steel,
     [ECellType.Bomb]: img.bomb,
