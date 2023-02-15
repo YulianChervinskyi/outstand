@@ -5,12 +5,10 @@ export class PlayerModel {
     constructor() {
     }
 
-    move = (axis: string, seconds: number, direction: number) => {
-        const distance = direction * seconds * this.speed;
+    walk = (offsetX: number, offsetY: number) => {
+        const diagonalCoef = offsetX && offsetY ? this.speed / Math.sqrt(Math.pow(this.speed, 2) * 2) : 1;
 
-        if (axis === "x")
-            this.position.x += distance;
-        else if (axis === "y")
-            this.position.y += distance;
+        this.position.x += offsetX * this.speed * diagonalCoef;
+        this.position.y += offsetY * this.speed * diagonalCoef;
     }
 }

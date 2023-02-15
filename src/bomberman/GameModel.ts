@@ -1,9 +1,7 @@
 import {ECellType, ISize} from "./types";
-import {Controls} from "../asteroids/Controls";
 import {PlayerModel} from "./player/PlayerModel";
 
 export class GameModel {
-    controls = new Controls();
     player = new PlayerModel();
 
     width: number = 0;
@@ -14,15 +12,6 @@ export class GameModel {
         this.width = size.w;
         this.height = size.h;
         this.initField();
-    }
-
-    makeMove(active: boolean | undefined, seconds: number) {
-        if (!active) return;
-
-        this.controls.states.forward && this.player.move("y", seconds, -1);
-        this.controls.states.backward && this.player.move("y", seconds, 1);
-        this.controls.states.right && this.player.move("x", seconds, 1);
-        this.controls.states.left && this.player.move("x", seconds, -1);
     }
 
     private initField() {

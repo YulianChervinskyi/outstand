@@ -6,9 +6,11 @@ import {Field} from "./field/Field";
 import {Player} from "./player/Player";
 import "./Bomberman.scss";
 import React from "react";
+import {Controls} from "../asteroids/Controls";
 
 export class Bomberman extends React.Component<IComponentProps, {}> {
     model = new GameModel(FIELD_SIZE);
+    controls = new Controls();
     prevTime = 0;
 
     constructor(props: IComponentProps) {
@@ -24,11 +26,21 @@ export class Bomberman extends React.Component<IComponentProps, {}> {
         const seconds = (time - this.prevTime) / 1000;
         this.prevTime = time;
 
-        // if (seconds > 0 && seconds < 0.2)
-            this.model.makeMove(this.props.active, seconds);
+        if (seconds > 0 && seconds < 0.2)
+            this.makeMove(seconds);
 
         this.setState({});
         requestAnimationFrame(this.frame);
+    }
+
+    makeMove(seconds: number) {
+        if (!this.props.active) return;
+
+        const offsetX = seconds * (Number(this.controls.states.right) - Number(this.controls.states.left));
+        const offsetY = seconds * (Number(this.controls.states.backward) - Number(this.controls.states.forward));
+
+        if (offsetX || offsetY)
+            this.model.player.walk(offsetX, offsetY);
     }
 
     render() {
