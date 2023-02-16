@@ -38,8 +38,8 @@ export class Bomberman extends React.Component<IComponentProps, {}> {
 
         let checkedOffset: { x: number, y: number };
 
-        const offsetX = seconds * (Number(this.controls.states.right) - Number(this.controls.states.left));
-        const offsetY = seconds * (Number(this.controls.states.backward) - Number(this.controls.states.forward));
+        const offsetX = this.model.player.speed * seconds * (Number(this.controls.states.right) - Number(this.controls.states.left));
+        const offsetY = this.model.player.speed * seconds * (Number(this.controls.states.backward) - Number(this.controls.states.forward));
 
         if (offsetX || offsetY) {
             checkedOffset = this.model.playerOffsetCheck(offsetX, offsetY);
