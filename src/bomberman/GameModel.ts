@@ -27,4 +27,24 @@ export class GameModel {
             }
         }
     }
+
+    playerOffsetCheck(offsetX: number, offsetY: number): { x: number, y: number } {
+        let validOffset = { x: 0, y: 0 };
+
+        const playerPosRow = offsetX !== 0
+            ? this.player.position.row + Math.round(100 * offsetX / 2)
+            : this.player.position.row;
+
+        const playerPosCol = offsetY !== 0
+            ? this.player.position.col + Math.round(100 * offsetY / 2)
+            : this.player.position.col;
+
+        if (playerPosRow >= 0 && playerPosRow < this.width && this.field[playerPosCol][playerPosRow] === ECellType.Empty)
+            validOffset.x = offsetX;
+
+        if (playerPosCol >= 0 && playerPosCol < this.height && this.field[playerPosCol][playerPosRow] === ECellType.Empty)
+            validOffset.y = offsetY;
+
+        return validOffset;
+    }
 }

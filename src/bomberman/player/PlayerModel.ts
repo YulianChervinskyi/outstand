@@ -1,14 +1,16 @@
+import {CELL_SIZE} from "../config";
+
 export class PlayerModel {
-    position: { x: number, y: number } = {x: 0, y: 0};
+    position = {row: 0, col: 0};
     speed = 100;
 
     constructor() {
     }
 
     walk = (offsetX: number, offsetY: number) => {
-        const diagonalCoef = offsetX && offsetY ? this.speed / Math.sqrt(Math.pow(this.speed, 2) * 2) : 1;
+        // const diagonalCoef = offsetX && offsetY ? this.speed / Math.sqrt(Math.pow(this.speed, 2) * 2) : 1;
 
-        this.position.x += offsetX * this.speed * diagonalCoef;
-        this.position.y += offsetY * this.speed * diagonalCoef;
+        this.position.row += (offsetX * this.speed /** diagonalCoef*/) / CELL_SIZE;
+        this.position.col += (offsetY * this.speed /** diagonalCoef*/) / CELL_SIZE;
     }
 }

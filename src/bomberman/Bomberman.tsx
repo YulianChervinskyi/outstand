@@ -27,20 +27,24 @@ export class Bomberman extends React.Component<IComponentProps, {}> {
         this.prevTime = time;
 
         if (seconds > 0 && seconds < 0.2)
-            this.makeMove(seconds);
+            this.update(seconds);
 
         this.setState({});
         requestAnimationFrame(this.frame);
     }
 
-    makeMove(seconds: number) {
+    update(seconds: number) {
         if (!this.props.active) return;
+
+        let checkedOffset: { x: number, y: number };
 
         const offsetX = seconds * (Number(this.controls.states.right) - Number(this.controls.states.left));
         const offsetY = seconds * (Number(this.controls.states.backward) - Number(this.controls.states.forward));
 
-        if (offsetX || offsetY)
-            this.model.player.walk(offsetX, offsetY);
+        if (offsetX || offsetY) {
+            checkedOffset = this.model.playerOffsetCheck(offsetX, offsetY);
+            this.model.player.walk(checkedOffset.x, checkedOffset.y);
+        }
     }
 
     render() {
@@ -56,7 +60,7 @@ export class Bomberman extends React.Component<IComponentProps, {}> {
                 <InfoPanel/>
                 <div className="game-area">
                     <Field model={this.model}/>
-                    <Player model={this.model}/>
+                    <Player position={this.model.player.position}/>
                 </div>
             </div>
         );

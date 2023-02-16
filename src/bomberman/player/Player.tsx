@@ -1,12 +1,17 @@
-import {GameModel} from "../GameModel";
 import {player} from "../assets/index";
-import {CELL_SIZE} from "../config";
+import {CELL_SIZE, PLAYER_SIZE} from "../config";
 import "./Player.scss";
 
-export function Player(props: { model: GameModel }) {
+export function Player(props: { position: { row: number, col: number } }) {
+    const coords = {
+        x: props.position.row * CELL_SIZE,
+        y: props.position.col * CELL_SIZE,
+    }
+
     const style = {
-        transform: `translate(${props.model.player.position.x}px, ${props.model.player.position.y}px)`,
-        width: CELL_SIZE * 0.75,
+        left: `${coords.x + CELL_SIZE / 2}px`,
+        top: `${coords.y + CELL_SIZE / 2}px`,
+        width: PLAYER_SIZE,
     };
 
     return <img className="player" src={player} style={style} alt=""/>;
