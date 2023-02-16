@@ -23,7 +23,7 @@ export class GameModel {
                 else if ((x + y <= 1) || (x + y) >= (this.height + this.width - 3))
                     this.field[y][x] = ECellType.Empty;
                 else
-                    this.field[y][x] = Math.random() < 0.7 ? ECellType.Wall : ECellType.Empty;
+                    this.field[y][x] = Math.random() < 0.3 ? ECellType.Wall : ECellType.Empty;
             }
         }
     }
@@ -41,16 +41,17 @@ export class GameModel {
         if (p.y + offsetY > this.height - 1)
             offsetY = this.height - 1 - p.y;
 
-        const playerPosRow = Math.round(this.player.position.x);
-        const playerPosCol = Math.round(this.player.position.y);
+        const col = Math.round(this.player.position.x);
+        const row = Math.round(this.player.position.y);
+        const newCol = Math.round(this.player.position.x + offsetX);
+        const newRow = Math.round(this.player.position.y + offsetY);
+        console.log(newCol, newRow);
 
-        // if (this.field[playerPosCol][playerPosRow] === ECellType.Empty)
+        if (this.field[row][newCol] === ECellType.Empty)
             validOffset.x = offsetX;
 
-        // if (this.field[playerPosCol][playerPosRow] === ECellType.Empty)
+        if (this.field[newRow][col] === ECellType.Empty)
             validOffset.y = offsetY;
-
-        console.log(playerPosCol, playerPosRow);
 
         return validOffset;
     }
