@@ -10,7 +10,7 @@ export class PlayerModel {
     walk = (offsetX: number, offsetY: number) => {
         // const diagonalCoef = offsetX && offsetY ? this.speed / Math.sqrt(Math.pow(this.speed, 2) * 2) : 1;
 
-        this.position.row += (offsetX * this.speed /** diagonalCoef*/) / CELL_SIZE;
-        this.position.col += (offsetY * this.speed /** diagonalCoef*/) / CELL_SIZE;
+        this.position.row += offsetX * this.speed / CELL_SIZE;
+        this.position.col += offsetY * this.speed / CELL_SIZE;
     }
 }
