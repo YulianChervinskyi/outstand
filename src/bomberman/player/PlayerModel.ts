@@ -1,12 +1,12 @@
 export class PlayerModel {
-    position = {row: 0, col: 0};
-    speed = 1.6;
+    position = {x: 0, y: 0};
+    speed = 5;
 
     constructor() {
     }
 
     walk = (offsetX: number, offsetY: number) => {
-        this.position.row += offsetX;
-        this.position.col += offsetY;
+        this.position.x += offsetX;
+        this.position.y += offsetY;
     }
 }

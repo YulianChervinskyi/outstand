@@ -6,7 +6,7 @@ import {Field} from "./field/Field";
 import {Player} from "./player/Player";
 import "./Bomberman.scss";
 import React from "react";
-import {Controls} from "../asteroids/Controls";
+import {Controls} from "./Controls";
 
 export class Bomberman extends React.Component<IComponentProps, {}> {
     model = new GameModel(FIELD_SIZE);

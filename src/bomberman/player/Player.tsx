@@ -2,10 +2,10 @@ import {player} from "../assets/index";
 import {CELL_SIZE, PLAYER_SIZE} from "../config";
 import "./Player.scss";
 
-export function Player(props: { position: { row: number, col: number } }) {
+export function Player(props: { position: { x: number, y: number } }) {
     const coords = {
-        x: props.position.row * CELL_SIZE,
-        y: props.position.col * CELL_SIZE,
+        x: props.position.x * CELL_SIZE,
+        y: props.position.y * CELL_SIZE,
     }
 
     const style = {

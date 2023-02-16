@@ -28,16 +28,26 @@ export class GameModel {
         }
     }
 
-    playerOffsetCheck = (offsetX: number, offsetY: number) => {
+    playerOffsetCheck(offsetX: number, offsetY: number) {
         let validOffset = {x: 0, y: 0};
+        const p = this.player.position;
 
-        const playerPosRow = Math.round(this.player.position.row) + Math.round(offsetX + 0.5);
-        const playerPosCol = Math.round(this.player.position.col) + Math.round(offsetY + 0.5);
+        if (p.x + offsetX < 0)
+            offsetX = -p.x;
+        if (p.x + offsetX > this.width - 1)
+            offsetX = this.width - 1 - p.x;
+        if (p.y + offsetY < 0)
+            offsetY = -p.y;
+        if (p.y + offsetY > this.height - 1)
+            offsetY = this.height - 1 - p.y;
 
-        if (playerPosRow >= 0 && playerPosRow < this.width && this.field?.[playerPosCol]?.[playerPosRow] === ECellType.Empty)
+        const playerPosRow = Math.round(this.player.position.x);
+        const playerPosCol = Math.round(this.player.position.y);
+
+        // if (this.field[playerPosCol][playerPosRow] === ECellType.Empty)
             validOffset.x = offsetX;
 
-        if (playerPosCol >= 0 && playerPosCol < this.height && this.field?.[playerPosCol]?.[playerPosRow] === ECellType.Empty)
+        // if (this.field[playerPosCol][playerPosRow] === ECellType.Empty)
             validOffset.y = offsetY;
 
         console.log(playerPosCol, playerPosRow);
