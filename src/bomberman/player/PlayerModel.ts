@@ -1,6 +1,6 @@
 export class PlayerModel {
     position = {x: 0, y: 0};
-    speed = 4;
+    speed = 2;
 
     constructor() {
     }

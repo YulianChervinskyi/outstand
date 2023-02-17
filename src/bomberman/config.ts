@@ -7,7 +7,6 @@ export const FIELD_SIZE = {
 };
 
 export const CELL_SIZE = 64;
-export const PLAYER_SIZE = CELL_SIZE * 0.75;
 
 export const cellImg = {
     [ECellType.Empty]: "",
