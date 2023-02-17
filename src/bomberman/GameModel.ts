@@ -46,14 +46,25 @@ export class GameModel {
         const newCol = Math.round(pos.x + offsetX + Math.sign(offsetX) / 2);
         const newRow = Math.round(pos.y + offsetY + Math.sign(offsetY) / 2);
 
-        console.log(`pos: ${pos.x}, ${pos.y}`)
-        console.log(`nPos: ${newCol}, ${newRow}`);
+        if (newCol > this.width - 1 || newCol < 0 || newRow > this.height - 1 || newRow < 0)
+            return {x: offsetX, y: offsetY};
 
-        if (pos.y % 1 === 0 && this.field[row][newCol] === ECellType.Empty)
+        const xDeviation = pos.x - Math.round(pos.x);
+        const yDeviation = pos.y - Math.round(pos.y);
+
+        if (offsetX && Math.abs(yDeviation) < 0.1 && this.field[row][newCol] === ECellType.Empty) {
             validOffset.x = offsetX;
 
-        if (pos.x % 1 === 0 && this.field[newRow][col] === ECellType.Empty)
+            if (!offsetY)
+                validOffset.y = -yDeviation;
+        }
+
+        if (offsetY && Math.abs(xDeviation) < 0.1 && this.field[newRow][col] === ECellType.Empty) {
             validOffset.y = offsetY;
+
+            if (!offsetX)
+                validOffset.x = -xDeviation;
+        }
 
         return validOffset;
     }
