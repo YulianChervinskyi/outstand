@@ -1,16 +1,17 @@
-import {ECellType, ISize} from "./types";
-import {PlayerModel} from "./player/PlayerModel";
+import {ECellType, ISize} from "../types";
+import {PlayerModel} from "./PlayerModel";
 
 export class GameModel {
-    player = new PlayerModel();
-
+    field: ECellType[][] = [];
+    players: PlayerModel[];
     width: number = 0;
     height: number = 0;
-    field: ECellType[][] = [];
 
-    constructor(size: ISize) {
+    constructor(size: ISize, players: PlayerModel[]) {
         this.width = size.w;
         this.height = size.h;
+        this.players = players;
+        this.players.forEach(player => player.setCheckOffset(this.checkPlayerOffset.bind(this, player)));
         this.initField();
     }
 
@@ -28,45 +29,45 @@ export class GameModel {
         }
     }
 
-    playerOffsetCheck(offsetX: number, offsetY: number) {
+    checkPlayerOffset(player: PlayerModel, offset: { x: number, y: number }) {
         let validOffset = {x: 0, y: 0};
-        const pos = this.player.pos;
+        const pos = player.pos;
 
-        if (pos.x + offsetX < 0)
-            offsetX = -pos.x;
-        if (pos.x + offsetX > this.width - 1)
-            offsetX = this.width - 1 - pos.x;
-        if (pos.y + offsetY < 0)
-            offsetY = -pos.y;
-        if (pos.y + offsetY > this.height - 1)
-            offsetY = this.height - 1 - pos.y;
+        if (pos.x + offset.x < 0)
+            offset.x = -pos.x;
+        if (pos.x + offset.x > this.width - 1)
+            offset.x = this.width - 1 - pos.x;
+        if (pos.y + offset.y < 0)
+            offset.y = -pos.y;
+        if (pos.y + offset.y > this.height - 1)
+            offset.y = this.height - 1 - pos.y;
 
         const col = Math.round(pos.x);
         const row = Math.round(pos.y);
-        const newCol = Math.round(pos.x + offsetX + Math.sign(offsetX) / 2);
-        const newRow = Math.round(pos.y + offsetY + Math.sign(offsetY) / 2);
+        const newCol = Math.round(pos.x + offset.x + Math.sign(offset.x) / 2);
+        const newRow = Math.round(pos.y + offset.y + Math.sign(offset.y) / 2);
 
         if (newCol > this.width - 1 || newCol < 0 || newRow > this.height - 1 || newRow < 0)
-            return {x: offsetX, y: offsetY};
+            return {x: offset.x, y: offset.y};
 
         const xDeviation = pos.x - Math.round(pos.x);
         const yDeviation = pos.y - Math.round(pos.y);
 
         const validateX = () => {
-            if (offsetX && Math.abs(yDeviation) < 0.1 && this.field[row][newCol] === ECellType.Empty) {
-                validOffset.x = offsetX;
+            if (offset.x && Math.abs(yDeviation) < 0.1 && this.field[row][newCol] === ECellType.Empty) {
+                validOffset.x = offset.x;
                 validOffset.y = -yDeviation;
             }
         }
 
         const validateY = () => {
-            if (offsetY && Math.abs(xDeviation) < 0.1 && this.field[newRow][col] === ECellType.Empty) {
-                validOffset.y = offsetY;
+            if (offset.y && Math.abs(xDeviation) < 0.1 && this.field[newRow][col] === ECellType.Empty) {
+                validOffset.y = offset.y;
                 validOffset.x = -xDeviation;
             }
         }
 
-        if (this.player.direction === "x") {
+        if (player.direction === "x") {
             validateX();
             validateY();
         } else {
@@ -74,8 +75,10 @@ export class GameModel {
             validateX();
         }
 
-        console.log("direction", this.player.direction);
-
         return validOffset;
+    }
+
+    update(seconds: number) {
+        this.players.forEach(p => p.update(seconds));
     }
 }

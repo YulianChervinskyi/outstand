@@ -1,5 +1,5 @@
 import "./Field.scss";
-import {GameModel} from "../GameModel";
+import {GameModel} from "../models/GameModel";
 import {cellImg, CELL_SIZE} from "../config";
 import {ECellType} from "../types";
 
