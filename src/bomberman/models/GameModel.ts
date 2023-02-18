@@ -54,16 +54,20 @@ export class GameModel {
         const yDeviation = pos.y - Math.round(pos.y);
 
         const validateX = () => {
-            if (offset.x && Math.abs(yDeviation) < 0.1 && this.field[row][newCol] === ECellType.Empty) {
+            if (offset.x && Math.abs(yDeviation) < 0.2 && this.field[row][newCol] === ECellType.Empty) {
                 validOffset.x = offset.x;
                 validOffset.y = -yDeviation;
+            } else if (offset.x && this.field[row][newCol] !== ECellType.Empty) {
+                validOffset.x = Math.round(pos.x) - pos.x;
             }
         }
 
         const validateY = () => {
-            if (offset.y && Math.abs(xDeviation) < 0.1 && this.field[newRow][col] === ECellType.Empty) {
+            if (offset.y && Math.abs(xDeviation) < 0.2 && this.field[newRow][col] === ECellType.Empty) {
                 validOffset.y = offset.y;
                 validOffset.x = -xDeviation;
+            } else if (offset.y && this.field[newRow][col] !== ECellType.Empty) {
+                validOffset.y = Math.round(pos.y) - pos.y;
             }
         }
 
