@@ -30,7 +30,7 @@ export class GameModel {
 
     playerOffsetCheck(offsetX: number, offsetY: number) {
         let validOffset = {x: 0, y: 0};
-        const pos = this.player.position;
+        const pos = this.player.pos;
 
         if (pos.x + offsetX < 0)
             offsetX = -pos.x;
@@ -52,19 +52,29 @@ export class GameModel {
         const xDeviation = pos.x - Math.round(pos.x);
         const yDeviation = pos.y - Math.round(pos.y);
 
-        if (offsetX && Math.abs(yDeviation) < 0.1 && this.field[row][newCol] === ECellType.Empty) {
-            validOffset.x = offsetX;
-
-            if (!offsetY)
+        const validateX = () => {
+            if (offsetX && Math.abs(yDeviation) < 0.1 && this.field[row][newCol] === ECellType.Empty) {
+                validOffset.x = offsetX;
                 validOffset.y = -yDeviation;
+            }
         }
 
-        if (offsetY && Math.abs(xDeviation) < 0.1 && this.field[newRow][col] === ECellType.Empty) {
-            validOffset.y = offsetY;
-
-            if (!offsetX)
+        const validateY = () => {
+            if (offsetY && Math.abs(xDeviation) < 0.1 && this.field[newRow][col] === ECellType.Empty) {
+                validOffset.y = offsetY;
                 validOffset.x = -xDeviation;
+            }
         }
+
+        if (this.player.direction === "x") {
+            validateX();
+            validateY();
+        } else {
+            validateY();
+            validateX();
+        }
+
+        console.log("direction", this.player.direction);
 
         return validOffset;
     }
