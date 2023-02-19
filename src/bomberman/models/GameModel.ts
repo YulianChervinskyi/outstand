@@ -22,7 +22,7 @@ export class GameModel {
         for (let y = 0; y < this.height; y++) {
             this.field.push([]);
             for (let x = 0; x < this.width; x++) {
-                if (y % 2 && x % 2)
+                if (y % 2 && x % 2 && (x > 1 || y > 1))
                     this.field[y][x] = ECellType.AzovSteel;
                 else if ((x + y <= 1) || (x + y) >= (this.height + this.width - 3))
                     this.field[y][x] = ECellType.Empty;
