@@ -54,8 +54,10 @@ export class Bomberman extends React.Component<IComponentProps, {}> {
             >
                 <InfoPanel/>
                 <div className="game-area">
-                    <Field model={this.model}/>
-                    <Player position={this.player.pos}/>
+                    <div className="scene">
+                        <Field model={this.model}/>
+                        <Player position={this.player.pos}/>
+                    </div>
                 </div>
             </div>
         );

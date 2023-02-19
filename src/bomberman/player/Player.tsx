@@ -4,8 +4,8 @@ import "./Player.scss";
 
 export function Player(props: { position: { x: number, y: number } }) {
     const style = {
-        left: `${CELL_SIZE * (props.position.x)}px`,
-        top: `${CELL_SIZE * (props.position.y)}px`,
+        left: `${CELL_SIZE * (props.position.x) + 1}px`,
+        top: `${CELL_SIZE * (props.position.y) + 1}px`,
         width: CELL_SIZE,
     };
 

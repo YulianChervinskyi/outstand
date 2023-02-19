@@ -5,7 +5,7 @@ import {ECellType} from "../types";
 
 export function Field(props: { model: GameModel }) {
     return (
-        <div className="common-size field">
+        <div className="field">
             {props.model.field.map((row, rowKey) =>
                 <div className="field-row" key={rowKey}>
                     {row.map((cell, cellKey) =>
