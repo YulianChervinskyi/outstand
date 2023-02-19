@@ -4,6 +4,7 @@ const MAX_AXIS_RATE = 5;
 
 export class PlayerModel {
     readonly pos = {x: 0, y: 0};
+    readonly prevPos = {x: 0, y: 0};
     readonly speed = 5;
     private xAxisRate = 0;
     private yAxisRate = 0;
@@ -27,15 +28,19 @@ export class PlayerModel {
     }
 
     walk(offset: { x: number, y: number }) {
+        if (this.pos.x % 1 === 0 && this.pos.x !== this.prevPos.x)
+            this.prevPos.x = this.pos.x;
+        if (this.pos.y % 1 === 0 && this.pos.y !== this.prevPos.y)
+            this.prevPos.y = this.pos.y;
+
         this.pos.x += offset.x;
         this.pos.y += offset.y;
-
-        const xMovement = Math.abs(offset.x) > Math.abs(offset.y) ? 1 : -1
-        this.xAxisRate = Math.max(-MAX_AXIS_RATE, Math.min(MAX_AXIS_RATE, this.xAxisRate + xMovement));
-        this.yAxisRate = Math.max(-MAX_AXIS_RATE, Math.min(MAX_AXIS_RATE, this.yAxisRate - xMovement));
+        // const xMovement = Math.abs(offset.x) > Math.abs(offset.y) ? 1 : -1
+        // this.xAxisRate = Math.max(-MAX_AXIS_RATE, Math.min(MAX_AXIS_RATE, this.xAxisRate + xMovement));
+        // this.yAxisRate = Math.max(-MAX_AXIS_RATE, Math.min(MAX_AXIS_RATE, this.yAxisRate - xMovement));
     }
 
-    get direction() {
-        return this.xAxisRate > this.yAxisRate ? "x" : "y";
-    }
+    // get direction() {
+    //     return this.xAxisRate > this.yAxisRate ? "x" : "y";
+    // }
 }
