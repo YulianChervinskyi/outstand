@@ -47,8 +47,6 @@ export class GameModel {
         const distanceFromPlayerToCell_X = Math.abs(Math.round(pos.x) - pos.x);
         const distanceFromPlayerToCell_Y = Math.abs(Math.round(pos.y) - pos.y);
 
-        console.log(`distance: x: ${distanceFromPlayerToCell_X}, y: ${distanceFromPlayerToCell_Y}`);
-
         if (distanceFromPlayerToCell_X && distanceFromPlayerToCell_X < Math.abs(offset.x))
             offset.x = distanceFromPlayerToCell_X * Math.sign(offset.x);
         if (distanceFromPlayerToCell_Y && Math.abs(distanceFromPlayerToCell_Y) < Math.abs(offset.y))
@@ -60,8 +58,6 @@ export class GameModel {
         if (newCol > this.width - 1 || newCol < 0 || newRow > this.height - 1 || newRow < 0)
             return {x: offset.x, y: offset.y};
 
-        console.log(pos.y + offset.y);
-
         if (pos.y % 1 === 0 && this.field[row][newCol] === ECellType.Empty)
             validOffset.x = offset.x;
         else if (distanceFromPlayerToCell_X === offset.x && this.field[row][newCol] !== ECellType.Empty)
@@ -71,8 +67,6 @@ export class GameModel {
             validOffset.y = offset.y;
         else if (distanceFromPlayerToCell_Y === offset.y && this.field[newRow][col] !== ECellType.Empty)
             validOffset.y = distanceFromPlayerToCell_Y;
-
-        console.log(`pos: x= ${pos.x}, y= ${pos.y}`);
 
         if (validOffset.x && validOffset.y)
             validOffset = col !== player.prevPos.x ? {x: 0, y: validOffset.y} : {x: validOffset.x, y: 0};
