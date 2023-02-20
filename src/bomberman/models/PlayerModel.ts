@@ -2,8 +2,8 @@ import {IControlsStates} from "../Controls";
 
 export class PlayerModel {
     readonly pos = {x: 0, y: 0};
-    readonly prevPos = {x: 0, y: 0};
-    readonly speed = 5;
+    prevAxis: string | undefined;
+    readonly speed = 2.5;
     private checkOffset?: (offset: { x: number, y: number }) => { x: number, y: number };
 
     constructor(private states: IControlsStates) {
@@ -25,10 +25,7 @@ export class PlayerModel {
     }
 
     walk(offset: { x: number, y: number }) {
-        if (this.pos.x % 1 === 0 && this.pos.x !== this.prevPos.x)
-            this.prevPos.x = this.pos.x;
-        if (this.pos.y % 1 === 0 && this.pos.y !== this.prevPos.y)
-            this.prevPos.y = this.pos.y;
+        this.prevAxis = (this.pos.x % 1 === 0 || this.pos.y % 1 === 0) && offset.x ? "x" : "y";
 
         this.pos.x += offset.x;
         this.pos.y += offset.y;

@@ -69,7 +69,7 @@ export class GameModel {
             validOffset.y = distanceFromPlayerToCell_Y;
 
         if (validOffset.x && validOffset.y)
-            validOffset = col !== player.prevPos.x ? {x: 0, y: validOffset.y} : {x: validOffset.x, y: 0};
+            validOffset = player.prevAxis === "x" ? {x: 0, y: validOffset.y} : {x: validOffset.x, y: 0};
 
         return validOffset;
     }
