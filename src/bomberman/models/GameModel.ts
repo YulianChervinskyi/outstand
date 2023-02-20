@@ -11,7 +11,10 @@ export class GameModel {
         this.width = size.w;
         this.height = size.h;
         this.players = players;
-        this.players.forEach(player => player.setCheckOffset(this.checkPlayerOffset.bind(this, player)));
+        this.players.forEach((player) => {
+            player.setCheckOffset(this.checkPlayerOffset.bind(this, player));
+            player.setSpawnBomb(this.spawnBomb.bind(this, player));
+        });
         this.initField();
     }
 
@@ -27,6 +30,13 @@ export class GameModel {
                     this.field[y][x] = Math.random() < 0.1 ? ECellType.Wall : ECellType.Empty;
             }
         }
+    }
+
+    spawnBomb(player: PlayerModel) {
+        const pos = player.pos;
+        const spawnPos = {x: Math.round(pos.x), y: Math.round(pos.y)};
+
+        this.field[spawnPos.y][spawnPos.x] = ECellType.Bomb;
     }
 
     checkPlayerOffset(player: PlayerModel, offset: { x: number, y: number }) {

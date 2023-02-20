@@ -5,6 +5,7 @@ export class PlayerModel {
     prevAxis: string | undefined;
     readonly speed = 2.5;
     private checkOffset?: (offset: { x: number, y: number }) => { x: number, y: number };
+    private spawnBomb?: () => void;
 
     constructor(private states: IControlsStates) {
     }
@@ -13,7 +14,18 @@ export class PlayerModel {
         this.checkOffset = checkOffset;
     }
 
+    setSpawnBomb(spawnBomb: () => void) {
+        this.spawnBomb = spawnBomb;
+    }
+
     update(seconds: number) {
+        this.checkMovement(seconds);
+
+        if (this.states.fire && this.spawnBomb)
+            this.spawnBomb();
+    }
+
+    checkMovement(seconds: number) {
         if (!this.checkOffset)
             return;
 
