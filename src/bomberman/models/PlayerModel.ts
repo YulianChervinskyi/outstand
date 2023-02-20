@@ -1,41 +1,34 @@
 import {IControlsStates} from "../Controls";
-
-const MAX_AXIS_RATE = 5;
+import {IPoint} from "../types";
 
 export class PlayerModel {
-    readonly pos = {x: 0, y: 0};
+    readonly pos: IPoint = {x: 0, y: 0};
     readonly speed = 5;
-    private xAxisRate = 0;
-    private yAxisRate = 0;
-    private checkOffset?: (offset: { x: number, y: number }) => { x: number, y: number };
+    private fixOffset?: (pos: IPoint, offset: IPoint) => { x: number, y: number };
 
     constructor(private states: IControlsStates) {}
 
-    setCheckOffset(checkOffset: (offset: { x: number, y: number }) => { x: number, y: number }) {
-        this.checkOffset = checkOffset;
+    setCheckOffset(checkOffset: (pos: IPoint, offset: IPoint) => { x: number, y: number }) {
+        this.fixOffset = checkOffset;
     }
 
     update(seconds: number) {
-        if (!this.checkOffset)
+        if (!this.fixOffset)
             return;
 
-        const zx = this.speed * seconds * (Number(this.states.right) - Number(this.states.left));
-        const zy = this.speed * seconds * (Number(this.states.backward) - Number(this.states.forward));
+        const x = this.speed * seconds * (Number(this.states.right) - Number(this.states.left));
+        const y = this.speed * seconds * (Number(this.states.backward) - Number(this.states.forward));
 
-        if (zx || zy)
-            this.walk(this.checkOffset({x: zx, y: zy}));
+        if (x || y) {
+            const offset = this.fixOffset(this.pos, {x, y});
+            const diagCoef = x && y && offset.x === x && offset.y === y ? 1 / Math.sqrt(2) : 1;
+            this.walk({x: offset.x * diagCoef, y: offset.y * diagCoef});
+        }
     }
 
     walk(offset: { x: number, y: number }) {
         this.pos.x += offset.x;
         this.pos.y += offset.y;
-
-        const xMovement = Math.abs(offset.x) > Math.abs(offset.y) ? 1 : -1
-        this.xAxisRate = Math.max(-MAX_AXIS_RATE, Math.min(MAX_AXIS_RATE, this.xAxisRate + xMovement));
-        this.yAxisRate = Math.max(-MAX_AXIS_RATE, Math.min(MAX_AXIS_RATE, this.yAxisRate - xMovement));
     }
 
-    get direction() {
-        return this.xAxisRate > this.yAxisRate ? "x" : "y";
-    }
 }
