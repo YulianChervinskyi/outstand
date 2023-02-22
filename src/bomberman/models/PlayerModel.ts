@@ -3,7 +3,7 @@ import {IControlsStates} from "../Controls";
 export class PlayerModel {
     readonly pos = {x: 0, y: 0};
     prevAxis: string | undefined;
-    readonly speed = 2.5;
+    readonly speed = 5;
     private checkOffset?: (offset: { x: number, y: number }) => { x: number, y: number };
     private spawnBomb?: () => void;
 

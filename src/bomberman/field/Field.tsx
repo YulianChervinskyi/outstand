@@ -1,11 +1,12 @@
 import "./Field.scss";
+import {IPoint} from "../../asteroids/types";
 import {GameModel} from "../models/GameModel";
 import {cellImg, CELL_SIZE} from "../config";
 import {ECellType} from "../types";
 
-export function Field(props: { model: GameModel }) {
+export function Field(props: { model: GameModel, offset: IPoint }) {
     return (
-        <div className="field">
+        <div className="field" style={{left: props.offset.x, top: props.offset.y}}>
             {props.model.field.map((row, rowKey) =>
                 <div className="field-row" key={rowKey}>
                     {row.map((cell, cellKey) =>

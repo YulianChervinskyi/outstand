@@ -1,5 +1,5 @@
 import {IComponentProps} from "../Box";
-import {FIELD_SIZE} from "./config";
+import {CELL_SIZE, FIELD_SIZE} from "./config";
 import {GameModel} from "./models/GameModel";
 import {InfoPanel} from "./info_panel/InfoPanel";
 import {Field} from "./field/Field";
@@ -14,6 +14,7 @@ export class Bomberman extends React.Component<IComponentProps, {}> {
     player = new PlayerModel(this.controls.states);
     model = new GameModel(FIELD_SIZE, [this.player]);
     prevTime = 0;
+    gameAreaRef = React.createRef<HTMLDivElement>();
 
     constructor(props: IComponentProps) {
         super(props);
@@ -43,6 +44,12 @@ export class Bomberman extends React.Component<IComponentProps, {}> {
     }
 
     render() {
+        const gw = this.gameAreaRef.current?.offsetWidth || 0;
+        const gh = this.gameAreaRef.current?.offsetHeight || 0;
+        const cw = this.model.width * CELL_SIZE + 2;
+        const ch = this.model.height * CELL_SIZE + 2;
+        const offset = {x: (gw - cw) / 2, y: (gh - ch) / 2};
+
         return (
             <div
                 className="bomberman"
@@ -53,10 +60,10 @@ export class Bomberman extends React.Component<IComponentProps, {}> {
                 }}
             >
                 <InfoPanel/>
-                <div className="game-area">
+                <div className="game-area" ref={this.gameAreaRef}>
                     <div className="scene">
-                        <Field model={this.model}/>
-                        <Player position={this.player.pos}/>
+                        <Field model={this.model} offset={offset}/>
+                        <Player position={this.player.pos} offset={offset}/>
                     </div>
                 </div>
             </div>
