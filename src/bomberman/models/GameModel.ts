@@ -50,14 +50,6 @@ export class GameModel {
         const distanceFromPlayerToCell_X = Math.abs(Math.round(pos.x) - pos.x);
         const distanceFromPlayerToCell_Y = Math.abs(Math.round(pos.y) - pos.y);
 
-        const checkPlayerPos = () => {
-            if (pos.y % 1 === 0 && pos.x % 1 !== 0)
-                validOffset.x = offset.x;
-
-            if (pos.x % 1 === 0 && pos.y % 1 !== 0)
-                validOffset.y = offset.y;
-        }
-
         if (pos.x + offset.x < 0)
             offset.x = -pos.x;
         if (pos.x + offset.x > this.width - 1)
@@ -80,24 +72,18 @@ export class GameModel {
             ? Math.round(pos.y + offset.y + Math.sign(offset.y) / 2)
             : this.height - 1;
 
-        if (this.field[row][col] !== ECellType.Empty)
-            checkPlayerPos();
-
-        if (pos.y % 1 === 0 && this.field[row][newCol] === ECellType.Empty)
+        if (pos.y % 1 === 0 && (this.field[row][newCol] === ECellType.Empty || this.field[row][col] !== ECellType.Empty && pos.x % 1 !== 0))
             validOffset.x = offset.x;
         else if (distanceFromPlayerToCell_X === offset.x && this.field[row][newCol] !== ECellType.Empty)
             validOffset.x = distanceFromPlayerToCell_X;
 
-        if (pos.x % 1 === 0 && this.field[newRow][col] === ECellType.Empty)
+        if (pos.x % 1 === 0 && (this.field[newRow][col] === ECellType.Empty || this.field[row][col] !== ECellType.Empty && pos.y % 1 !== 0))
             validOffset.y = offset.y;
         else if (distanceFromPlayerToCell_Y === offset.y && this.field[newRow][col] !== ECellType.Empty)
             validOffset.y = distanceFromPlayerToCell_Y;
 
         if (validOffset.x && validOffset.y)
             validOffset = player.prevAxis === "x" ? {x: 0, y: validOffset.y} : {x: validOffset.x, y: 0};
-
-        console.log(`pos: ${pos.x}, ${pos.y}`);
-        console.log(`posRounded: ${col}, ${row}`);
 
         return validOffset;
     }
