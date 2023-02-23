@@ -1,6 +1,8 @@
 import {ECellType, IPoint, ISize} from "../types";
 import {PlayerModel} from "./PlayerModel";
 
+const [abs, sign, round, min] = [Math.abs, Math.sign, Math.round, Math.min];
+
 export class GameModel {
     field: ECellType[][] = [];
     players: PlayerModel[];
@@ -29,86 +31,46 @@ export class GameModel {
         }
     }
 
-    private fixPlayerOffset(p: IPoint, offset: IPoint) {
-        const initialOffset = {x: offset.x, y: offset.y};
-        let validOffset = {x: 0, y: 0};
-        const pos = {x: p.x, y: p.y};
+    private fixPlayerOffset(pos: IPoint, offset: IPoint) {
+        const o = this.fixBounds(pos, offset);
+        const p = {x: pos.x, y: pos.y};
+        let axis1 = "x" as keyof IPoint;
 
-        this.fixBounds(pos, offset);
+        for (let i = 0; i < 3 && abs(o.x) + abs(o.y) > 0; i++) {
+            if (o[axis1]) {
+                const axis2 = axis1 === "x" ? "y" : "x" as keyof IPoint;
+                const devA1 = round(p[axis1]) - p[axis1];    //deviation by main axis
+                const signA1 = sign(o[axis1]);               //sign of offset by main axis
+                const absA1 = abs(o[axis1]);                 //absolute main axis offset
 
-        let totalWay = Math.abs(offset.x) + Math.abs(offset.y);
+                const isPathFree = () => {
+                    const cA1 = round(p[axis1] + o[axis1] + signA1 / 2);
+                    const cA2 = round(p[axis2]);
+                    const signA2 = sign(cA2 - p[axis2]);
+                    return this.isCellEmpty(cA1, cA2, axis1) && (!signA2 || this.isCellEmpty(cA1, cA2 - signA2, axis1));
+                }
 
-        let count = 0;
-        while (totalWay > 0) {
-            const oldTotalWay = totalWay;
-
-            const calcDx = () => Math.round(pos.x) - pos.x;
-            const calcDy = () => Math.round(pos.y) - pos.y;
-
-            const isRowFree = (pos: IPoint, xOffset: number) => {
-                const row1 = Math.round(pos.y);
-                const row2 = row1 - Math.sign(calcDy());
-                const col = Math.round(pos.x + xOffset + Math.sign(xOffset) / 2);
-                return !this.isCellOccupied(col, row1) && !this.isCellOccupied(col, row2);
-            }
-
-            const isColFree = (pos: IPoint, yOffset: number) => {
-                const col1 = Math.round(pos.x);
-                const col2 = col1 - Math.sign(calcDx());
-                const row = Math.round(pos.y + yOffset + Math.sign(yOffset) / 2);
-                return !this.isCellOccupied(col1, row) && !this.isCellOccupied(col2, row);
-            }
-
-            if (offset.x) {
-                const dx = calcDx();
-                const dy = calcDy();
-                if (dx) {
-                    const absDx = Math.abs(dx);
-                    const gridDx = Math.min(Math.sign(offset.x) === Math.sign(dx) ? absDx : 1 - absDx, Math.abs(offset.x)) * Math.sign(offset.x);
-                    validOffset.x += gridDx;
-                    totalWay -= Math.abs(gridDx);
-                    pos.x += gridDx;
-                    offset.x -= gridDx;
-                } else if (isRowFree(pos, offset.x)) {
-                    validOffset.x += offset.x;
-                    totalWay -= Math.abs(offset.x);
-                    pos.x += offset.x;
-                    offset.x = 0;
-                } else if (!initialOffset.y && !this.isCellOccupied(pos.x + Math.sign(offset.x), Math.round(pos.y))) {
-                    const absDx = Math.min(Math.abs(offset.x), Math.abs(dy));
-                    offset.y += absDx * Math.sign(dy);
-                    offset.x -= absDx * Math.sign(offset.x);
+                if (devA1) {
+                    // if player is not on the cell center
+                    const maxDevA1 = min(signA1 === sign(devA1) ? abs(devA1) : 1 - abs(devA1), absA1) * signA1;
+                    p[axis1] += maxDevA1;
+                    o[axis1] -= maxDevA1;
+                } else if (isPathFree()) {
+                    // if player is on the cell center and path is free
+                    p[axis1] += o[axis1];
+                    o[axis1] = 0;
+                } else if (!offset[axis2] && this.isCellEmpty(p[axis1] + signA1, round(p[axis2]), axis1)) {
+                    // if player is on the cell center and path is blocked by wall
+                    const devA2 = round(p[axis2]) - p[axis2];
+                    const maxDevA2 = min(absA1, abs(devA2));
+                    o[axis2] += maxDevA2 * sign(devA2);
+                    o[axis1] -= maxDevA2 * signA1;
                 }
             }
 
-            if (offset.y) {
-                const dx = calcDx();
-                const dy = calcDy();
-                if (dy) {
-                    const absDy = Math.abs(dy);
-                    const gridDy = Math.min(Math.sign(offset.y) === Math.sign(dy) ? absDy : 1 - absDy, Math.abs(offset.y)) * Math.sign(offset.y);
-                    validOffset.y += gridDy;
-                    totalWay -= Math.abs(gridDy);
-                    pos.y += gridDy;
-                    offset.y -= gridDy;
-                } else if (isColFree(pos, offset.y)) {
-                    validOffset.y += offset.y;
-                    totalWay -= Math.abs(offset.y);
-                    pos.y += offset.y;
-                    offset.y = 0;
-                } else if (!initialOffset.x && !this.isCellOccupied(Math.round(pos.x), pos.y + Math.sign(offset.y))) {
-                    const absDy = Math.min(Math.abs(offset.y), Math.abs(dx));
-                    offset.x += absDy * Math.sign(dx);
-                    offset.y -= absDy * Math.sign(offset.y);
-                }
-            }
-            count++;
-
-            if (count % 4 === 0 && oldTotalWay === totalWay)
-                break;
+            axis1 = axis1 === "x" ? "y" : "x" as keyof IPoint;
         }
-        console.log("count:", count);
-        return validOffset;
+        return {x: p.x - pos.x, y: p.y - pos.y};
     }
 
     update(seconds: number) {
@@ -116,18 +78,17 @@ export class GameModel {
     }
 
     fixBounds(pos: IPoint, offset: IPoint) {
-        if (pos.x + offset.x < 0)
-            offset.x = -pos.x;
-        if (pos.x + offset.x > this.width - 1)
-            offset.x = this.width - 1 - pos.x;
-        if (pos.y + offset.y < 0)
-            offset.y = -pos.y;
-        if (pos.y + offset.y > this.height - 1)
-            offset.y = this.height - 1 - pos.y;
+        const {x, y} = offset;
+        return {
+            x: pos.x + x < 0 ? -pos.x : pos.x + x > this.width - 1 ? this.width - 1 - pos.x : x,
+            y: pos.y + y < 0 ? -pos.y : pos.y + y > this.height - 1 ? this.height - 1 - pos.y : y,
+        };
     }
 
-    isCellOccupied(col: number, row: number) {
-        return this.field[row]?.[col] !== ECellType.Empty;
+    isCellEmpty(cA1: number, cA2: number, axis: keyof IPoint = "x") {
+        const row = axis === "x" ? cA2 : cA1;
+        const col = axis === "x" ? cA1 : cA2;
+        return this.field[row]?.[col] === ECellType.Empty;
     }
 
 }
