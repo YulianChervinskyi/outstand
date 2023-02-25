@@ -1,5 +1,7 @@
-import {ECellType, ISize} from "../types";
+import {ECellType, IPoint, ISize} from "../types";
 import {PlayerModel} from "./PlayerModel";
+
+const [abs, sign, round, min] = [Math.abs, Math.sign, Math.round, Math.min];
 
 export class GameModel {
     field: ECellType[][] = [];
@@ -12,7 +14,7 @@ export class GameModel {
         this.height = size.h;
         this.players = players;
         this.players.forEach((player) => {
-            player.setCheckOffset(this.checkPlayerOffset.bind(this, player));
+            player.setCheckOffset(this.fixPlayerOffset.bind(this));
             player.setSpawnBomb(this.spawnBomb.bind(this, player));
         });
         this.initField();
@@ -22,12 +24,12 @@ export class GameModel {
         for (let y = 0; y < this.height; y++) {
             this.field.push([]);
             for (let x = 0; x < this.width; x++) {
-                if (y % 2 && x % 2 && (x > 1 || y > 1))
+                if (y % 2 && x % 2 && x + y > 2)
                     this.field[y][x] = ECellType.AzovSteel;
-                else if ((x + y <= 1) || (x + y) >= (this.height + this.width - 3))
+                else if ((x + y <= 2) || (x + y) >= (this.height + this.width - 3))
                     this.field[y][x] = ECellType.Empty;
                 else
-                    this.field[y][x] = Math.random() < 0.05 ? ECellType.Wall : ECellType.Empty;
+                    this.field[y][x] = Math.random() < 0.1 ? ECellType.Wall : ECellType.Empty;
             }
         }
     }
@@ -39,56 +41,64 @@ export class GameModel {
         this.field[spawnPos.y][spawnPos.x] = ECellType.Bomb;
     }
 
-    checkPlayerOffset(player: PlayerModel, offset: { x: number, y: number }) {
-        let validOffset = {x: 0, y: 0};
+    private fixPlayerOffset(pos: IPoint, offset: IPoint) {
+        const o = this.fixBounds(pos, offset);
+        const p = {x: pos.x, y: pos.y};
+        let axis1 = "x" as keyof IPoint;
 
-        const pos = player.pos;
+        for (let i = 0; i < 3 && abs(o.x) + abs(o.y) > 0; i++) {
+            if (o[axis1]) {
+                const axis2 = axis1 === "x" ? "y" : "x" as keyof IPoint;
+                const devA1 = round(p[axis1]) - p[axis1];    //deviation by main axis
+                const signA1 = sign(o[axis1]);               //sign of offset by main axis
+                const absA1 = abs(o[axis1]);                 //absolute main axis offset
 
-        const col = Math.round(pos.x);
-        const row = Math.round(pos.y);
+                const isPathFree = () => {
+                    const cA1 = round(p[axis1] + o[axis1] + signA1 / 2);
+                    const cA2 = round(p[axis2]);
+                    const signA2 = sign(cA2 - p[axis2]);
+                    return this.isCellEmpty(cA1, cA2, axis1) && (!signA2 || this.isCellEmpty(cA1, cA2 - signA2, axis1));
+                }
 
-        const distanceFromPlayerToCell_X = Math.abs(Math.round(pos.x) - pos.x);
-        const distanceFromPlayerToCell_Y = Math.abs(Math.round(pos.y) - pos.y);
+                if (devA1) {
+                    // if player is not on the cell center
+                    const maxDevA1 = min(signA1 === sign(devA1) ? abs(devA1) : 1 - abs(devA1), absA1) * signA1;
+                    p[axis1] += maxDevA1;
+                    o[axis1] -= maxDevA1;
+                } else if (isPathFree()) {
+                    // if player is on the cell center and path is free
+                    p[axis1] += o[axis1];
+                    o[axis1] = 0;
+                } else if (!offset[axis2] && this.isCellEmpty(p[axis1] + signA1, round(p[axis2]), axis1)) {
+                    // if player is on the cell center and path is blocked by wall
+                    const devA2 = round(p[axis2]) - p[axis2];
+                    const maxDevA2 = min(absA1, abs(devA2));
+                    o[axis2] += maxDevA2 * sign(devA2);
+                    o[axis1] -= maxDevA2 * signA1;
+                }
+            }
 
-        if (pos.x + offset.x < 0)
-            offset.x = -pos.x;
-        if (pos.x + offset.x > this.width - 1)
-            offset.x = this.width - 1 - pos.x;
-        if (pos.y + offset.y < 0)
-            offset.y = -pos.y;
-        if (pos.y + offset.y > this.height - 1)
-            offset.y = this.height - 1 - pos.y;
-
-        if (distanceFromPlayerToCell_X && distanceFromPlayerToCell_X < Math.abs(offset.x))
-            offset.x = distanceFromPlayerToCell_X * Math.sign(offset.x);
-        if (distanceFromPlayerToCell_Y && Math.abs(distanceFromPlayerToCell_Y) < Math.abs(offset.y))
-            offset.y = distanceFromPlayerToCell_Y * Math.sign(offset.y);
-
-        const newCol = pos.x + offset.x < this.width - 1
-            ? Math.round(pos.x + offset.x + Math.sign(offset.x) / 2)
-            : this.width - 1;
-
-        const newRow = pos.y + offset.y < this.height - 1
-            ? Math.round(pos.y + offset.y + Math.sign(offset.y) / 2)
-            : this.height - 1;
-
-        if (pos.y % 1 === 0 && (this.field[row][newCol] === ECellType.Empty || this.field[row][col] !== ECellType.Empty && pos.x % 1 !== 0))
-            validOffset.x = offset.x;
-        else if (distanceFromPlayerToCell_X === offset.x && this.field[row][newCol] !== ECellType.Empty)
-            validOffset.x = distanceFromPlayerToCell_X;
-
-        if (pos.x % 1 === 0 && (this.field[newRow][col] === ECellType.Empty || this.field[row][col] !== ECellType.Empty && pos.y % 1 !== 0))
-            validOffset.y = offset.y;
-        else if (distanceFromPlayerToCell_Y === offset.y && this.field[newRow][col] !== ECellType.Empty)
-            validOffset.y = distanceFromPlayerToCell_Y;
-
-        if (validOffset.x && validOffset.y)
-            validOffset = player.prevAxis === "x" ? {x: 0, y: validOffset.y} : {x: validOffset.x, y: 0};
-
-        return validOffset;
+            axis1 = axis1 === "x" ? "y" : "x" as keyof IPoint;
+        }
+        return {x: p.x - pos.x, y: p.y - pos.y};
     }
 
     update(seconds: number) {
         this.players.forEach(p => p.update(seconds));
     }
+
+    fixBounds(pos: IPoint, offset: IPoint) {
+        const {x, y} = offset;
+        return {
+            x: pos.x + x < 0 ? -pos.x : pos.x + x > this.width - 1 ? this.width - 1 - pos.x : x,
+            y: pos.y + y < 0 ? -pos.y : pos.y + y > this.height - 1 ? this.height - 1 - pos.y : y,
+        };
+    }
+
+    isCellEmpty(cA1: number, cA2: number, axis: keyof IPoint = "x") {
+        const row = axis === "x" ? cA2 : cA1;
+        const col = axis === "x" ? cA1 : cA2;
+        return this.field[row]?.[col] === ECellType.Empty;
+    }
+
 }

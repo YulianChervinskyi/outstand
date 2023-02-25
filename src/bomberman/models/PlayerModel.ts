@@ -1,17 +1,16 @@
 import {IControlsStates} from "../Controls";
+import {IPoint} from "../types";
 
 export class PlayerModel {
-    readonly pos = {x: 0, y: 0};
-    prevAxis: string | undefined;
+    readonly pos: IPoint = {x: 0, y: 0};
     readonly speed = 5;
-    private checkOffset?: (offset: { x: number, y: number }) => { x: number, y: number };
+    private fixOffset?: (pos: IPoint, offset: IPoint) => { x: number, y: number };
     private spawnBomb?: () => void;
 
-    constructor(private states: IControlsStates) {
-    }
+    constructor(private states: IControlsStates) {}
 
-    setCheckOffset(checkOffset: (offset: { x: number, y: number }) => { x: number, y: number }) {
-        this.checkOffset = checkOffset;
+    setCheckOffset(checkOffset: (pos: IPoint, offset: IPoint) => { x: number, y: number }) {
+        this.fixOffset = checkOffset;
     }
 
     setSpawnBomb(spawnBomb: () => void) {
@@ -19,26 +18,27 @@ export class PlayerModel {
     }
 
     update(seconds: number) {
-        this.checkMovement(seconds);
+        this.updateMovement(seconds);
 
         if (this.states.fire && this.spawnBomb)
             this.spawnBomb();
     }
 
-    checkMovement(seconds: number) {
-        if (!this.checkOffset)
+    updateMovement(seconds: number) {
+        if (!this.fixOffset)
             return;
 
-        const zx = this.speed * seconds * (Number(this.states.right) - Number(this.states.left));
-        const zy = this.speed * seconds * (Number(this.states.backward) - Number(this.states.forward));
+        const x = this.speed * seconds * (Number(this.states.right) - Number(this.states.left));
+        const y = this.speed * seconds * (Number(this.states.backward) - Number(this.states.forward));
 
-        if (zx || zy)
-            this.walk(this.checkOffset({x: zx, y: zy}));
+        if (x || y) {
+            const offset = this.fixOffset(this.pos, {x, y});
+            const diagCoef = x && y && offset.x === x && offset.y === y ? 1 / Math.sqrt(2) : 1;
+            this.walk({x: offset.x * diagCoef, y: offset.y * diagCoef});
+        }
     }
 
     walk(offset: { x: number, y: number }) {
-        this.prevAxis = (this.pos.x % 1 === 0 || this.pos.y % 1 === 0) && offset.x ? "x" : "y";
-
         this.pos.x += offset.x;
         this.pos.y += offset.y;
     }

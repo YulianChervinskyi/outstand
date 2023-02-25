@@ -13,3 +13,8 @@ export interface ISize {
     w: number,
     h: number,
 }
+
+export interface IPoint {
+    x: number,
+    y: number,
+}
