@@ -69,15 +69,19 @@ export class GameModel {
                     // if player is on the cell center and path is free
                     p[axis1] += o[axis1];
                     o[axis1] = 0;
-                } else if (!offset[axis2] && this.isCellEmpty(p[axis1] + signA1, round(p[axis2]), axis1)) {
+                } else if (!offset[axis2]) {
                     // if player is on the cell center and path is blocked by wall
-                    const devA2 = round(p[axis2]) - p[axis2];
+                    const cA1 = p[axis1] + signA1;
+                    const cA2 = round(p[axis2]);
+                    let devA2 = cA2 - p[axis2];
+                    if (!this.isCellEmpty(cA1, cA2, axis1))
+                        devA2 = this.isCellEmpty(cA1, cA2 - sign(devA2), axis1) ? devA2 - sign(devA2) : 0;
+
                     const maxDevA2 = min(absA1, abs(devA2));
                     o[axis2] += maxDevA2 * sign(devA2);
                     o[axis1] -= maxDevA2 * signA1;
                 }
             }
-
             axis1 = axis1 === "x" ? "y" : "x" as keyof IPoint;
         }
         return {x: p.x - pos.x, y: p.y - pos.y};
