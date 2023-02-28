@@ -8,13 +8,15 @@ import {Player} from "./player/Player";
 import "./Bomberman.scss";
 import React from "react";
 import {Controls} from "./Controls";
+import {IPoint} from "./types";
 
 export class Bomberman extends React.Component<IComponentProps, {}> {
     controls = new Controls();
     player = new PlayerModel(this.controls.states);
     model = new GameModel(FIELD_SIZE, [this.player]);
-    prevTime = 0;
     gameAreaRef = React.createRef<HTMLDivElement>();
+    screenOffset: IPoint = {x: 0, y: 0};
+    prevTime = 0;
 
     constructor(props: IComponentProps) {
         super(props);
@@ -41,15 +43,30 @@ export class Bomberman extends React.Component<IComponentProps, {}> {
             return;
 
         this.model.update(seconds);
+
+        this.calcScreenOffset();
+    }
+
+    calcScreenOffset() {
+        const pos = {x: this.player.pos.x * CELL_SIZE, y: this.player.pos.y * CELL_SIZE};
+
+        const gameAreaW = this.gameAreaRef.current?.offsetWidth || 0;
+        const gameAreaH = this.gameAreaRef.current?.offsetHeight || 0;
+        const sceneW = this.model.width * CELL_SIZE + 2;
+        const sceneH = this.model.height * CELL_SIZE + 2;
+
+        if (pos.x >= gameAreaW / 2 && pos.x + gameAreaW / 2 <= sceneW)
+            this.screenOffset.x = gameAreaW / 2 - pos.x;
+        else if (gameAreaW >= sceneW)
+            this.screenOffset.x = (gameAreaW - sceneW) / 2;
+
+        if (pos.y >= gameAreaH / 2 && pos.y + gameAreaH / 2 <= sceneH)
+            this.screenOffset.y = gameAreaH / 2 - pos.y;
+        else if (gameAreaH >= sceneH)
+            this.screenOffset.y = (gameAreaH - sceneH) / 2;
     }
 
     render() {
-        const gw = this.gameAreaRef.current?.offsetWidth || 0;
-        const gh = this.gameAreaRef.current?.offsetHeight || 0;
-        const cw = this.model.width * CELL_SIZE + 2;
-        const ch = this.model.height * CELL_SIZE + 2;
-        const offset = {x: (gw - cw) / 2, y: (gh - ch) / 2};
-
         return (
             <div
                 className="bomberman"
@@ -62,8 +79,8 @@ export class Bomberman extends React.Component<IComponentProps, {}> {
                 <InfoPanel/>
                 <div className="game-area" ref={this.gameAreaRef}>
                     <div className="scene">
-                        <Field model={this.model} offset={offset}/>
-                        <Player position={this.player.pos} offset={offset}/>
+                        <Field model={this.model} offset={this.screenOffset}/>
+                        <Player position={this.player.pos} offset={this.screenOffset}/>
                     </div>
                 </div>
             </div>
