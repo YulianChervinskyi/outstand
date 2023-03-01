@@ -15,7 +15,6 @@ export class Bomberman extends React.Component<IComponentProps, {}> {
     player = new PlayerModel(this.controls.states);
     model = new GameModel(FIELD_SIZE, [this.player]);
     gameAreaRef = React.createRef<HTMLDivElement>();
-    screenOffset: IPoint = {x: 0, y: 0};
     prevTime = 0;
 
     constructor(props: IComponentProps) {
@@ -43,30 +42,59 @@ export class Bomberman extends React.Component<IComponentProps, {}> {
             return;
 
         this.model.update(seconds);
-
-        this.calcScreenOffset();
     }
 
     calcScreenOffset() {
-        const pos = {x: this.player.pos.x * CELL_SIZE, y: this.player.pos.y * CELL_SIZE};
+        const offset: IPoint = {x: 0, y: 0};
+        const pos = {
+            x: this.player.pos.x * CELL_SIZE + 1,
+            y: this.player.pos.y * CELL_SIZE + 1,
+        };
 
         const gameAreaW = this.gameAreaRef.current?.offsetWidth || 0;
         const gameAreaH = this.gameAreaRef.current?.offsetHeight || 0;
         const sceneW = this.model.width * CELL_SIZE + 2;
         const sceneH = this.model.height * CELL_SIZE + 2;
 
-        if (pos.x >= gameAreaW / 2 && pos.x + gameAreaW / 2 <= sceneW)
-            this.screenOffset.x = gameAreaW / 2 - pos.x;
-        else if (gameAreaW >= sceneW)
-            this.screenOffset.x = (gameAreaW - sceneW) / 2;
+        const half = CELL_SIZE / 2;
+        if (gameAreaW >= sceneW)
+            offset.x = (gameAreaW - sceneW) / 2;
+        else if (pos.x + half >= gameAreaW / 2 && pos.x + half <= sceneW - gameAreaW / 2)
+            offset.x = gameAreaW / 2 - pos.x - half;
+        else
+            offset.x = pos.x >= sceneW / 2 ? gameAreaW - sceneW : 0;
 
-        if (pos.y >= gameAreaH / 2 && pos.y + gameAreaH / 2 <= sceneH)
-            this.screenOffset.y = gameAreaH / 2 - pos.y;
-        else if (gameAreaH >= sceneH)
-            this.screenOffset.y = (gameAreaH - sceneH) / 2;
+        if (gameAreaH >= sceneH)
+            offset.y = (gameAreaH - sceneH) / 2;
+        else if (pos.y + half >= gameAreaH / 2 && pos.y + half <= sceneH - gameAreaH / 2)
+            offset.y = gameAreaH / 2 - pos.y - half;
+        else
+            offset.y = pos.y >= sceneH / 2 ? gameAreaH - sceneH : 0;
+
+        return offset;
+    }
+
+    calcOffset() {
+        const areaWidth = this.gameAreaRef.current?.offsetWidth || 0;
+        const areaHeight = this.gameAreaRef.current?.offsetHeight || 0;
+        const fieldWidth = this.model.width * CELL_SIZE + 2;
+        const fieldHeight = this.model.height * CELL_SIZE + 2;
+        const playerX = this.player.pos.x * CELL_SIZE + 1;
+        const playerY = this.player.pos.y * CELL_SIZE + 1;
+        const playerCenterOffsetX = areaWidth / 2 - playerX - CELL_SIZE / 2;
+        const playerCenterOffsetY = areaHeight / 2 - playerY - CELL_SIZE / 2;
+
+        const maxOffsetX = areaWidth - fieldWidth;
+        const maxOffsetY = areaHeight - fieldHeight;
+        return {
+            x: Math.min(Math.max(playerCenterOffsetX, maxOffsetX), Math.max((maxOffsetX) / 2, 0)),
+            y: Math.min(Math.max(playerCenterOffsetY, maxOffsetY), Math.max((maxOffsetY) / 2, 0)),
+        }
     }
 
     render() {
+        const offset = this.calcScreenOffset();
+
         return (
             <div
                 className="bomberman"
@@ -79,8 +107,8 @@ export class Bomberman extends React.Component<IComponentProps, {}> {
                 <InfoPanel/>
                 <div className="game-area" ref={this.gameAreaRef}>
                     <div className="scene">
-                        <Field model={this.model} offset={this.screenOffset}/>
-                        <Player position={this.player.pos} offset={this.screenOffset}/>
+                        <Field model={this.model} offset={offset}/>
+                        <Player position={this.player.pos} offset={offset}/>
                     </div>
                 </div>
             </div>
