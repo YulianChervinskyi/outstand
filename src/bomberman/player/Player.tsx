@@ -5,8 +5,8 @@ import "./Player.scss";
 
 export function Player(props: { position: IPoint, offset: IPoint }) {
     const style = {
-        left: `${CELL_SIZE * (props.position.x) + 1 + props.offset.x}px`,
-        top: `${CELL_SIZE * (props.position.y) + 1 + props.offset.y}px`,
+        left: `${CELL_SIZE * props.position.x + props.offset.x + 1}px`,
+        top: `${CELL_SIZE * props.position.y + props.offset.y + 1}px`,
         width: CELL_SIZE,
     };
 

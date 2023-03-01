@@ -24,9 +24,9 @@ export class GameModel {
         for (let y = 0; y < this.height; y++) {
             this.field.push([]);
             for (let x = 0; x < this.width; x++) {
-                if (y % 2 && x % 2 && x + y > 2)
+                if (y % 2 && x % 2)
                     this.field[y][x] = ECellType.AzovSteel;
-                else if ((x + y <= 2) || (x + y) >= (this.height + this.width - 3))
+                else if (x + y <= 2 || x + y >= this.height + this.width - 3)
                     this.field[y][x] = ECellType.Empty;
                 else
                     this.field[y][x] = Math.random() < 0.1 ? ECellType.Wall : ECellType.Empty;
@@ -74,6 +74,7 @@ export class GameModel {
                     const cA1 = p[axis1] + signA1;
                     const cA2 = round(p[axis2]);
                     let devA2 = cA2 - p[axis2];
+
                     if (!this.isCellEmpty(cA1, cA2, axis1))
                         devA2 = this.isCellEmpty(cA1, cA2 - sign(devA2), axis1) ? devA2 - sign(devA2) : 0;
 
@@ -104,5 +105,4 @@ export class GameModel {
         const col = axis === "x" ? cA1 : cA2;
         return this.field[row]?.[col] === ECellType.Empty;
     }
-
 }
