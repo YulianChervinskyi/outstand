@@ -1,8 +1,9 @@
 import "./Field.scss";
 import {IPoint} from "../../asteroids/types";
 import {GameModel} from "../models/GameModel";
-import {cellImg, CELL_SIZE} from "../config";
+import {CELL_SIZE, cellImg} from "../config";
 import {ECellType} from "../types";
+import {Bomb} from "../bomb/Bomb";
 
 export function Field(props: { model: GameModel, offset: IPoint }) {
     return (
@@ -18,9 +19,9 @@ export function Field(props: { model: GameModel, offset: IPoint }) {
                                  height: `${CELL_SIZE}px`,
                                  minWidth: `${CELL_SIZE}px`,
                                  minHeight: `${CELL_SIZE}px`,
-                             }}
-                        >
-                            {(cell === ECellType.Wall || cell === ECellType.AzovSteel || cell === ECellType.Bomb)
+                             }}>
+                            {cell === ECellType.Bomb && <Bomb/>}
+                            {(cell === ECellType.Wall || cell === ECellType.AzovSteel)
                                 && <img src={cellImg[cell]} alt=""/>}
                         </div>
                     )}

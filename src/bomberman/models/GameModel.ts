@@ -14,10 +14,14 @@ export class GameModel {
         this.height = size.h;
         this.players = players;
         this.players.forEach((player) => {
-            player.setCheckOffset(this.fixPlayerOffset.bind(this));
-            player.setSpawnBomb(this.spawnBomb.bind(this, player));
+            player.setFixOffset(this.fixPlayerOffset.bind(this));
+            player.setBombOnField(this.updateBombOnField.bind(this));
         });
         this.initField();
+    }
+
+    update(seconds: number) {
+        this.players.forEach(p => p.update(seconds));
     }
 
     private initField() {
@@ -34,11 +38,8 @@ export class GameModel {
         }
     }
 
-    spawnBomb(player: PlayerModel) {
-        const pos = player.pos;
-        const spawnPos = {x: Math.round(pos.x), y: Math.round(pos.y)};
-
-        this.field[spawnPos.y][spawnPos.x] = ECellType.Bomb;
+    private updateBombOnField(pos: IPoint, cell: ECellType) {
+        this.field[Math.round(pos.y)][Math.round(pos.x)] = cell;
     }
 
     private fixPlayerOffset(pos: IPoint, offset: IPoint) {
@@ -88,11 +89,7 @@ export class GameModel {
         return {x: p.x - pos.x, y: p.y - pos.y};
     }
 
-    update(seconds: number) {
-        this.players.forEach(p => p.update(seconds));
-    }
-
-    fixBounds(pos: IPoint, offset: IPoint) {
+    private fixBounds(pos: IPoint, offset: IPoint) {
         const {x, y} = offset;
         return {
             x: pos.x + x < 0 ? -pos.x : pos.x + x > this.width - 1 ? this.width - 1 - pos.x : x,
@@ -100,7 +97,7 @@ export class GameModel {
         };
     }
 
-    isCellEmpty(cA1: number, cA2: number, axis: keyof IPoint = "x") {
+    private isCellEmpty(cA1: number, cA2: number, axis: keyof IPoint = "x") {
         const row = axis === "x" ? cA2 : cA1;
         const col = axis === "x" ? cA1 : cA2;
         return this.field[row]?.[col] === ECellType.Empty;

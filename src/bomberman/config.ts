@@ -1,12 +1,13 @@
 import {ECellType} from "./types";
 import {img} from "./assets";
 
+export const CELL_SIZE = 64;
+export const EXPLOSION_TIME = 4;
+
 export const FIELD_SIZE = {
     w: 15,
     h: 11,
 };
-
-export const CELL_SIZE = 64;
 
 export const cellImg = {
     [ECellType.Empty]: "",
