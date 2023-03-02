@@ -87,8 +87,8 @@ export class Bomberman extends React.Component<IComponentProps, {}> {
         const maxOffsetX = areaWidth - fieldWidth;
         const maxOffsetY = areaHeight - fieldHeight;
         return {
-            x: Math.min(Math.max(playerCenterOffsetX, maxOffsetX), Math.max((maxOffsetX) / 2, 0)),
-            y: Math.min(Math.max(playerCenterOffsetY, maxOffsetY), Math.max((maxOffsetY) / 2, 0)),
+            x: Math.min(Math.max(playerCenterOffsetX, maxOffsetX), Math.max(maxOffsetX / 2, 0)),
+            y: Math.min(Math.max(playerCenterOffsetY, maxOffsetY), Math.max(maxOffsetY / 2, 0)),
         }
     }
 
