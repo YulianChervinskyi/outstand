@@ -1,13 +1,17 @@
 import {IPoint} from "../types";
+import {EXPLOSION_TIME} from "../config";
 
 export class BombModel {
-    readonly spawnTime = performance.now() / 1000;
-    readonly spawnPos: IPoint = {x: 0, y: 0};
-
     private listeners: { [key: string]: ((event: BombModel) => void)[] } = {};
 
-    constructor(pos: { x: number, y: number }) {
-        this.spawnPos = {x: pos.x, y: pos.y};
+    constructor(readonly spawnTime: number, readonly spawnPos: IPoint) {
+    }
+
+    update() {
+        const currTime = performance.now() / 1000;
+
+        if (this.spawnTime < currTime - EXPLOSION_TIME)
+            this.explosion();
     }
 
     addEventListener(event: "onExplosion", callback: (event: BombModel) => void) {

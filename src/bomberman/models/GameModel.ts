@@ -1,10 +1,12 @@
 import {ECellType, IPoint, ISize} from "../types";
 import {PlayerModel} from "./PlayerModel";
+import {BombModel} from "./BombModel";
 
 const [abs, sign, round, min] = [Math.abs, Math.sign, Math.round, Math.min];
 
 export class GameModel {
     field: ECellType[][] = [];
+    activeBombs: BombModel[] = [];
     players: PlayerModel[];
     width: number = 0;
     height: number = 0;
@@ -15,13 +17,14 @@ export class GameModel {
         this.players = players;
         this.players.forEach((player) => {
             player.setFixOffset(this.fixPlayerOffset.bind(this));
-            player.setBombOnField(this.updateBombOnField.bind(this));
+            player.setBombOnField(this.addBomb.bind(this));
         });
         this.initField();
     }
 
     update(seconds: number) {
         this.players.forEach(p => p.update(seconds));
+        this.activeBombs?.forEach(b => b.update())
     }
 
     private initField() {
@@ -38,8 +41,16 @@ export class GameModel {
         }
     }
 
-    private updateBombOnField(pos: IPoint, cell: ECellType) {
-        this.field[Math.round(pos.y)][Math.round(pos.x)] = cell;
+    private addBomb(bomb: BombModel) {
+        this.activeBombs.push(bomb);
+        bomb.addEventListener("onExplosion", this.removeBomb.bind(this));
+        this.field[bomb.spawnPos.y][bomb.spawnPos.x] = ECellType.Bomb;
+    }
+
+    private removeBomb(bombToRemove: BombModel) {
+        this.activeBombs = this.activeBombs.filter((bomb) => bomb !== bombToRemove);
+        bombToRemove.removeEventListener("onExplosion", this.removeBomb.bind(this));
+        this.field[bombToRemove.spawnPos.y][bombToRemove.spawnPos.x] = ECellType.Empty;
     }
 
     private fixPlayerOffset(pos: IPoint, offset: IPoint) {

@@ -1,7 +1,6 @@
 import {IControlsStates} from "../Controls";
-import {ECellType, IPoint} from "../types";
+import {IPoint} from "../types";
 import {BombModel} from "./BombModel";
-import {EXPLOSION_TIME} from "../config";
 
 export class PlayerModel {
     readonly pos: IPoint = {x: 0, y: 0};
@@ -9,7 +8,7 @@ export class PlayerModel {
     private bombSupply = 3;
     private activeBombs: BombModel[] = [];
     private fixOffset?: (pos: IPoint, offset: IPoint) => { x: number, y: number };
-    private changeFieldCell?: (pos: IPoint, cell: ECellType) => void;
+    private addBombOnField?: (bomb: BombModel) => void;
 
     constructor(private states: IControlsStates) {
     }
@@ -18,53 +17,45 @@ export class PlayerModel {
         this.fixOffset = checkOffset;
     }
 
-    setBombOnField(changeFieldCell: (pos: IPoint, cell: ECellType) => void) {
-        this.changeFieldCell = changeFieldCell;
+    setBombOnField(addBombOnField: (bomb: BombModel) => void) {
+        this.addBombOnField = addBombOnField;
     }
 
     update(seconds: number) {
-        const currTime = performance.now() / 1000;
-
         this.updateMovement(seconds);
 
         if (this.states.fire && this.bombSupply > 0)
             this.createBomb();
-
-        this.activeBombs.forEach((bomb) => {
-            const bombLifeTime = Math.floor(currTime) - EXPLOSION_TIME;
-
-            if (bombLifeTime >= Math.round(bomb.spawnTime))
-                this.removeBomb(bomb.spawnPos);
-        });
-
     }
 
     createBomb() {
-        if (!this.changeFieldCell)
+        if (!this.addBombOnField)
             return;
 
-        const prevBombPos = this.activeBombs.length ? {
-            x: Math.round(this.activeBombs[this.activeBombs.length - 1].spawnPos.x),
-            y: Math.round(this.activeBombs[this.activeBombs.length - 1].spawnPos.y),
-        } : undefined;
+        const bombPos = {x: Math.round(this.pos.x), y: Math.round(this.pos.y)};
 
-        if (prevBombPos?.x === Math.round(this.pos.x) && prevBombPos?.y === Math.round(this.pos.y))
+        const prevBombPos = {
+            x: Math.round(this.activeBombs[this.activeBombs.length - 1]?.spawnPos.x),
+            y: Math.round(this.activeBombs[this.activeBombs.length - 1]?.spawnPos.y),
+        };
+
+        if (prevBombPos.x === bombPos.x && prevBombPos.y === bombPos.y)
             return;
+
+        const currTime = performance.now() / 1000;
+        const newBomb = new BombModel(currTime, bombPos);
+
+        newBomb.addEventListener("onExplosion", this.removeBomb.bind(this));
 
         this.bombSupply -= 1;
-        this.activeBombs.push(new BombModel(this.pos));
-        this.changeFieldCell(this.pos, ECellType.Bomb);
-        console.log(this.activeBombs);
+        this.addBombOnField(newBomb);
+        this.activeBombs.push(newBomb);
     }
 
-    removeBomb(spawnPos: IPoint) {
-        if (!this.changeFieldCell || !spawnPos)
-            return;
-
+    removeBomb(bombToRemove: BombModel) {
         this.bombSupply += 1;
-        this.activeBombs.splice(0, 1);
-        this.changeFieldCell(spawnPos, ECellType.Empty);
-        console.log(this.activeBombs);
+        this.activeBombs[0].removeEventListener("onExplosion", this.removeBomb.bind(this));
+        this.activeBombs = this.activeBombs.filter((bomb) => bomb != bombToRemove);
     }
 
     updateMovement(seconds: number) {
