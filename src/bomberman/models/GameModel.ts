@@ -17,14 +17,14 @@ export class GameModel {
         this.players = players;
         this.players.forEach((player) => {
             player.setFixOffset(this.fixPlayerOffset.bind(this));
-            player.setBombOnField(this.addBomb.bind(this));
+            player.setPlaceBomb(this.addBomb.bind(this));
         });
         this.initField();
     }
 
     update(seconds: number) {
         this.players.forEach(p => p.update(seconds));
-        this.activeBombs?.forEach(b => b.update())
+        this.activeBombs?.forEach(b => b.update(seconds))
     }
 
     private initField() {
@@ -43,13 +43,13 @@ export class GameModel {
 
     private addBomb(bomb: BombModel) {
         this.activeBombs.push(bomb);
-        bomb.addEventListener("onExplosion", this.removeBomb.bind(this));
+        bomb.addEventListener("onExplosion", this.removeBomb);
         this.field[bomb.spawnPos.y][bomb.spawnPos.x] = ECellType.Bomb;
     }
 
-    private removeBomb(bombToRemove: BombModel) {
+    private removeBomb = (bombToRemove: BombModel) => {
         this.activeBombs = this.activeBombs.filter((bomb) => bomb !== bombToRemove);
-        bombToRemove.removeEventListener("onExplosion", this.removeBomb.bind(this));
+        bombToRemove.removeEventListener("onExplosion", this.removeBomb);
         this.field[bombToRemove.spawnPos.y][bombToRemove.spawnPos.x] = ECellType.Empty;
     }
 

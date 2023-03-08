@@ -3,14 +3,15 @@ import {EXPLOSION_TIME} from "../config";
 
 export class BombModel {
     private listeners: { [key: string]: ((event: BombModel) => void)[] } = {};
+    private explosionTime = EXPLOSION_TIME;
 
-    constructor(readonly spawnTime: number, readonly spawnPos: IPoint) {
+    constructor(readonly spawnPos: IPoint) {
     }
 
-    update() {
-        const currTime = performance.now() / 1000;
+    update(seconds: number) {
+        this.explosionTime -= seconds;
 
-        if (this.spawnTime < currTime - EXPLOSION_TIME)
+        if (this.explosionTime <= 0)
             this.explosion();
     }
 

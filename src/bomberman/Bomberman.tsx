@@ -25,7 +25,7 @@ export class Bomberman extends React.Component<IComponentProps, {}> {
         requestAnimationFrame(this.frame);
     }
 
-    frame = (time: number) => {
+    private frame = (time: number) => {
         const seconds = (time - this.prevTime) / 1000;
         this.prevTime = time;
 
@@ -36,14 +36,14 @@ export class Bomberman extends React.Component<IComponentProps, {}> {
         requestAnimationFrame(this.frame);
     }
 
-    update(seconds: number) {
+    private update(seconds: number) {
         if (!this.props.active)
             return;
 
         this.model.update(seconds);
     }
 
-    calcOffset() {
+    private calcOffset() {
         const areaWidth = this.gameAreaRef.current?.offsetWidth || 0;
         const areaHeight = this.gameAreaRef.current?.offsetHeight || 0;
         const fieldWidth = this.model.width * CELL_SIZE + 2;

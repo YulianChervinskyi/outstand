@@ -4,11 +4,11 @@ import {BombModel} from "./BombModel";
 
 export class PlayerModel {
     readonly pos: IPoint = {x: 0, y: 0};
-    readonly speed = 5;
+    private readonly speed = 5;
     private bombSupply = 3;
     private activeBombs: BombModel[] = [];
     private fixOffset?: (pos: IPoint, offset: IPoint) => { x: number, y: number };
-    private addBombOnField?: (bomb: BombModel) => void;
+    private placeBomb?: (bomb: BombModel) => void;
 
     constructor(private states: IControlsStates) {
     }
@@ -17,8 +17,8 @@ export class PlayerModel {
         this.fixOffset = checkOffset;
     }
 
-    setBombOnField(addBombOnField: (bomb: BombModel) => void) {
-        this.addBombOnField = addBombOnField;
+    setPlaceBomb(placeBomb: (bomb: BombModel) => void) {
+        this.placeBomb = placeBomb;
     }
 
     update(seconds: number) {
@@ -28,8 +28,8 @@ export class PlayerModel {
             this.createBomb();
     }
 
-    createBomb() {
-        if (!this.addBombOnField)
+    private createBomb() {
+        if (!this.placeBomb)
             return;
 
         const bombPos = {x: Math.round(this.pos.x), y: Math.round(this.pos.y)};
@@ -42,23 +42,22 @@ export class PlayerModel {
         if (prevBombPos.x === bombPos.x && prevBombPos.y === bombPos.y)
             return;
 
-        const currTime = performance.now() / 1000;
-        const newBomb = new BombModel(currTime, bombPos);
+        const newBomb = new BombModel(bombPos);
 
-        newBomb.addEventListener("onExplosion", this.removeBomb.bind(this));
+        newBomb.addEventListener("onExplosion", this.removeBomb);
 
         this.bombSupply -= 1;
-        this.addBombOnField(newBomb);
+        this.placeBomb(newBomb);
         this.activeBombs.push(newBomb);
     }
 
-    removeBomb(bombToRemove: BombModel) {
+    private removeBomb = (bombToRemove: BombModel) => {
         this.bombSupply += 1;
-        this.activeBombs[0].removeEventListener("onExplosion", this.removeBomb.bind(this));
+        this.activeBombs[0].removeEventListener("onExplosion", this.removeBomb);
         this.activeBombs = this.activeBombs.filter((bomb) => bomb != bombToRemove);
     }
 
-    updateMovement(seconds: number) {
+    private updateMovement(seconds: number) {
         if (!this.fixOffset)
             return;
 
@@ -72,7 +71,7 @@ export class PlayerModel {
         }
     }
 
-    walk(offset: { x: number, y: number }) {
+    private walk(offset: { x: number, y: number }) {
         this.pos.x += offset.x;
         this.pos.y += offset.y;
     }
