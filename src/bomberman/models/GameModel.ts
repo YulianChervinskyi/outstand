@@ -41,10 +41,18 @@ export class GameModel {
         }
     }
 
-    private addBomb(bomb: BombModel) {
-        this.activeBombs.push(bomb);
-        bomb.addEventListener("onExplosion", this.removeBomb);
-        this.field[bomb.spawnPos.y][bomb.spawnPos.x] = ECellType.Bomb;
+    private addBomb(bombPos: IPoint) {
+        if (this.field[bombPos.y][bombPos.x] === ECellType.Bomb)
+            return;
+
+        const newBomb = new BombModel(bombPos);
+
+        newBomb.addEventListener("onExplosion", this.removeBomb);
+
+        this.activeBombs.push(newBomb);
+        this.field[bombPos.y][bombPos.x] = ECellType.Bomb;
+
+        return newBomb;
     }
 
     private removeBomb = (bombToRemove: BombModel) => {

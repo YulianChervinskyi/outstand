@@ -8,7 +8,7 @@ export class PlayerModel {
     private bombSupply = 3;
     private activeBombs: BombModel[] = [];
     private fixOffset?: (pos: IPoint, offset: IPoint) => { x: number, y: number };
-    private placeBomb?: (bomb: BombModel) => void;
+    private placeBomb?: (bombPos: IPoint) => (BombModel | undefined);
 
     constructor(private states: IControlsStates) {
     }
@@ -17,7 +17,7 @@ export class PlayerModel {
         this.fixOffset = checkOffset;
     }
 
-    setPlaceBomb(placeBomb: (bomb: BombModel) => void) {
+    setPlaceBomb(placeBomb: (bombPos: IPoint) => (BombModel | undefined)) {
         this.placeBomb = placeBomb;
     }
 
@@ -29,25 +29,16 @@ export class PlayerModel {
     }
 
     private createBomb() {
-        if (!this.placeBomb)
-            return;
+        if (!this.placeBomb) return;
 
         const bombPos = {x: Math.round(this.pos.x), y: Math.round(this.pos.y)};
+        const newBomb = this.placeBomb(bombPos);
 
-        const prevBombPos = {
-            x: Math.round(this.activeBombs[this.activeBombs.length - 1]?.spawnPos.x),
-            y: Math.round(this.activeBombs[this.activeBombs.length - 1]?.spawnPos.y),
-        };
-
-        if (prevBombPos.x === bombPos.x && prevBombPos.y === bombPos.y)
-            return;
-
-        const newBomb = new BombModel(bombPos);
+        if (!newBomb) return;
 
         newBomb.addEventListener("onExplosion", this.removeBomb);
 
         this.bombSupply -= 1;
-        this.placeBomb(newBomb);
         this.activeBombs.push(newBomb);
     }
 
