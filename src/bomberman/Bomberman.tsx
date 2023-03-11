@@ -3,7 +3,6 @@ import {CELL_SIZE, FIELD_SIZE} from "./config";
 import {GameModel} from "./models/GameModel";
 import {InfoPanel} from "./info_panel/InfoPanel";
 import {Field} from "./field/Field";
-import {PlayerModel} from "./models/PlayerModel";
 import {Player} from "./player/Player";
 import "./Bomberman.scss";
 import React from "react";
@@ -11,8 +10,8 @@ import {Controls} from "./Controls";
 
 export class Bomberman extends React.Component<IComponentProps, {}> {
     controls = new Controls();
-    player = new PlayerModel(this.controls.states);
-    model = new GameModel(FIELD_SIZE, [this.player]);
+    model = new GameModel(FIELD_SIZE);
+    player = this.model.createPlayer(this.controls.states);
     gameAreaRef = React.createRef<HTMLDivElement>();
     prevTime = 0;
 

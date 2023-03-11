@@ -10,6 +10,8 @@ export enum ECellType {
     BonusPush = 8,
 }
 
+export type TField = ECellType[][];
+
 export interface ISize {
     w: number,
     h: number,
