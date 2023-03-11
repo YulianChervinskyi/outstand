@@ -1,12 +1,14 @@
 import {ECellType, IPoint, ISize} from "../types";
 import {PlayerModel} from "./PlayerModel";
 import {BombModel} from "./BombModel";
+import {ExplosionModel} from "./ExplosionModel";
 
 const [abs, sign, round, min] = [Math.abs, Math.sign, Math.round, Math.min];
 
 export class GameModel {
     field: ECellType[][] = [];
     activeBombs: BombModel[] = [];
+    explosions: ExplosionModel[] = [];
     players: PlayerModel[];
     width: number = 0;
     height: number = 0;
@@ -24,7 +26,8 @@ export class GameModel {
 
     update(seconds: number) {
         this.players.forEach(p => p.update(seconds));
-        this.activeBombs?.forEach(b => b.update(seconds))
+        this.activeBombs?.forEach(b => b.update(seconds));
+        this.explosions?.forEach(e => e.update(seconds));
     }
 
     private initField() {
@@ -46,7 +49,7 @@ export class GameModel {
             return false;
 
         bomb.addEventListener("onExplosion", this.removeBomb);
-        bomb.setToExplode(this.createExplosion.bind(this));
+        bomb.setInitExplosion(this.initExplosion);
 
         this.activeBombs.push(bomb);
         this.field[bomb.pos.y][bomb.pos.x] = ECellType.Bomb;
@@ -57,28 +60,51 @@ export class GameModel {
     private removeBomb = (bombToRemove: BombModel) => {
         this.activeBombs = this.activeBombs.filter((bomb) => bomb !== bombToRemove);
         bombToRemove.removeEventListener("onExplosion", this.removeBomb);
-        // this.field[bombToRemove.pos.y][bombToRemove.pos.x] = ECellType.Empty;
     }
 
-    private createExplosion(expWave: number, bombPos: IPoint) {
-        if (expWave) {
-            for (let y = 0; y < 2; y++) {
-                for (let x = -expWave; x < expWave + 1; x += 2 * expWave) {
-                    const nearbyCell = {x: x * (1 - y), y: y * x};
-                    const validNearbyCell = this.fixBounds(bombPos, nearbyCell);
-                    const pos = {x: bombPos.x + validNearbyCell.x, y: bombPos.y + validNearbyCell.y};
+    private initExplosion = (power: number, bombPos: IPoint, delay: number) => {
+        setTimeout(() => this.explode(bombPos), delay);
 
-                    if (this.field[pos.y][pos.x] !== ECellType.AzovSteel)
-                        this.field[pos.y][pos.x] = ECellType.Fire;
-                }
+        for (let y = 0; y < 2; y++) {
+            for (let x = -1; x < 2; x += 2) {
+                const direction = {x: x * (1 - y), y: y * x};
+                this.addExplosion(bombPos, direction, power, delay);
             }
-        } else if (!expWave) {
-            this.field[bombPos.y][bombPos.x] = ECellType.Fire;
         }
     }
 
+    private addExplosion(prevPos: IPoint, direction: IPoint, power: number, delay: number) {
+        let vDirection = this.validateBounds(prevPos, direction);
+
+        if (!power || vDirection.x + vDirection.y === 0 || this.field[prevPos.y + direction.y][prevPos.x + direction.x] === ECellType.AzovSteel)
+            return;
+
+        const pos = {x: prevPos.x + direction.x, y: prevPos.y + direction.y};
+
+        if (this.field[pos.y][pos.x] === ECellType.Wall)
+            vDirection = {x: 0, y: 0};
+
+        setTimeout(() => {
+            this.explode(pos);
+            this.addExplosion(pos, vDirection, power - 1, delay);
+        }, delay * 1000);
+    }
+
+    private explode(pos: IPoint) {
+        const explosion = new ExplosionModel(pos);
+        explosion.setExplode(this.removeExplosion);
+
+        this.explosions.push(explosion);
+        this.field[pos.y][pos.x] = ECellType.Fire;
+    }
+
+    removeExplosion = (explosion: ExplosionModel) => {
+        this.explosions = this.explosions.filter((e) => e !== explosion);
+        this.field[explosion.pos.y][explosion.pos.x] = ECellType.Empty;
+    }
+
     private fixPlayerOffset(pos: IPoint, offset: IPoint) {
-        const o = this.fixBounds(pos, offset);
+        const o = this.validateBounds(pos, offset);
         const p = {x: pos.x, y: pos.y};
         let axis1 = "x" as keyof IPoint;
 
@@ -124,7 +150,7 @@ export class GameModel {
         return {x: p.x - pos.x, y: p.y - pos.y};
     }
 
-    private fixBounds(pos: IPoint, offset: IPoint) {
+    private validateBounds(pos: IPoint, offset: IPoint) {
         const {x, y} = offset;
         return {
             x: pos.x + x < 0 ? -pos.x : pos.x + x > this.width - 1 ? this.width - 1 - pos.x : x,

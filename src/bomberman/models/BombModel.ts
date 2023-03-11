@@ -1,11 +1,10 @@
 import {IPoint} from "../types";
-import {EXPLOSION_TIME} from "../config";
+import {BOMB_LIFETIME} from "../config";
 
 export class BombModel {
     private listeners: { [key: string]: ((event: BombModel) => void)[] } = {};
-    private createExplosion?: (wave: number, pos: IPoint) => void;
-    private explosionTime = EXPLOSION_TIME;
-    private expWave = 0;
+    private createExplosion?: (power: number, pos: IPoint, delay: number) => void;
+    private explosionTime = BOMB_LIFETIME;
 
     constructor(readonly pos: IPoint, private power: number) {
     }
@@ -32,22 +31,17 @@ export class BombModel {
         this.listeners[event] = this.listeners[event].filter((listener) => listener !== callback);
     }
 
-    setToExplode(createExplosion: (wave: number, pos: IPoint) => void) {
-        this.createExplosion = createExplosion;
+    setInitExplosion(initExplosion: (power: number, pos: IPoint, delay: number) => void) {
+        this.createExplosion = initExplosion;
     }
 
     private toExplode() {
         if (!this.createExplosion)
             return;
 
-        const delay = 0.1;
+        const delay = 0.3;
+        this.createExplosion(this.power, this.pos, delay);
 
-        this.createExplosion(this.expWave, this.pos);
-
-        if (this.expWave === this.power)
-            this.listeners["onExplosion"]?.forEach((listener) => listener(this));
-
-        this.explosionTime += delay;
-        this.expWave++;
+        this.listeners["onExplosion"]?.forEach((listener) => listener(this));
     }
 }
