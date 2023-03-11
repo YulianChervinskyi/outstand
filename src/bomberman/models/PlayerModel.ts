@@ -4,11 +4,12 @@ import {BombModel} from "./BombModel";
 
 export class PlayerModel {
     readonly pos: IPoint = {x: 0, y: 0};
-    private readonly speed = 5;
+    private speed = 5;
+    private bombPower = 2;
     private bombSupply = 3;
     private activeBombs: BombModel[] = [];
+    private placeBomb?: (bomb: BombModel) => boolean;
     private fixOffset?: (pos: IPoint, offset: IPoint) => { x: number, y: number };
-    private placeBomb?: (bombPos: IPoint) => (BombModel | undefined);
 
     constructor(private states: IControlsStates) {
     }
@@ -17,7 +18,7 @@ export class PlayerModel {
         this.fixOffset = checkOffset;
     }
 
-    setPlaceBomb(placeBomb: (bombPos: IPoint) => (BombModel | undefined)) {
+    setPlaceBomb(placeBomb: (bomb: BombModel) => boolean) {
         this.placeBomb = placeBomb;
     }
 
@@ -29,12 +30,14 @@ export class PlayerModel {
     }
 
     private createBomb() {
-        if (!this.placeBomb) return;
+        if (!this.placeBomb)
+            return;
 
         const bombPos = {x: Math.round(this.pos.x), y: Math.round(this.pos.y)};
-        const newBomb = this.placeBomb(bombPos);
+        const newBomb = new BombModel(bombPos, this.bombPower);
 
-        if (!newBomb) return;
+        if (!this.placeBomb(newBomb))
+            return;
 
         newBomb.addEventListener("onExplosion", this.removeBomb);
 
@@ -45,7 +48,7 @@ export class PlayerModel {
     private removeBomb = (bombToRemove: BombModel) => {
         this.bombSupply += 1;
         this.activeBombs[0].removeEventListener("onExplosion", this.removeBomb);
-        this.activeBombs = this.activeBombs.filter((bomb) => bomb != bombToRemove);
+        this.activeBombs = this.activeBombs.filter((bomb) => bomb !== bombToRemove);
     }
 
     private updateMovement(seconds: number) {

@@ -3,10 +3,11 @@ export enum ECellType {
     Wall = 1,
     AzovSteel = 2,
     Bomb = 3,
-    BonusBomb = 4,
-    BonusFire = 5,
-    BonusSpeed = 6,
-    BonusPush = 7,
+    Fire = 4,
+    BonusBomb = 5,
+    BonusFire = 6,
+    BonusSpeed = 7,
+    BonusPush = 8,
 }
 
 export interface ISize {

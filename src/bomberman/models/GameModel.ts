@@ -41,24 +41,40 @@ export class GameModel {
         }
     }
 
-    private addBomb(bombPos: IPoint) {
-        if (this.field[bombPos.y][bombPos.x] === ECellType.Bomb)
-            return;
+    private addBomb(bomb: BombModel) {
+        if (this.field[bomb.pos.y][bomb.pos.x] === ECellType.Bomb)
+            return false;
 
-        const newBomb = new BombModel(bombPos);
+        bomb.addEventListener("onExplosion", this.removeBomb);
+        bomb.setToExplode(this.createExplosion.bind(this));
 
-        newBomb.addEventListener("onExplosion", this.removeBomb);
+        this.activeBombs.push(bomb);
+        this.field[bomb.pos.y][bomb.pos.x] = ECellType.Bomb;
 
-        this.activeBombs.push(newBomb);
-        this.field[bombPos.y][bombPos.x] = ECellType.Bomb;
-
-        return newBomb;
+        return true;
     }
 
     private removeBomb = (bombToRemove: BombModel) => {
         this.activeBombs = this.activeBombs.filter((bomb) => bomb !== bombToRemove);
         bombToRemove.removeEventListener("onExplosion", this.removeBomb);
-        this.field[bombToRemove.spawnPos.y][bombToRemove.spawnPos.x] = ECellType.Empty;
+        // this.field[bombToRemove.pos.y][bombToRemove.pos.x] = ECellType.Empty;
+    }
+
+    private createExplosion(expWave: number, bombPos: IPoint) {
+        if (expWave) {
+            for (let y = 0; y < 2; y++) {
+                for (let x = -expWave; x < expWave + 1; x += 2 * expWave) {
+                    const nearbyCell = {x: x * (1 - y), y: y * x};
+                    const validNearbyCell = this.fixBounds(bombPos, nearbyCell);
+                    const pos = {x: bombPos.x + validNearbyCell.x, y: bombPos.y + validNearbyCell.y};
+
+                    if (this.field[pos.y][pos.x] !== ECellType.AzovSteel)
+                        this.field[pos.y][pos.x] = ECellType.Fire;
+                }
+            }
+        } else if (!expWave) {
+            this.field[bombPos.y][bombPos.x] = ECellType.Fire;
+        }
     }
 
     private fixPlayerOffset(pos: IPoint, offset: IPoint) {

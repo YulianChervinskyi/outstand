@@ -14,6 +14,7 @@ export const cellImg = {
     [ECellType.Wall]: img.wall,
     [ECellType.AzovSteel]: img.azov_steel,
     [ECellType.Bomb]: img.bomb,
+    [ECellType.Fire]: "#0729d3",
     [ECellType.BonusBomb]: "#e80e2b",
     [ECellType.BonusFire]: "#b5b207",
     [ECellType.BonusSpeed]: "#9e90fc",
