@@ -49,20 +49,20 @@ export class GameModel {
             return false;
 
         bomb.addEventListener("onExplosion", this.removeBomb);
-        bomb.setInitExplosion(this.initExplosion);
-
         this.activeBombs.push(bomb);
         this.field[bomb.pos.y][bomb.pos.x] = ECellType.Bomb;
 
         return true;
     }
 
-    private removeBomb = (bombToRemove: BombModel) => {
-        this.activeBombs = this.activeBombs.filter((bomb) => bomb !== bombToRemove);
-        bombToRemove.removeEventListener("onExplosion", this.removeBomb);
+    private removeBomb = (bomb: BombModel) => {
+        this.initExplosion(bomb.power, bomb.pos);
+        this.activeBombs = this.activeBombs.filter((b) => b !== bomb);
+        bomb.removeEventListener("onExplosion", this.removeBomb);
     }
 
-    private initExplosion = (power: number, bombPos: IPoint, delay: number) => {
+    private initExplosion = (power: number, bombPos: IPoint) => {
+        const delay = 0.2;
         setTimeout(() => this.explode(bombPos), delay);
 
         for (let y = 0; y < 2; y++) {

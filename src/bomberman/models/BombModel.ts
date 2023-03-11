@@ -3,17 +3,16 @@ import {BOMB_LIFETIME} from "../config";
 
 export class BombModel {
     private listeners: { [key: string]: ((event: BombModel) => void)[] } = {};
-    private createExplosion?: (power: number, pos: IPoint, delay: number) => void;
-    private explosionTime = BOMB_LIFETIME;
+    private lifetime = 0;
 
-    constructor(readonly pos: IPoint, private power: number) {
+    constructor(readonly pos: IPoint, readonly power: number) {
     }
 
     update(seconds: number) {
-        this.explosionTime -= seconds;
+        this.lifetime += seconds;
 
-        if (this.explosionTime <= 0)
-            this.toExplode();
+        if (this.lifetime >= BOMB_LIFETIME)
+            this.listeners["onExplosion"]?.forEach((listener) => listener(this));
     }
 
     addEventListener(event: "onExplosion", callback: (event: BombModel) => void) {
@@ -29,19 +28,5 @@ export class BombModel {
             return;
 
         this.listeners[event] = this.listeners[event].filter((listener) => listener !== callback);
-    }
-
-    setInitExplosion(initExplosion: (power: number, pos: IPoint, delay: number) => void) {
-        this.createExplosion = initExplosion;
-    }
-
-    private toExplode() {
-        if (!this.createExplosion)
-            return;
-
-        const delay = 0.3;
-        this.createExplosion(this.power, this.pos, delay);
-
-        this.listeners["onExplosion"]?.forEach((listener) => listener(this));
     }
 }
