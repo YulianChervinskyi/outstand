@@ -56,10 +56,11 @@ export class GameModel {
         return true;
     }
 
-    private removeBomb = (bomb: BombModel) => {
-        this.explode(bomb);
-        this.activeBombs = this.activeBombs.filter((b) => b !== bomb);
-        bomb.removeEventListener("onExplosion", this.removeBomb);
+    addExplosion = (pos: IPoint, direction: IPoint, power: number) => {
+        const explosion = new ExplosionModel(power, this.field, pos, direction);
+        explosion.setAddExplosion(this.addExplosion);
+        explosion.setRemoveExplosion(this.removeExplosion);
+        this.explosions.push(explosion);
     }
 
     private explode = (bomb: BombModel) => {
@@ -77,13 +78,10 @@ export class GameModel {
         }
     }
 
-    addExplosion = (pos: IPoint, direction: IPoint, power: number) => {
-        console.log("power: ", power);
-        const explosion = new ExplosionModel(power, this.field, pos, direction);
-        explosion.setAddExplosion(this.addExplosion);
-        explosion.setValidateBounds(this.validateBounds);
-        explosion.setRemoveExplosion(this.removeExplosion);
-        this.explosions.push(explosion);
+    private removeBomb = (bomb: BombModel) => {
+        this.explode(bomb);
+        this.activeBombs = this.activeBombs.filter((b) => b !== bomb);
+        bomb.removeEventListener("onExplosion", this.removeBomb);
     }
 
     removeExplosion = (explosion: ExplosionModel) => {

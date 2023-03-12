@@ -1,13 +1,13 @@
 export enum ECellType {
-    Empty = 0,
-    Wall = 1,
-    AzovSteel = 2,
-    Bomb = 3,
-    Fire = 4,
-    BonusBomb = 5,
-    BonusFire = 6,
-    BonusSpeed = 7,
-    BonusPush = 8,
+    Empty,
+    Wall,
+    AzovSteel,
+    Bomb,
+    Fire,
+    BonusBomb,
+    BonusFire,
+    BonusSpeed,
+    BonusPush,
 }
 
 export type TField = ECellType[][];
