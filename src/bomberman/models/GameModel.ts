@@ -57,46 +57,33 @@ export class GameModel {
     }
 
     private removeBomb = (bomb: BombModel) => {
-        this.initExplosion(bomb.power, bomb.pos);
+        this.explode(bomb);
         this.activeBombs = this.activeBombs.filter((b) => b !== bomb);
         bomb.removeEventListener("onExplosion", this.removeBomb);
     }
 
-    private initExplosion = (power: number, bombPos: IPoint) => {
-        const delay = 0.2;
-        setTimeout(() => this.explode(bombPos), delay);
+    private explode = (bomb: BombModel) => {
+        this.addExplosion(bomb.pos, {x: 0, y: 0}, 1);
 
         for (let y = 0; y < 2; y++) {
             for (let x = -1; x < 2; x += 2) {
                 const direction = {x: x * (1 - y), y: y * x};
-                this.addExplosion(bombPos, direction, power, delay);
+                const vDirection = this.validateBounds(bomb.pos, direction);
+                const pos = {x: bomb.pos.x + vDirection.x, y: bomb.pos.y + vDirection.y};
+
+                if (vDirection.x + vDirection.y !== 0 && this.field[pos.y][pos.x] !== ECellType.AzovSteel)
+                    this.addExplosion(pos, vDirection, bomb.power);
             }
         }
     }
 
-    private addExplosion(prevPos: IPoint, direction: IPoint, power: number, delay: number) {
-        let vDirection = this.validateBounds(prevPos, direction);
-
-        if (!power || vDirection.x + vDirection.y === 0 || this.field[prevPos.y + direction.y][prevPos.x + direction.x] === ECellType.AzovSteel)
-            return;
-
-        const pos = {x: prevPos.x + direction.x, y: prevPos.y + direction.y};
-
-        if (this.field[pos.y][pos.x] === ECellType.Wall)
-            vDirection = {x: 0, y: 0};
-
-        setTimeout(() => {
-            this.explode(pos);
-            this.addExplosion(pos, vDirection, power - 1, delay);
-        }, delay * 1000);
-    }
-
-    private explode(pos: IPoint) {
-        const explosion = new ExplosionModel(pos);
-        explosion.setExplode(this.removeExplosion);
-
+    addExplosion = (pos: IPoint, direction: IPoint, power: number) => {
+        console.log("power: ", power);
+        const explosion = new ExplosionModel(power, this.field, pos, direction);
+        explosion.setAddExplosion(this.addExplosion);
+        explosion.setValidateBounds(this.validateBounds);
+        explosion.setRemoveExplosion(this.removeExplosion);
         this.explosions.push(explosion);
-        this.field[pos.y][pos.x] = ECellType.Fire;
     }
 
     removeExplosion = (explosion: ExplosionModel) => {
