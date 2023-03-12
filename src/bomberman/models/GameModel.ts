@@ -3,6 +3,7 @@ import {ECellType, IPoint, ISize, TField} from "../types";
 import {PlayerModel} from "./PlayerModel";
 import {BombModel} from "./BombModel";
 import {ExplosionModel} from "./ExplosionModel";
+import {BOMB_LIFETIME} from "../config";
 
 export class GameModel {
     field: TField = [];
@@ -56,30 +57,16 @@ export class GameModel {
         return true;
     }
 
-    addExplosion = (pos: IPoint, direction: IPoint, power: number) => {
+    addExplosion = (pos: IPoint, direction: IPoint | undefined, power: number) => {
         const explosion = new ExplosionModel(power, this.field, pos, direction);
         explosion.setAddExplosion(this.addExplosion);
+        explosion.setDetonateBomb(this.detonateBomb);
         explosion.setRemoveExplosion(this.removeExplosion);
         this.explosions.push(explosion);
     }
 
-    private explode = (bomb: BombModel) => {
-        this.addExplosion(bomb.pos, {x: 0, y: 0}, 1);
-
-        for (let y = 0; y < 2; y++) {
-            for (let x = -1; x < 2; x += 2) {
-                const direction = {x: x * (1 - y), y: y * x};
-                const vDirection = this.validateBounds(bomb.pos, direction);
-                const pos = {x: bomb.pos.x + vDirection.x, y: bomb.pos.y + vDirection.y};
-
-                if (vDirection.x + vDirection.y !== 0 && this.field[pos.y][pos.x] !== ECellType.AzovSteel)
-                    this.addExplosion(pos, vDirection, bomb.power);
-            }
-        }
-    }
-
     private removeBomb = (bomb: BombModel) => {
-        this.explode(bomb);
+        this.addExplosion(bomb.pos, undefined, bomb.power + 1);
         this.activeBombs = this.activeBombs.filter((b) => b !== bomb);
         bomb.removeEventListener("onExplosion", this.removeBomb);
     }
@@ -87,6 +74,13 @@ export class GameModel {
     removeExplosion = (explosion: ExplosionModel) => {
         this.explosions = this.explosions.filter((e) => e !== explosion);
         this.field[explosion.pos.y][explosion.pos.x] = ECellType.Empty;
+    }
+
+    detonateBomb = (pos: IPoint) => {
+        this.activeBombs?.forEach(b => {
+           if (b.pos.x === pos.x && b.pos.y === pos.y)
+               b.update(BOMB_LIFETIME);
+        });
     }
 
     private validateBounds(pos: IPoint, offset: IPoint) {
