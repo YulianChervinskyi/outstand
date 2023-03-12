@@ -1,19 +1,22 @@
 import {ECellType, IPoint, TField} from "../types";
-import {EXPLOSION_TIME} from "../config";
+import {EXPLOSION_LIFETIME, EXPLOSION_SPAWN_DELAY} from "../config";
 
 export class ExplosionModel {
     detonateBomb?: (pos: IPoint) => void;
     removeExplosion?: (explosion: ExplosionModel) => void;
     createExplosion?: (pos: IPoint, direction: IPoint, power: number) => void;
-    delay = 0.1;
     lifetime = 0;
 
-    constructor(private power: number, private field: TField, readonly pos: IPoint, readonly direction: IPoint | undefined) {
+    constructor(private power: number,
+                private field: TField,
+                readonly pos: IPoint,
+                readonly direction: IPoint | undefined
+    ) {
         this.power--;
     }
 
-    private checkNextCell() {
-        if (!this.createExplosion || this.power <= 0)
+    private spawn() {
+        if (this.power <= 0)
             return;
 
         const checkExceptions = (pos: IPoint) => {
@@ -31,7 +34,7 @@ export class ExplosionModel {
 
                     if (this.field[pos.y]?.[pos.x] !== undefined && this.field[pos.y]?.[pos.x] !== ECellType.AzovSteel) {
                         checkExceptions(pos);
-                        this.createExplosion(pos, direction, this.power);
+                        this.createExplosion?.(pos, direction, this.power);
                     }
                 }
             }
@@ -42,21 +45,23 @@ export class ExplosionModel {
                 return;
 
             checkExceptions(pos);
-            this.createExplosion(pos, this.direction, this.power);
+            this.createExplosion?.(pos, this.direction, this.power);
         }
+        this.power = 0;
     }
 
     update(seconds: number) {
-        this.lifetime += seconds;
 
         if (this.field[this.pos.y][this.pos.x] !== ECellType.Fire)
             this.field[this.pos.y][this.pos.x] = ECellType.Fire;
 
-        if (this.lifetime >= this.delay && this.lifetime <= this.delay + seconds)
-            this.checkNextCell();
+        if (this.lifetime >= EXPLOSION_SPAWN_DELAY)
+            this.spawn();
 
-        if (this.removeExplosion && this.lifetime >= EXPLOSION_TIME)
-            this.removeExplosion(this);
+        if (this.lifetime >= EXPLOSION_LIFETIME)
+            this.removeExplosion?.(this);
+
+        this.lifetime += seconds;
     }
 
     setRemoveExplosion(func: (explosion: ExplosionModel) => void) {

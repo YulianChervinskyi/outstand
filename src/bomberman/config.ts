@@ -3,7 +3,8 @@ import {img} from "./assets";
 
 export const CELL_SIZE = 64;
 export const BOMB_LIFETIME = 4;
-export const EXPLOSION_TIME = 1;
+export const EXPLOSION_LIFETIME = 1;
+export const EXPLOSION_SPAWN_DELAY = 0.1;
 
 export const FIELD_SIZE = {
     w: 15,
