@@ -58,7 +58,7 @@ export class GameModel {
     }
 
     addExplosion = (pos: IPoint, direction: IPoint | undefined, power: number) => {
-        const explosion = new ExplosionModel(power, this.field, pos, direction);
+        const explosion = new ExplosionModel(direction, power, this.field, pos);
         explosion.setAddExplosion(this.addExplosion);
         explosion.setDetonateBomb(this.detonateBomb);
         explosion.setRemoveExplosion(this.removeExplosion);
@@ -81,13 +81,5 @@ export class GameModel {
            if (b.pos.x === pos.x && b.pos.y === pos.y)
                b.update(BOMB_LIFETIME);
         });
-    }
-
-    private validateBounds(pos: IPoint, offset: IPoint) {
-        const {x, y} = offset;
-        return {
-            x: pos.x + x < 0 ? -pos.x : pos.x + x > this.width - 1 ? this.width - 1 - pos.x : x,
-            y: pos.y + y < 0 ? -pos.y : pos.y + y > this.height - 1 ? this.height - 1 - pos.y : y,
-        };
     }
 }

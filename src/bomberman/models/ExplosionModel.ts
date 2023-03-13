@@ -7,11 +7,10 @@ export class ExplosionModel {
     createExplosion?: (pos: IPoint, direction: IPoint, power: number) => void;
     lifetime = 0;
 
-    constructor(private power: number,
+    constructor(readonly direction: IPoint | undefined,
+                private power: number,
                 private field: TField,
-                readonly pos: IPoint,
-                readonly direction: IPoint | undefined
-    ) {
+                readonly pos: IPoint) {
         this.power--;
     }
 
@@ -19,11 +18,17 @@ export class ExplosionModel {
         if (this.power <= 0)
             return;
 
-        const checkExceptions = (pos: IPoint) => {
-            if (this.field[pos.y][pos.x] === ECellType.Wall)
-                this.power = 1;
-            else if (this.detonateBomb && this.field[pos.y][pos.x] === ECellType.Bomb)
+        const checkPower = (pos: IPoint) => {
+            if (this.field[pos.y][pos.x] === ECellType.Empty)
+                return this.power;
+
+            // if (this.field[pos.y][pos.x] === ECellType.Wall)
+            // TODO bonus logic
+
+            if (this.detonateBomb && this.field[pos.y][pos.x] === ECellType.Bomb)
                 this.detonateBomb(pos);
+
+            return 1;
         }
 
         if (!this.direction) {
@@ -32,10 +37,8 @@ export class ExplosionModel {
                     const direction = {x: x * (1 - y), y: y * x};
                     const pos = {x: this.pos.x + direction.x, y: this.pos.y + direction.y};
 
-                    if (this.field[pos.y]?.[pos.x] !== undefined && this.field[pos.y]?.[pos.x] !== ECellType.AzovSteel) {
-                        checkExceptions(pos);
-                        this.createExplosion?.(pos, direction, this.power);
-                    }
+                    if (this.field[pos.y]?.[pos.x] !== undefined && this.field[pos.y]?.[pos.x] !== ECellType.AzovSteel)
+                        this.createExplosion?.(pos, direction, checkPower(pos));
                 }
             }
         } else {
@@ -44,8 +47,7 @@ export class ExplosionModel {
             if (this.field[pos.y]?.[pos.x] === undefined || this.field[pos.y]?.[pos.x] === ECellType.AzovSteel)
                 return;
 
-            checkExceptions(pos);
-            this.createExplosion?.(pos, this.direction, this.power);
+            this.createExplosion?.(pos, this.direction, checkPower(pos));
         }
         this.power = 0;
     }
