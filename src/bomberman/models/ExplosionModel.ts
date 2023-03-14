@@ -3,7 +3,6 @@ import {EXPLOSION_LIFETIME, EXPLOSION_SPAWN_DELAY} from "../config";
 
 export class ExplosionModel implements ISceneObject {
     detonateBomb?: (pos: IPoint) => void;
-    removeExplosion?: (explosion: ExplosionModel) => void;
     createExplosion?: (pos: IPoint, direction: IPoint, power: number) => void;
     lifetime = 0;
 
@@ -56,17 +55,12 @@ export class ExplosionModel implements ISceneObject {
         if (this.field[this.pos.y][this.pos.x] !== ECellType.Fire)
             this.field[this.pos.y][this.pos.x] = ECellType.Fire;
 
+        this.lifetime += seconds;
+
         if (this.lifetime >= EXPLOSION_SPAWN_DELAY)
             this.spawn();
 
-        if (this.lifetime >= EXPLOSION_LIFETIME)
-            this.removeExplosion?.(this);
-
-        this.lifetime += seconds;
-    }
-
-    setRemoveExplosion(func: (explosion: ExplosionModel) => void) {
-        this.removeExplosion = func;
+        return this.lifetime < EXPLOSION_LIFETIME
     }
 
     setAddExplosion(func: (pos: IPoint, direction: IPoint, power: number) => void) {

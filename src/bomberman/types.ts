@@ -14,7 +14,7 @@ export type TField = ECellType[][];
 
 export interface ISceneObject {
     pos: IPoint;
-    update: (seconds: number) => void;
+    update: (seconds: number) => boolean;
 }
 
 export interface ISize {

@@ -27,7 +27,15 @@ export class GameModel {
 
     update(seconds: number) {
         this.players.forEach(p => p.update(seconds));
-        this.sceneObjects.forEach(b => b.update(seconds));
+        for (const o of this.sceneObjects) {
+            if (o.update(seconds))
+                continue;
+
+            if (o instanceof BombModel)
+                this.removeBomb(o);
+            else if (o instanceof ExplosionModel)
+                this.removeExplosion(o);
+        }
     }
 
     private initField() {
@@ -59,7 +67,7 @@ export class GameModel {
         const explosion = new ExplosionModel(direction, power, this.field, pos);
         explosion.setAddExplosion(this.addExplosion);
         explosion.setDetonateBomb(this.detonateBomb);
-        explosion.setRemoveExplosion(this.removeExplosion);
+        // explosion.setRemoveExplosion(this.removeExplosion);
         this.sceneObjects.push(explosion);
     }
 
