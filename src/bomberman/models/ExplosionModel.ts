@@ -1,7 +1,7 @@
-import {ECellType, IPoint, TField} from "../types";
+import {ECellType, IPoint, ISceneObject, TField} from "../types";
 import {EXPLOSION_LIFETIME, EXPLOSION_SPAWN_DELAY} from "../config";
 
-export class ExplosionModel {
+export class ExplosionModel implements ISceneObject {
     detonateBomb?: (pos: IPoint) => void;
     removeExplosion?: (explosion: ExplosionModel) => void;
     createExplosion?: (pos: IPoint, direction: IPoint, power: number) => void;
@@ -53,7 +53,6 @@ export class ExplosionModel {
     }
 
     update(seconds: number) {
-
         if (this.field[this.pos.y][this.pos.x] !== ECellType.Fire)
             this.field[this.pos.y][this.pos.x] = ECellType.Fire;
 

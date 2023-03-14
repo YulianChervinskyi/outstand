@@ -1,7 +1,7 @@
-import {IPoint} from "../types";
+import {IPoint, ISceneObject} from "../types";
 import {BOMB_LIFETIME} from "../config";
 
-export class BombModel {
+export class BombModel implements ISceneObject {
     private listeners: { [key: string]: ((event: BombModel) => void)[] } = {};
     private lifetime = 0;
 

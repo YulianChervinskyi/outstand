@@ -49,9 +49,6 @@ export class PlayerModel {
     }
 
     private updateMovement(seconds: number) {
-        if (!this.fixOffset)
-            return;
-
         const x = this.speed * seconds * (Number(this.states.right) - Number(this.states.left));
         const y = this.speed * seconds * (Number(this.states.backward) - Number(this.states.forward));
 

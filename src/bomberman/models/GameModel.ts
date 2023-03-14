@@ -1,5 +1,5 @@
 import {IControlsStates} from "../Controls";
-import {ECellType, IPoint, ISize, TField} from "../types";
+import {ECellType, IPoint, ISceneObject, ISize, TField} from "../types";
 import {PlayerModel} from "./PlayerModel";
 import {BombModel} from "./BombModel";
 import {ExplosionModel} from "./ExplosionModel";
@@ -7,8 +7,7 @@ import {BOMB_LIFETIME} from "../config";
 
 export class GameModel {
     field: TField = [];
-    activeBombs: BombModel[] = [];
-    explosions: ExplosionModel[] = [];
+    sceneObjects: ISceneObject[] = [];
     players: PlayerModel[] = [];
     width: number = 0;
     height: number = 0;
@@ -28,8 +27,7 @@ export class GameModel {
 
     update(seconds: number) {
         this.players.forEach(p => p.update(seconds));
-        this.activeBombs?.forEach(b => b.update(seconds));
-        this.explosions?.forEach(e => e.update(seconds));
+        this.sceneObjects.forEach(b => b.update(seconds));
     }
 
     private initField() {
@@ -51,35 +49,35 @@ export class GameModel {
             return false;
 
         bomb.addEventListener("onExplosion", this.removeBomb);
-        this.activeBombs.push(bomb);
+        this.sceneObjects.push(bomb);
         this.field[bomb.pos.y][bomb.pos.x] = ECellType.Bomb;
 
         return true;
     }
 
-    addExplosion = (pos: IPoint, direction: IPoint | undefined, power: number) => {
+    private addExplosion = (pos: IPoint, direction: IPoint | undefined, power: number) => {
         const explosion = new ExplosionModel(direction, power, this.field, pos);
         explosion.setAddExplosion(this.addExplosion);
         explosion.setDetonateBomb(this.detonateBomb);
         explosion.setRemoveExplosion(this.removeExplosion);
-        this.explosions.push(explosion);
+        this.sceneObjects.push(explosion);
     }
 
     private removeBomb = (bomb: BombModel) => {
         this.addExplosion(bomb.pos, undefined, bomb.power + 1);
-        this.activeBombs = this.activeBombs.filter((b) => b !== bomb);
+        this.sceneObjects = this.sceneObjects.filter((o) => o !== bomb);
         bomb.removeEventListener("onExplosion", this.removeBomb);
     }
 
-    removeExplosion = (explosion: ExplosionModel) => {
-        this.explosions = this.explosions.filter((e) => e !== explosion);
+    private removeExplosion = (explosion: ExplosionModel) => {
+        this.sceneObjects = this.sceneObjects.filter((o) => o !== explosion);
         this.field[explosion.pos.y][explosion.pos.x] = ECellType.Empty;
     }
 
-    detonateBomb = (pos: IPoint) => {
-        this.activeBombs?.forEach(b => {
-           if (b.pos.x === pos.x && b.pos.y === pos.y)
-               b.update(BOMB_LIFETIME);
+    private detonateBomb = (pos: IPoint) => {
+        this.sceneObjects?.forEach(b => {
+            if (b.pos.x === pos.x && b.pos.y === pos.y)
+                b.update(BOMB_LIFETIME);
         });
     }
 }
