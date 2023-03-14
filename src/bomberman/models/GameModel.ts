@@ -67,12 +67,11 @@ export class GameModel {
         const explosion = new ExplosionModel(direction, power, this.field, pos);
         explosion.setAddExplosion(this.addExplosion);
         explosion.setDetonateBomb(this.detonateBomb);
-        // explosion.setRemoveExplosion(this.removeExplosion);
         this.sceneObjects.push(explosion);
     }
 
     private removeBomb = (bomb: BombModel) => {
-        this.addExplosion(bomb.pos, undefined, bomb.power + 1);
+        this.addExplosion(bomb.pos, undefined, bomb.power);
         this.sceneObjects = this.sceneObjects.filter((o) => o !== bomb);
         bomb.removeEventListener("onExplosion", this.removeBomb);
     }

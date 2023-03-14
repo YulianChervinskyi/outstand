@@ -9,25 +9,23 @@ export class ExplosionModel implements ISceneObject {
     constructor(readonly direction: IPoint | undefined,
                 private power: number,
                 private field: TField,
-                readonly pos: IPoint) {
-        this.power--;
-    }
+                readonly pos: IPoint) {}
 
     private spawn() {
         if (this.power <= 0)
             return;
 
-        const checkPower = (pos: IPoint) => {
+        const reducePower = (pos: IPoint) => {
             if (this.field[pos.y][pos.x] === ECellType.Empty)
-                return this.power;
+                return this.power - 1;
 
             // if (this.field[pos.y][pos.x] === ECellType.Wall)
             // TODO bonus logic
 
-            if (this.detonateBomb && this.field[pos.y][pos.x] === ECellType.Bomb)
-                this.detonateBomb(pos);
+            if (this.field[pos.y][pos.x] === ECellType.Bomb)
+                this.detonateBomb?.(pos);
 
-            return 1;
+            return 0;
         }
 
         if (!this.direction) {
@@ -37,7 +35,7 @@ export class ExplosionModel implements ISceneObject {
                     const pos = {x: this.pos.x + direction.x, y: this.pos.y + direction.y};
 
                     if (this.field[pos.y]?.[pos.x] !== undefined && this.field[pos.y]?.[pos.x] !== ECellType.AzovSteel)
-                        this.createExplosion?.(pos, direction, checkPower(pos));
+                        this.createExplosion?.(pos, direction, reducePower(pos));
                 }
             }
         } else {
@@ -46,7 +44,7 @@ export class ExplosionModel implements ISceneObject {
             if (this.field[pos.y]?.[pos.x] === undefined || this.field[pos.y]?.[pos.x] === ECellType.AzovSteel)
                 return;
 
-            this.createExplosion?.(pos, this.direction, checkPower(pos));
+            this.createExplosion?.(pos, this.direction, reducePower(pos));
         }
         this.power = 0;
     }
