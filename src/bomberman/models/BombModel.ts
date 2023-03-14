@@ -10,12 +10,11 @@ export class BombModel implements ISceneObject {
 
     update(seconds: number) {
         this.lifetime += seconds;
-        const isAlive = this.lifetime < BOMB_LIFETIME;
+        if (this.lifetime < BOMB_LIFETIME)
+            return true;
 
-        if (!isAlive)
-            this.listeners["onExplosion"]?.forEach((listener) => listener(this));
-
-        return isAlive;
+        this.listeners["onExplosion"]?.forEach((listener) => listener(this));
+        return false;
     }
 
     addEventListener(event: "onExplosion", callback: (event: BombModel) => void) {
