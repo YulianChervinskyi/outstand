@@ -3,11 +3,15 @@ export enum ECellType {
     Wall,
     AzovSteel,
     Bomb,
-    Fire,
-    BonusBomb,
-    BonusFire,
-    BonusSpeed,
-    BonusPush,
+    Explosion,
+    Bonus,
+}
+
+export enum EBonusType {
+    BombSupply,
+    SpeedUp,
+    ExplosionPower,
+    PushBombs,
 }
 
 export type TField = ECellType[][];

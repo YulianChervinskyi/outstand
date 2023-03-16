@@ -1,0 +1,24 @@
+import {EBonusType, ECellType, IPoint, ISceneObject, TField} from "../types";
+import {BONUS_LIFETIME, EXPLOSION_LIFETIME} from "../config";
+
+export class BonusModel implements ISceneObject {
+    private lifetime = 0;
+    type: EBonusType | undefined;
+
+    constructor(readonly pos: IPoint, private field: TField) {
+        this.type = this.defineType();
+    }
+
+    update(seconds: number) {
+        this.lifetime += seconds;
+
+        if (this.lifetime > EXPLOSION_LIFETIME && this.field[this.pos.y][this.pos.x] !== ECellType.Bonus)
+            this.field[this.pos.y][this.pos.x] = ECellType.Bonus;
+
+        return this.lifetime < (BONUS_LIFETIME + EXPLOSION_LIFETIME);
+    }
+
+    private defineType() {
+        return EBonusType.BombSupply;
+    }
+}
