@@ -64,30 +64,37 @@ export class GameModel {
         const explosion = new ExplosionModel(direction, power, this.field, pos);
         explosion.setDetonateObject(this.detonateObject);
         explosion.setCreateExplosion(this.addExplosion);
-        explosion.setCreateBonus(this.addBonus);
         this.sceneObjects.push(explosion);
     }
 
     private addBonus = (pos: IPoint) => {
-        const bonus = new BonusModel(pos, this.field);
+        const bonus = new BonusModel(pos);
         this.sceneObjects.push(bonus);
         this.field[pos.y][pos.x] = ECellType.Bonus;
+        console.log("Bonus", pos);
     }
 
     private removeObject = (object: ISceneObject) => {
+        this.sceneObjects = this.sceneObjects.filter((o) => o !== object);
+        this.field[object.pos.y][object.pos.x] = ECellType.Empty;
+
         if (object instanceof BombModel) {
             object.removeEventListener("onExplosion", this.removeObject);
             this.addExplosion(object.pos, undefined, object.power);
+        } else if (object instanceof ExplosionModel && object.isBonus) {
+            this.addBonus(object.pos);
         }
-
-        this.sceneObjects = this.sceneObjects.filter((o) => o !== object);
-        this.field[object.pos.y][object.pos.x] = ECellType.Empty;
+        console.log("Object", object.pos, object instanceof ExplosionModel);
     }
 
     private detonateObject = (pos: IPoint) => {
         this.sceneObjects?.forEach(o => {
-            if (o.pos.x === pos.x && o.pos.y === pos.y)
-                o.update(o instanceof BombModel ? BOMB_LIFETIME : BONUS_LIFETIME);
+            if (this.field[pos.y][pos.x] !== ECellType.Explosion && o.pos.x === pos.x && o.pos.y === pos.y) {
+                if (o instanceof BombModel)
+                    o.update(BOMB_LIFETIME);
+                else if (o instanceof BonusModel)
+                    o.update(BONUS_LIFETIME);
+            }
         });
     }
 }

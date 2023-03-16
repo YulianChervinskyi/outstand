@@ -3,30 +3,22 @@ import {BONUS_GENERATION_CHANCE, EXPLOSION_LIFETIME, EXPLOSION_SPAWN_DELAY} from
 
 export class ExplosionModel implements ISceneObject {
     detonateObject?: (pos: IPoint) => void;
-    createBonus?: (pos: IPoint) => void;
     createExplosion?: (pos: IPoint, direction: IPoint, power: number) => void;
-    lifetime = 0;
+    private lifetime = 0;
+    isBonus = false;
 
     constructor(readonly direction: IPoint | undefined,
                 private power: number,
                 private field: TField,
-                readonly pos: IPoint) {}
+                readonly pos: IPoint) {
+    }
 
     private spawn() {
         if (this.power <= 0)
             return;
 
         const reducePower = (pos: IPoint) => {
-            if (this.field[pos.y][pos.x] === ECellType.Empty)
-                return this.power - 1;
-
-            if (this.field[pos.y][pos.x] === ECellType.Bomb || this.field[pos.y][pos.x] === ECellType.Bonus)
-                this.detonateObject?.(pos);
-
-            if (this.field[pos.y][pos.x] === ECellType.Wall && Math.random() <= BONUS_GENERATION_CHANCE)
-                this.createBonus?.(pos);
-
-            return 0;
+            return this.field[pos.y][pos.x] === ECellType.Empty ? this.power - 1 : 0;
         }
 
         if (!this.direction) {
@@ -51,6 +43,15 @@ export class ExplosionModel implements ISceneObject {
     }
 
     update(seconds: number) {
+        const explosionCell = this.field[this.pos.y][this.pos.x];
+
+        if (explosionCell === ECellType.Bomb || explosionCell === ECellType.Bonus) {
+            this.detonateObject?.(this.pos);
+            return false;
+        } else if (explosionCell === ECellType.Wall && Math.random() <= BONUS_GENERATION_CHANCE) {
+            this.isBonus = true;
+        }
+
         if (this.field[this.pos.y][this.pos.x] !== ECellType.Explosion)
             this.field[this.pos.y][this.pos.x] = ECellType.Explosion;
 
@@ -64,10 +65,6 @@ export class ExplosionModel implements ISceneObject {
 
     setCreateExplosion(func: (pos: IPoint, direction: IPoint, power: number) => void) {
         this.createExplosion = func;
-    }
-
-    setCreateBonus(func: (pos: IPoint) => void) {
-        this.createBonus = func;
     }
 
     setDetonateObject(func: (pos: IPoint) => void) {
