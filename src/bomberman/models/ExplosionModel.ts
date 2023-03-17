@@ -45,12 +45,15 @@ export class ExplosionModel implements ISceneObject {
     update(seconds: number) {
         const explosionCell = this.field[this.pos.y][this.pos.x];
 
-        if (explosionCell === ECellType.Bomb || explosionCell === ECellType.Bonus) {
+        if (explosionCell === ECellType.Bomb) {
             this.detonateObject?.(this.pos);
             return false;
-        } else if (explosionCell === ECellType.Wall && Math.random() <= BONUS_GENERATION_CHANCE) {
-            this.isBonus = true;
         }
+
+        if (explosionCell === ECellType.Bonus)
+            this.detonateObject?.(this.pos);
+        else if (explosionCell === ECellType.Wall && Math.random() <= BONUS_GENERATION_CHANCE)
+            this.isBonus = true;
 
         if (this.field[this.pos.y][this.pos.x] !== ECellType.Explosion)
             this.field[this.pos.y][this.pos.x] = ECellType.Explosion;

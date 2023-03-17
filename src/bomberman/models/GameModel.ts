@@ -4,6 +4,7 @@ import {PlayerModel} from "./PlayerModel";
 import {BombModel} from "./BombModel";
 import {ExplosionModel} from "./ExplosionModel";
 import {BonusModel} from "./BonusModel";
+import {FIELD_FILLING} from "../config";
 
 export class GameModel {
     field: TField = [];
@@ -43,7 +44,7 @@ export class GameModel {
                 else if (x + y <= 2 || x + y >= this.height + this.width - 3)
                     this.field[y][x] = ECellType.Empty;
                 else
-                    this.field[y][x] = Math.random() < 0.1 ? ECellType.Wall : ECellType.Empty;
+                    this.field[y][x] = Math.random() < FIELD_FILLING ? ECellType.Wall : ECellType.Empty;
             }
         }
     }
@@ -80,7 +81,7 @@ export class GameModel {
 
     private detonateObject = (pos: IPoint) => {
         this.sceneObjects?.forEach(o => {
-            if (o.pos.x === pos.x && o.pos.y === pos.y)
+            if (!(o instanceof ExplosionModel) && o.pos.x === pos.x && o.pos.y === pos.y)
                 this.removeObject(o);
         });
     }
