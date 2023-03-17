@@ -53,7 +53,7 @@ export class GameModel {
         if (this.field[bomb.pos.y][bomb.pos.x] === ECellType.Bomb)
             return false;
 
-        bomb.addEventListener("onExplosion", this.removeObject);
+        // bomb.addEventListener("onExplosion", this.removeObject);
         this.sceneObjects.push(bomb);
         this.field[bomb.pos.y][bomb.pos.x] = ECellType.Bomb;
 
@@ -79,7 +79,7 @@ export class GameModel {
         this.field[object.pos.y][object.pos.x] = ECellType.Empty;
 
         if (object instanceof BombModel) {
-            object.removeEventListener("onExplosion", this.removeObject);
+            // object.removeEventListener("onExplosion", this.removeObject);
             this.addExplosion(object.pos, undefined, object.power);
         } else if (object instanceof ExplosionModel && object.isBonus) {
             this.addBonus(object.pos);
