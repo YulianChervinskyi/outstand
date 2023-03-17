@@ -10,12 +10,12 @@ export class PlayerModel {
     private bombPower = 2;
     private bombSupply = 3;
     private activeBombs: BombModel[] = [];
-    private placeBomb?: (bomb: BombModel) => boolean;
+    private placeBomb?: (bomb: BombModel) => void;
 
     constructor(private states: IControlsStates, private field: TField) {
     }
 
-    setPlaceBomb(placeBomb: (bomb: BombModel) => boolean) {
+    setPlaceBomb(placeBomb: (bomb: BombModel) => void) {
         this.placeBomb = placeBomb;
     }
 
@@ -27,24 +27,21 @@ export class PlayerModel {
     }
 
     private createBomb() {
-        if (!this.placeBomb)
-            return;
-
         const bombPos = {x: Math.round(this.pos.x), y: Math.round(this.pos.y)};
-        const newBomb = new BombModel(bombPos, this.bombPower);
 
-        if (!this.placeBomb(newBomb))
+        if (this.field[bombPos.y][bombPos.x] === ECellType.Bomb)
             return;
 
-        newBomb.addEventListener("onExplosion", this.removeBomb);
+        const newBomb = new BombModel(bombPos, this.bombPower);
+        newBomb.setRemoveFromPlayer(this.removeBomb);
 
         this.bombSupply -= 1;
+        this.placeBomb?.(newBomb);
         this.activeBombs.push(newBomb);
     }
 
     private removeBomb = (bombToRemove: BombModel) => {
         this.bombSupply += 1;
-        this.activeBombs[0].removeEventListener("onExplosion", this.removeBomb);
         this.activeBombs = this.activeBombs.filter((bomb) => bomb !== bombToRemove);
     }
 

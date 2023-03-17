@@ -49,13 +49,8 @@ export class GameModel {
     }
 
     private addBomb(bomb: BombModel) {
-        if (this.field[bomb.pos.y][bomb.pos.x] === ECellType.Bomb)
-            return false;
-
         this.sceneObjects.push(bomb);
         this.field[bomb.pos.y][bomb.pos.x] = ECellType.Bomb;
-
-        return true;
     }
 
     private addExplosion = (pos: IPoint, direction: IPoint | undefined, power: number) => {
@@ -69,17 +64,18 @@ export class GameModel {
         const bonus = new BonusModel(pos);
         this.sceneObjects.push(bonus);
         this.field[pos.y][pos.x] = ECellType.Bonus;
-        console.log("Bonus", pos);
     }
 
     private removeObject = (object: ISceneObject) => {
         this.sceneObjects = this.sceneObjects.filter((o) => o !== object);
         this.field[object.pos.y][object.pos.x] = ECellType.Empty;
 
-        if (object instanceof BombModel)
+        if (object instanceof BombModel) {
+            object.removeFromPlayer?.(object);
             this.addExplosion(object.pos, undefined, object.power);
-        else if (object instanceof ExplosionModel && object.isBonus)
+        } else if (object instanceof ExplosionModel && object.isBonus) {
             this.addBonus(object.pos);
+        }
     }
 
     private detonateObject = (pos: IPoint) => {
