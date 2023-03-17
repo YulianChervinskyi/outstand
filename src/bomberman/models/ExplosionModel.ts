@@ -17,7 +17,7 @@ export class ExplosionModel implements ISceneObject {
         if (this.power <= 0)
             return;
 
-        const reducePower = (pos: IPoint) => {
+        const getNextExplosionPower = (pos: IPoint) => {
             return this.field[pos.y][pos.x] === ECellType.Empty ? this.power - 1 : 0;
         }
 
@@ -28,7 +28,7 @@ export class ExplosionModel implements ISceneObject {
                     const pos = {x: this.pos.x + direction.x, y: this.pos.y + direction.y};
 
                     if (this.field[pos.y]?.[pos.x] !== undefined && this.field[pos.y]?.[pos.x] !== ECellType.AzovSteel)
-                        this.createExplosion?.(pos, direction, reducePower(pos));
+                        this.createExplosion?.(pos, direction, getNextExplosionPower(pos));
                 }
             }
         } else {
@@ -37,7 +37,7 @@ export class ExplosionModel implements ISceneObject {
             if (this.field[pos.y]?.[pos.x] === undefined || this.field[pos.y]?.[pos.x] === ECellType.AzovSteel)
                 return;
 
-            this.createExplosion?.(pos, this.direction, reducePower(pos));
+            this.createExplosion?.(pos, this.direction, getNextExplosionPower(pos));
         }
         this.power = 0;
     }

@@ -3,7 +3,6 @@ import {ECellType, IPoint, ISceneObject, ISize, TField} from "../types";
 import {PlayerModel} from "./PlayerModel";
 import {BombModel} from "./BombModel";
 import {ExplosionModel} from "./ExplosionModel";
-import {BOMB_LIFETIME, BONUS_LIFETIME} from "../config";
 import {BonusModel} from "./BonusModel";
 
 export class GameModel {
@@ -53,7 +52,6 @@ export class GameModel {
         if (this.field[bomb.pos.y][bomb.pos.x] === ECellType.Bomb)
             return false;
 
-        // bomb.addEventListener("onExplosion", this.removeObject);
         this.sceneObjects.push(bomb);
         this.field[bomb.pos.y][bomb.pos.x] = ECellType.Bomb;
 
@@ -78,23 +76,16 @@ export class GameModel {
         this.sceneObjects = this.sceneObjects.filter((o) => o !== object);
         this.field[object.pos.y][object.pos.x] = ECellType.Empty;
 
-        if (object instanceof BombModel) {
-            // object.removeEventListener("onExplosion", this.removeObject);
+        if (object instanceof BombModel)
             this.addExplosion(object.pos, undefined, object.power);
-        } else if (object instanceof ExplosionModel && object.isBonus) {
+        else if (object instanceof ExplosionModel && object.isBonus)
             this.addBonus(object.pos);
-        }
-        console.log("Object", object.pos, object instanceof ExplosionModel);
     }
 
     private detonateObject = (pos: IPoint) => {
         this.sceneObjects?.forEach(o => {
-            if (this.field[pos.y][pos.x] !== ECellType.Explosion && o.pos.x === pos.x && o.pos.y === pos.y) {
-                if (o instanceof BombModel)
-                    o.update(BOMB_LIFETIME);
-                else if (o instanceof BonusModel)
-                    o.update(BONUS_LIFETIME);
-            }
+            if (o.pos.x === pos.x && o.pos.y === pos.y)
+                this.removeObject(o);
         });
     }
 }

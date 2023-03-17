@@ -3,6 +3,7 @@ import {BOMB_LIFETIME} from "../config";
 
 export class BombModel implements ISceneObject {
     private listeners: { [key: string]: ((event: BombModel) => void)[] } = {};
+
     private lifetime = 0;
 
     constructor(readonly pos: IPoint, readonly power: number) {
