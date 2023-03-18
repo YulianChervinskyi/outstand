@@ -120,6 +120,6 @@ export class PlayerModel {
     private isCellEmpty(cA1: number, cA2: number, axis: keyof IPoint = "x") {
         const row = axis === "x" ? cA2 : cA1;
         const col = axis === "x" ? cA1 : cA2;
-        return this.field[row]?.[col] === ECellType.Empty;
+        return [ECellType.Empty, ECellType.Explosion, ECellType.Bonus].includes(this.field[row]?.[col]);
     }
 }
