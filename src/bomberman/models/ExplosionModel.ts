@@ -18,7 +18,7 @@ export class ExplosionModel implements ISceneObject {
             return;
 
         const getNextExplosionPower = (pos: IPoint) => {
-            return this.field[pos.y][pos.x] === ECellType.Empty ? this.power - 1 : 0;
+            return [ECellType.Empty, ECellType.Bonus].includes(this.field[pos.y][pos.x]) ? this.power - 1 : 0;
         }
 
         if (!this.direction) {
