@@ -29,7 +29,7 @@ export class PlayerModel {
     private createBomb() {
         const bombPos = {x: Math.round(this.pos.x), y: Math.round(this.pos.y)};
 
-        if (this.field[bombPos.y][bombPos.x] === ECellType.Bomb)
+        if (this.field[bombPos.y][bombPos.x] !== ECellType.Empty)
             return;
 
         const newBomb = new BombModel(bombPos, this.bombPower, this.field, this.removeBomb);
