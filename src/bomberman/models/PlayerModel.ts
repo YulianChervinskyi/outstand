@@ -32,8 +32,7 @@ export class PlayerModel {
         if (this.field[bombPos.y][bombPos.x] === ECellType.Bomb)
             return;
 
-        const newBomb = new BombModel(bombPos, this.bombPower, this.field);
-        newBomb.setRemoveFromPlayer(this.removeBomb);
+        const newBomb = new BombModel(bombPos, this.bombPower, this.field, this.removeBomb);
 
         this.bombSupply -= 1;
         this.placeBomb?.(newBomb);

@@ -1,9 +1,8 @@
+import {FIELD_FILLING} from "../config";
 import {IControlsStates} from "../Controls";
 import {ECellType, IPoint, ISceneObject, ISize, TField} from "../types";
-import {PlayerModel} from "./PlayerModel";
 import {BombModel} from "./BombModel";
-import {ExplosionModel} from "./ExplosionModel";
-import {BOMB_LIFETIME, BONUS_LIFETIME, FIELD_FILLING} from "../config";
+import {PlayerModel} from "./PlayerModel";
 
 export class GameModel {
     field: TField = [];
@@ -21,8 +20,13 @@ export class GameModel {
     createPlayer(states: IControlsStates) {
         const player = new PlayerModel(states, this.field);
         this.players.push(player);
-        player.setPlaceBomb(this.addBomb.bind(this));
+        player.setPlaceBomb(this.placeBomb);
         return player;
+    }
+
+    placeBomb = (bomb: BombModel) => {
+        bomb.setListeners(this.addObject, this.detonateObject);
+        this.addObject(bomb);
     }
 
     update(seconds: number) {
@@ -48,39 +52,19 @@ export class GameModel {
         }
     }
 
-    private addBomb(bomb: BombModel) {
-        this.sceneObjects.push(bomb);
-    }
-
-    private addExplosion = (pos: IPoint, direction: IPoint | undefined, power: number) => {
-        const explosion = new ExplosionModel(direction, power, this.field, pos);
-        explosion.setDetonateObject(this.detonateObject);
-        explosion.setCreateExplosion(this.addExplosion);
-        this.sceneObjects.push(explosion);
+    private addObject = (o: ISceneObject) => {
+        this.sceneObjects.push(o);
     }
 
     private removeObject = (object: ISceneObject) => {
         this.sceneObjects = this.sceneObjects.filter((o) => o !== object);
         this.field[object.pos.y][object.pos.x] = ECellType.Empty;
 
-        if (object instanceof BombModel)
-            object.removeFromPlayer?.(object);
-
-        const newObject = object.generatedObject;
-
-        if (newObject) {
-            if (newObject instanceof ExplosionModel) {
-                newObject.setDetonateObject(this.detonateObject);
-                newObject.setCreateExplosion(this.addExplosion);
-            }
+        if (object.generatedObject)
             this.sceneObjects.push(object.generatedObject);
-        }
     }
 
     private detonateObject = (pos: IPoint) => {
-        this.sceneObjects?.forEach(o => {
-            if (!(o instanceof ExplosionModel) && o.pos.x === pos.x && o.pos.y === pos.y)
-                o.update(o instanceof BombModel ? BOMB_LIFETIME : BONUS_LIFETIME);
-        });
+        this.sceneObjects.find(o => o.pos.x === pos.x && o.pos.y === pos.y)?.detonate();
     }
 }

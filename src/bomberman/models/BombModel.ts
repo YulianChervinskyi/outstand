@@ -3,27 +3,37 @@ import {BOMB_LIFETIME} from "../config";
 import {ExplosionModel} from "./ExplosionModel";
 
 export class BombModel implements ISceneObject {
-    removeFromPlayer?: (bomb: BombModel) => void;
-    private _generatedObject: ISceneObject | undefined;
     private lifetime = 0;
+    private detonateObject: (pos: IPoint) => void = () => {};
+    private addObject: (object: ISceneObject) => void = () => {};
 
-    constructor(readonly pos: IPoint, readonly power: number, private field: TField) {
+    constructor(
+        readonly pos: IPoint,
+        readonly power: number,
+        private field: TField,
+        private onDetonate: (bomb: BombModel) => void,
+    ) {}
+
+    detonate(): void {
+        this.lifetime = BOMB_LIFETIME;
     }
 
     update(seconds: number) {
         this.lifetime += seconds;
+        const isAlive = this.lifetime < BOMB_LIFETIME;
 
-        if (this.lifetime >= BOMB_LIFETIME)
-            this._generatedObject = new ExplosionModel(undefined, this.power, this.field, this.pos);
+        if (!isAlive)
+            this.onDetonate(this);
 
-        return this.lifetime < BOMB_LIFETIME;
+        return isAlive;
+    }
+
+    setListeners(addObject: (object: ISceneObject) => void, detonateObject: (pos: IPoint) => void) {
+        this.addObject = addObject;
+        this.detonateObject = detonateObject;
     }
 
     get generatedObject(): ISceneObject | undefined {
-        return this._generatedObject;
-    }
-
-    setRemoveFromPlayer(func: (bomb: BombModel) => void) {
-        this.removeFromPlayer = func;
+        return new ExplosionModel(this.pos, this.power, this.field, this.addObject, this.detonateObject);
     }
 }

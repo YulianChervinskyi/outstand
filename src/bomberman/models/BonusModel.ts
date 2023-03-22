@@ -9,6 +9,10 @@ export class BonusModel implements ISceneObject {
         this.type = this.defineType();
     }
 
+    detonate(): void {
+        this.lifetime = BONUS_LIFETIME;
+    }
+
     update(seconds: number) {
         this.lifetime += seconds;
 

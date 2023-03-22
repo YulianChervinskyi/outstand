@@ -18,7 +18,10 @@ export type TField = ECellType[][];
 
 export interface ISceneObject {
     pos: IPoint,
-    update: (seconds: number) => boolean,
+
+    update(seconds: number): boolean,
+
+    detonate(): void,
 
     get generatedObject(): ISceneObject | undefined;
 }
