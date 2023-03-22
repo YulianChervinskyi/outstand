@@ -1,11 +1,12 @@
 import {ECellType, IPoint, ISceneObject, TField} from "../types";
 import {BONUS_GENERATION_CHANCE, EXPLOSION_LIFETIME, EXPLOSION_SPAWN_DELAY} from "../config";
+import {BonusModel} from "./BonusModel";
 
 export class ExplosionModel implements ISceneObject {
     detonateObject?: (pos: IPoint) => void;
     createExplosion?: (pos: IPoint, direction: IPoint, power: number) => void;
+    private _generatedObject: ISceneObject | undefined;
     private lifetime = 0;
-    isBonus = false;
 
     constructor(readonly direction: IPoint | undefined,
                 private power: number,
@@ -53,7 +54,7 @@ export class ExplosionModel implements ISceneObject {
         if (explosionCell === ECellType.Bonus)
             this.detonateObject?.(this.pos);
         else if (explosionCell === ECellType.Wall && Math.random() <= BONUS_GENERATION_CHANCE)
-            this.isBonus = true;
+            this._generatedObject = new BonusModel(this.pos, this.field);
 
         if (this.field[this.pos.y][this.pos.x] !== ECellType.Explosion)
             this.field[this.pos.y][this.pos.x] = ECellType.Explosion;
@@ -64,6 +65,10 @@ export class ExplosionModel implements ISceneObject {
             this.spawn();
 
         return this.lifetime < EXPLOSION_LIFETIME;
+    }
+
+    get generatedObject(): ISceneObject | undefined {
+        return this._generatedObject;
     }
 
     setCreateExplosion(func: (pos: IPoint, direction: IPoint, power: number) => void) {

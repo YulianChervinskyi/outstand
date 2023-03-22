@@ -17,8 +17,10 @@ export enum EBonusType {
 export type TField = ECellType[][];
 
 export interface ISceneObject {
-    pos: IPoint;
-    update: (seconds: number) => boolean;
+    pos: IPoint,
+    update: (seconds: number) => boolean,
+
+    get generatedObject(): ISceneObject | undefined;
 }
 
 export interface ISize {
