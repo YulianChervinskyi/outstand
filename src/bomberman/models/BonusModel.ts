@@ -23,6 +23,7 @@ export class BonusModel implements ISceneObject {
     }
 
     private defineType() {
+        // TODO logic
         return EBonusType.BombSupply;
     }
 }
