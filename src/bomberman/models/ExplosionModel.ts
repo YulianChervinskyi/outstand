@@ -20,11 +20,6 @@ export class ExplosionModel implements ISceneObject {
         return this._generatedObject;
     }
 
-    createExplosion(pos: IPoint, direction: IPoint, power: number) {
-        const explosion = new ExplosionModel(pos, power, this.field, this.addObject, this.detonateObject, direction);
-        this.addObject(explosion);
-    }
-
     update(seconds: number) {
         // TODO: try to refactor this
         const explosionCell = this.field[this.pos.y][this.pos.x];
@@ -63,13 +58,13 @@ export class ExplosionModel implements ISceneObject {
                     continue;
 
                 const power = [ECellType.Empty, ECellType.Bonus, ECellType.Explosion].includes(this.field[pos.y][pos.x]) ? this.power - 1 : 0;
-                this.createExplosion(pos, direction, power);
+                const explosion = new ExplosionModel(pos, power, this.field, this.addObject, this.detonateObject, direction);
+                this.addObject(explosion);
 
                 if (direction === this.direction)
                     break;
             }
         }
-
         this.power = 0;
     }
 }
