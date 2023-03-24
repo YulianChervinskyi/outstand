@@ -52,22 +52,21 @@ export class ExplosionModel implements ISceneObject {
         if (this.power <= 0)
             return;
 
-        for (let y = 0; y < 2; y++) {
-            for (let x = -1; x < 2; x += 2) {
-                const direction = this.direction ? this.direction : {x: x * (1 - y), y: y * x};
-                const pos = {x: this.pos.x + direction.x, y: this.pos.y + direction.y};
-                const power = [ECellType.Empty, ECellType.Bonus, ECellType.Explosion].includes(this.field[pos.y]?.[pos.x]) ? this.power - 1 : 0;
+        const directions = this.direction
+            ? [this.direction]
+            : [{x: 0, y: -1}, {x: 0, y: 1}, {x: -1, y: 0}, {x: 1, y: 0}];
 
-                if (this.field[pos.y]?.[pos.x] === undefined || this.field[pos.y]?.[pos.x] === ECellType.AzovSteel)
-                    continue;
+        for (let direction of directions) {
+            const pos = {x: this.pos.x + direction.x, y: this.pos.y + direction.y};
+            const power = [ECellType.Empty, ECellType.Bonus, ECellType.Explosion].includes(this.field[pos.y]?.[pos.x]) ? this.power - 1 : 0;
 
-                const explosion = new ExplosionModel(pos, power, this.field, this.addObject, this.detonateObject, direction);
-                this.addObject(explosion);
+            if (this.field[pos.y]?.[pos.x] === undefined || this.field[pos.y]?.[pos.x] === ECellType.AzovSteel)
+                continue;
 
-                if (direction === this.direction)
-                    break;
-            }
+            const explosion = new ExplosionModel(pos, power, this.field, this.addObject, this.detonateObject, direction);
+            this.addObject(explosion);
         }
+
         this.power = 0;
     }
 }
