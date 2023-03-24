@@ -19,9 +19,6 @@ export class ExplosionModel implements ISceneObject {
     }
 
     get generatedObject(): ISceneObject | undefined {
-        if (this._generatedObject)
-            this.field[this.pos.y][this.pos.x] = ECellType.Bonus;
-
         return this._generatedObject;
     }
 
@@ -45,7 +42,11 @@ export class ExplosionModel implements ISceneObject {
         if ([ECellType.Bomb, ECellType.Bonus].includes(place))
             this.detonateObject?.(this.pos);
         else if (place === ECellType.Wall && Math.random() <= BONUS_GENERATION_CHANCE)
-            this._generatedObject = new BonusModel(this.pos);
+            this._generatedObject = new BonusModel(this.pos, this.field);
+    }
+
+    private validateExpansion(pos: IPoint) {
+        return [ECellType.Empty, ECellType.Bonus, ECellType.Explosion].includes(this.field[pos.y]?.[pos.x]);
     }
 
     private spawn() {
@@ -58,7 +59,7 @@ export class ExplosionModel implements ISceneObject {
 
         for (let direction of directions) {
             const pos = {x: this.pos.x + direction.x, y: this.pos.y + direction.y};
-            const power = [ECellType.Empty, ECellType.Bonus, ECellType.Explosion].includes(this.field[pos.y]?.[pos.x]) ? this.power - 1 : 0;
+            const power = this.validateExpansion(pos) ? this.power - 1 : 0;
 
             if (this.field[pos.y]?.[pos.x] === undefined || this.field[pos.y]?.[pos.x] === ECellType.AzovSteel)
                 continue;
@@ -66,7 +67,6 @@ export class ExplosionModel implements ISceneObject {
             const explosion = new ExplosionModel(pos, power, this.field, this.addObject, this.detonateObject, direction);
             this.addObject(explosion);
         }
-
         this.power = 0;
     }
 }
