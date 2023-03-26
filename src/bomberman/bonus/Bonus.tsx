@@ -1,5 +1,9 @@
 import {BonusModel} from "../models/BonusModel";
+import {EBonusType} from "../types";
+import "./Bonus.scss";
 
-export function Bonus(props: {bonus: BonusModel}) {
-    return <div style={{backgroundColor: "#e80e2b"}}>{props.bonus.type}</div>;
+export function Bonus(props: { bonus: BonusModel }) {
+    return <div className="bonus">
+        <p>{EBonusType[props.bonus.type]}</p>
+    </div>;
 }

@@ -3,7 +3,7 @@ import {BONUS_LIFETIME} from "../config";
 
 export class BonusModel implements ISceneObject {
     private lifetime = 0;
-    type: number | undefined;
+    type = 0;
 
     constructor(readonly pos: IPoint, private field: TField) {
         this.type = this.defineType();

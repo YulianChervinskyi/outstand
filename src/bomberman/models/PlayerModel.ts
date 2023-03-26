@@ -136,16 +136,16 @@ export class PlayerModel {
     private useBonus(bonus: BonusModel) {
         console.log(bonus.type !== undefined ? EBonusType[bonus.type] : "no type found :(");
         switch (bonus?.type) {
-            case EBonusType.ExplosionPower:
+            case EBonusType.Power:
                 this.bombPower++;
                 break;
-            case EBonusType.BombSupply:
+            case EBonusType.Supply:
                 this.bombSupply++;
                 break;
-            case EBonusType.SpeedUp:
+            case EBonusType.Speed:
                 this.speed++;
                 break;
-            case EBonusType.PushBombs:
+            case EBonusType.Push:
                 // TODO bomb pushing logic
                 break;
             default:

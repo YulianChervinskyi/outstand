@@ -1,7 +1,5 @@
 import {images} from "../assets";
 
 export function Bomb() {
-    return (
-        <img src={images.bomb} alt=""/>
-    );
+    return <img className="bomb" src={images.bomb} alt=""/>;
 }

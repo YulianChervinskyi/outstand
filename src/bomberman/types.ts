@@ -8,10 +8,10 @@ export enum ECellType {
 }
 
 export enum EBonusType {
-    ExplosionPower,
-    BombSupply,
-    SpeedUp,
-    PushBombs,
+    Power,
+    Supply,
+    Speed,
+    Push,
 }
 
 export type TField = ECellType[][];

@@ -10,7 +10,6 @@ import {ECellType, IPoint} from "../types";
 import "./Field.scss";
 
 export function Field(props: { model: GameModel, offset: IPoint }) {
-
     const getCellObject = (type: ECellType, pos: IPoint) => {
         switch (type) {
             case ECellType.Bomb:
@@ -36,7 +35,7 @@ export function Field(props: { model: GameModel, offset: IPoint }) {
                         <div className="field-cell"
                              key={cellKey}
                              style={{
-                                 backgroundColor: /*cell ? `${cellImg[cell]}` : "*/"#252533",
+                                 backgroundColor: "#252533",
                                  width: `${CELL_SIZE}px`,
                                  height: `${CELL_SIZE}px`,
                                  minWidth: `${CELL_SIZE}px`,
