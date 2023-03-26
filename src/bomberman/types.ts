@@ -8,9 +8,9 @@ export enum ECellType {
 }
 
 export enum EBonusType {
+    ExplosionPower,
     BombSupply,
     SpeedUp,
-    ExplosionPower,
     PushBombs,
 }
 

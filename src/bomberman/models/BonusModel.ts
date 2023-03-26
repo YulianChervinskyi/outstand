@@ -3,7 +3,7 @@ import {BONUS_LIFETIME} from "../config";
 
 export class BonusModel implements ISceneObject {
     private lifetime = 0;
-    type: EBonusType | undefined;
+    type: number | undefined;
 
     constructor(readonly pos: IPoint, private field: TField) {
         this.type = this.defineType();
@@ -27,7 +27,6 @@ export class BonusModel implements ISceneObject {
     }
 
     private defineType() {
-        // TODO logic
-        return EBonusType.BombSupply;
+        return Math.round(Math.random() * (Object.keys(EBonusType).length / 2 - 1));
     }
 }

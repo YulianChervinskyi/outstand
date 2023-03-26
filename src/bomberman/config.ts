@@ -9,7 +9,7 @@ export const BONUS_LIFETIME = 20;
 export const EXPLOSION_LIFETIME = 1;
 
 export const EXPLOSION_SPAWN_DELAY = 0.1;
-export const BONUS_GENERATION_CHANCE = 0.125;
+export const BONUS_GENERATION_CHANCE = 0.825;
 
 export const FIELD_SIZE = {
     w: 15,

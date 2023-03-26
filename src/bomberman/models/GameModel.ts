@@ -21,6 +21,7 @@ export class GameModel {
         const player = new PlayerModel(states, this.field);
         this.players.push(player);
         player.setPlaceBomb(this.placeBomb);
+        player.setGetObject(this.getObject);
         return player;
     }
 
@@ -66,5 +67,9 @@ export class GameModel {
 
     private detonateObject = (pos: IPoint) => {
         this.sceneObjects.find(o => o.pos.x === pos.x && o.pos.y === pos.y)?.detonate();
+    }
+
+    private getObject = (pos: IPoint) => {
+        return this.sceneObjects.find(o => o.pos.x === pos.x && o.pos.y === pos.y);
     }
 }

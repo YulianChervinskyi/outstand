@@ -1,6 +1,7 @@
 import {IControlsStates} from "../Controls";
-import {ECellType, IPoint, TField} from "../types";
+import {EBonusType, ECellType, IPoint, ISceneObject, TField} from "../types";
 import {BombModel} from "./BombModel";
+import {BonusModel} from "./BonusModel";
 
 const [abs, sign, round, min] = [Math.abs, Math.sign, Math.round, Math.min];
 
@@ -11,12 +12,17 @@ export class PlayerModel {
     private bombSupply = 3;
     private activeBombs: BombModel[] = [];
     private placeBomb?: (bomb: BombModel) => void;
+    private getObject?: (pos: IPoint) => ISceneObject | undefined;
 
     constructor(private states: IControlsStates, private field: TField) {
     }
 
     setPlaceBomb(placeBomb: (bomb: BombModel) => void) {
         this.placeBomb = placeBomb;
+    }
+
+    setGetObject(func: (pos: IPoint) => ISceneObject | undefined) {
+        this.getObject = func;
     }
 
     update(seconds: number) {
@@ -120,6 +126,32 @@ export class PlayerModel {
     private isCellEmpty(cA1: number, cA2: number, axis: keyof IPoint = "x") {
         const row = axis === "x" ? cA2 : cA1;
         const col = axis === "x" ? cA1 : cA2;
+
+        if (this.field[row]?.[col] === ECellType.Bonus && this.getObject?.({x: col, y: row}) instanceof BonusModel)
+            this.useBonus(this.getObject?.({x: col, y: row}) as BonusModel);
+
         return [ECellType.Empty, ECellType.Explosion, ECellType.Bonus].includes(this.field[row]?.[col]);
+    }
+
+    private useBonus(bonus: BonusModel) {
+        console.log(bonus.type !== undefined ? EBonusType[bonus.type] : "no type found :(");
+        switch (bonus?.type) {
+            case EBonusType.ExplosionPower:
+                this.bombPower++;
+                break;
+            case EBonusType.BombSupply:
+                this.bombSupply++;
+                break;
+            case EBonusType.SpeedUp:
+                this.speed++;
+                break;
+            case EBonusType.PushBombs:
+                // TODO bomb pushing logic
+                break;
+            default:
+                break;
+        }
+        console.log("speed:", this.speed, "supply", this.bombSupply, "power", this.bombPower);
+        bonus.detonate();
     }
 }
