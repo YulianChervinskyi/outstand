@@ -1,32 +1,38 @@
+import React from "react";
+import {images} from "../assets";
+import {Bomb} from "../bomb/Bomb";
 import {Explosion} from "../bomb/explosion/Explosion";
-import {BonusModel} from "../models/BonusModel";
-import {GameModel} from "../models/GameModel";
 import {Bonus} from "../bonus/Bonus";
 import {CELL_SIZE} from "../config";
+import {BonusModel} from "../models/BonusModel";
+import {GameModel} from "../models/GameModel";
 import {ECellType, IPoint} from "../types";
-import {Bomb} from "../bomb/Bomb";
-import {images} from "../assets";
 import "./Field.scss";
 
-interface cVisual {
-    [id: number]: JSX.Element | Element
-}
-
 export function Field(props: { model: GameModel, offset: IPoint }) {
-    const cell: cVisual = {
-        [ECellType.Empty]: new HTMLDivElement(),
-        [ECellType.Wall]: createImg(new Image(), images.wall),
-        [ECellType.AzovSteel]: createImg(new Image(), images.azov_steel),
-        [ECellType.Bomb]: <Bomb/>,
-        [ECellType.Explosion]: <Explosion/>,
-        [ECellType.Bonus]: <Bonus bonus={props.model.getObject({x: 0, y: 0}) as BonusModel}/>,
-    };
+
+    const getCellObject = (type: ECellType, pos: IPoint) => {
+        switch (type) {
+            case ECellType.Bomb:
+                return <Bomb/>;
+            case ECellType.Explosion:
+                return <Explosion/>;
+            case ECellType.Bonus:
+                return <Bonus bonus={props.model.getObject(pos) as BonusModel}/>;
+            case ECellType.Wall:
+                return <img src={images.wall} alt="wall"/>;
+            case ECellType.AzovSteel:
+                return <img src={images.azov_steel} alt="azov_steel"/>;
+            default:
+                return "";
+        }
+    }
 
     return (
         <div className="field" style={{left: props.offset.x, top: props.offset.y}}>
             {props.model.field.map((row, rowKey) =>
                 <div className="field-row" key={rowKey}>
-                    {row.map((_cell, cellKey) =>
+                    {row.map((cell, cellKey) =>
                         <div className="field-cell"
                              key={cellKey}
                              style={{
@@ -36,10 +42,7 @@ export function Field(props: { model: GameModel, offset: IPoint }) {
                                  minWidth: `${CELL_SIZE}px`,
                                  minHeight: `${CELL_SIZE}px`,
                              }}>
-                            {cell[_cell]}
-                            {/*{cell === ECellType.Bomb && <Bomb/>}*/}
-                            {/*{(cell === ECellType.Wall || cell === ECellType.AzovSteel)*/}
-                            {/*    && <img src={cellImg[cell]} alt=""/>}*/}
+                            {getCellObject(cell, {x: cellKey, y: rowKey})}
                         </div>
                     )}
                 </div>
@@ -48,7 +51,3 @@ export function Field(props: { model: GameModel, offset: IPoint }) {
     );
 }
 
-const createImg = (img: HTMLImageElement, src: string) => {
-    img.src = src;
-    return img;
-}

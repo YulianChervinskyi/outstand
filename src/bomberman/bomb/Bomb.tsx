@@ -1,8 +1,7 @@
-import {ECellType} from "../types";
-import {cellImg} from "../config";
+import {images} from "../assets";
 
 export function Bomb() {
     return (
-        <img src={cellImg[ECellType.Bomb]} alt=""/>
+        <img src={images.bomb} alt=""/>
     );
 }
