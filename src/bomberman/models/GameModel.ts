@@ -69,7 +69,7 @@ export class GameModel {
         this.sceneObjects.find(o => o.pos.x === pos.x && o.pos.y === pos.y)?.detonate();
     }
 
-    private getObject = (pos: IPoint) => {
+    getObject = (pos: IPoint) => {
         return this.sceneObjects.find(o => o.pos.x === pos.x && o.pos.y === pos.y);
     }
 }

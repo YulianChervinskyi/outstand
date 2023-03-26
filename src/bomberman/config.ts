@@ -1,5 +1,5 @@
 import {ECellType} from "./types";
-import {img} from "./assets";
+import {images} from "./assets";
 
 export const CELL_SIZE = 64;
 export const FIELD_FILLING = 0.5;
@@ -16,11 +16,11 @@ export const FIELD_SIZE = {
     h: 11,
 };
 
-export const cellImg = {
-    [ECellType.Empty]: "",
-    [ECellType.Wall]: img.wall,
-    [ECellType.AzovSteel]: img.azov_steel,
-    [ECellType.Bomb]: img.bomb,
-    [ECellType.Explosion]: "#0729d3",
-    [ECellType.Bonus]: "#e80e2b",
-};
+// export const cellImg = {
+//     [ECellType.Empty]: "",
+//     [ECellType.Wall]: img.wall,
+//     [ECellType.AzovSteel]: img.azov_steel,
+//     [ECellType.Bomb]: img.bomb,
+//     [ECellType.Explosion]: "#0729d3",
+//     [ECellType.Bonus]: "#e80e2b",
+// };
