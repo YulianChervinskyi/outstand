@@ -3,6 +3,7 @@ import {BONUS_GENERATION_CHANCE, EXPLOSION_LIFETIME, EXPLOSION_SPAWN_DELAY} from
 import {BonusModel} from "./BonusModel";
 
 export class ExplosionModel implements ISceneObject {
+    private validPlaces = [ECellType.Empty, ECellType.Bonus, ECellType.Explosion];
     private _generatedObject: ISceneObject | undefined;
     private lifetime = 0;
 
@@ -46,7 +47,7 @@ export class ExplosionModel implements ISceneObject {
     }
 
     private validateExpansion(pos: IPoint) {
-        return [ECellType.Empty, ECellType.Bonus, ECellType.Explosion].includes(this.field[pos.y]?.[pos.x]);
+        return this.validPlaces.includes(this.field[pos.y]?.[pos.x]);
     }
 
     private spawn() {

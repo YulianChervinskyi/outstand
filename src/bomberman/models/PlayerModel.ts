@@ -12,6 +12,7 @@ export class PlayerModel {
     private bombSupply = 3;
     private bombPushAbility = false;
     private activeBombs: BombModel[] = [];
+    private validPlaces = [ECellType.Empty, ECellType.Explosion, ECellType.Bonus];
     private placeBomb?: (bomb: BombModel) => void;
     private getObject?: (pos: IPoint) => ISceneObject | undefined;
 
@@ -126,6 +127,7 @@ export class PlayerModel {
     private isCellEmpty(cA1: number, cA2: number, axis: keyof IPoint = "x") {
         const row = axis === "x" ? cA2 : cA1;
         const col = axis === "x" ? cA1 : cA2;
+
         const sceneObject = this.getObject?.({x: col, y: row});
 
         if (sceneObject instanceof BonusModel)
@@ -133,13 +135,10 @@ export class PlayerModel {
         else if (this.bombPushAbility && sceneObject instanceof BombModel)
             sceneObject.move({x: sign(col - this.pos.x), y: sign(row - this.pos.y)});
 
-        return [ECellType.Empty, ECellType.Explosion, ECellType.Bonus].includes(this.field[row]?.[col]);
+        return this.validPlaces.includes(this.field[row]?.[col]);
     }
 
     private useBonus(bonus: BonusModel) {
-        if (bonus?.type === EBonusType.Push && this.bombPushAbility)
-            return;
-
         switch (bonus?.type) {
             case EBonusType.Power:
                 this.bombPower++;

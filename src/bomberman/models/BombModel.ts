@@ -4,15 +4,19 @@ import {ExplosionModel} from "./ExplosionModel";
 
 export class BombModel implements ISceneObject {
     private lifetime = 0;
-    private detonateObject: (pos: IPoint) => void = () => {};
-    private addObject: (object: ISceneObject) => void = () => {};
+    private validPlaces = [ECellType.Empty, ECellType.Explosion];
+    private detonateObject: (pos: IPoint) => void = () => {
+    };
+    private addObject: (object: ISceneObject) => void = () => {
+    };
 
     constructor(
-        public pos: IPoint,
+        readonly pos: IPoint,
         readonly power: number,
         private field: TField,
         private onDetonate: (bomb: BombModel) => void,
-    ) {}
+    ) {
+    }
 
     detonate(): void {
         this.lifetime = BOMB_LIFETIME;
@@ -39,11 +43,12 @@ export class BombModel implements ISceneObject {
     move(offset: IPoint) {
         const pos = {x: this.pos.x + offset.x, y: this.pos.y + offset.y}
 
-        if (![ECellType.Empty, ECellType.Explosion].includes(this.field[pos.y]?.[pos.x]))
+        if (!this.validPlaces.includes(this.field[pos.y]?.[pos.x]))
             return;
 
         this.field[this.pos.y][this.pos.x] = ECellType.Empty;
-        this.pos = pos;
+        this.pos.x = pos.x;
+        this.pos.y = pos.y;
     }
 
     get generatedObject(): ISceneObject | undefined {
