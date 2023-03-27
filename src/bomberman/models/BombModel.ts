@@ -43,7 +43,7 @@ export class BombModel implements ISceneObject {
     move(offset: IPoint) {
         const pos = {x: this.pos.x + offset.x, y: this.pos.y + offset.y}
 
-        if (!this.validPlaces.includes(this.field[pos.y]?.[pos.x]))
+        if (!this.validPlaces.includes(this.field[pos.y]?.[pos.x]) || offset.x && offset.y)
             return;
 
         this.field[this.pos.y][this.pos.x] = ECellType.Empty;
