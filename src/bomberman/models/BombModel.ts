@@ -1,4 +1,4 @@
-import {IPoint, ISceneObject, TField} from "../types";
+import {ECellType, IPoint, ISceneObject, TField} from "../types";
 import {BOMB_LIFETIME} from "../config";
 import {ExplosionModel} from "./ExplosionModel";
 
@@ -8,7 +8,7 @@ export class BombModel implements ISceneObject {
     private addObject: (object: ISceneObject) => void = () => {};
 
     constructor(
-        readonly pos: IPoint,
+        public pos: IPoint,
         readonly power: number,
         private field: TField,
         private onDetonate: (bomb: BombModel) => void,
@@ -22,6 +22,9 @@ export class BombModel implements ISceneObject {
         this.lifetime += seconds;
         const isAlive = this.lifetime < BOMB_LIFETIME;
 
+        if (this.field[this.pos.y][this.pos.x] !== ECellType.Bomb)
+            this.field[this.pos.y][this.pos.x] = ECellType.Bomb;
+
         if (!isAlive)
             this.onDetonate(this);
 
@@ -31,6 +34,16 @@ export class BombModel implements ISceneObject {
     setListeners(addObject: (object: ISceneObject) => void, detonateObject: (pos: IPoint) => void) {
         this.addObject = addObject;
         this.detonateObject = detonateObject;
+    }
+
+    move(offset: IPoint) {
+        const pos = {x: this.pos.x + offset.x, y: this.pos.y + offset.y}
+
+        if (![ECellType.Empty, ECellType.Explosion].includes(this.field[pos.y]?.[pos.x]))
+            return;
+
+        this.field[this.pos.y][this.pos.x] = ECellType.Empty;
+        this.pos = pos;
     }
 
     get generatedObject(): ISceneObject | undefined {
