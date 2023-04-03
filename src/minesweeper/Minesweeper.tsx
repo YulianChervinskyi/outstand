@@ -48,6 +48,7 @@ export class Minesweeper extends React.Component<IComponentProps, IState> {
         };
 
         this.setMinSize(this.state.difficulty);
+        console.log("created minesweeper");
     }
 
     setState<K extends keyof IState>(state: Pick<IState, K> | IState | null) {

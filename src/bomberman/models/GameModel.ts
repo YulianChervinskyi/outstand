@@ -1,8 +1,10 @@
-import {FIELD_FILLING} from "../config";
+import {BONUS_FILLING, FIELD_FILLING} from "../config";
 import {IControlsStates} from "../Controls";
 import {ECellType, IPoint, ISceneObject, ISize, TField} from "../types";
 import {BombModel} from "./BombModel";
 import {PlayerModel} from "./PlayerModel";
+
+export const bonuses: number[] = [];
 
 export class GameModel {
     field: TField = [];
@@ -15,6 +17,7 @@ export class GameModel {
         this.width = size.w;
         this.height = size.h;
         this.initField();
+        this.initBonuses();
     }
 
     createPlayer(states: IControlsStates) {
@@ -41,6 +44,14 @@ export class GameModel {
 
     getObject = (pos: IPoint) => {
         return this.sceneObjects.find(o => o.pos.x === pos.x && o.pos.y === pos.y);
+    }
+
+    private initBonuses() {
+        Object.entries(BONUS_FILLING).forEach(([type, quantity]) => {
+            for (let i = 0; i < quantity; i++)
+                bonuses.push(+type);
+        });
+        console.log(bonuses);
     }
 
     private initField() {

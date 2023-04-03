@@ -1,3 +1,5 @@
+import {EBonusType} from "./types";
+
 export const CELL_SIZE = 64;
 export const FIELD_FILLING = 0.5;
 
@@ -12,3 +14,10 @@ export const FIELD_SIZE = {
     w: 15,
     h: 11,
 };
+
+export const BONUS_FILLING: {[type: string]: number} = {
+    [EBonusType.Power]: 5,
+    [EBonusType.Supply]: 5,
+    [EBonusType.Speed]: 5,
+    [EBonusType.Push]: 2,
+}
