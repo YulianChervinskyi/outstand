@@ -4,7 +4,10 @@ import {ECellType, IPoint, ISceneObject, ISize, TField} from "../types";
 import {BombModel} from "./BombModel";
 import {PlayerModel} from "./PlayerModel";
 
-export const bonuses: (number | undefined)[] = [];
+export const bonuses: (number | undefined)[] = Object.entries(BONUS_FILLING)
+    .reduce((acc,[type, quantity]) => acc.concat(Array(quantity).fill(+type)), [] as (number | undefined)[]);
+
+console.log(bonuses);
 
 export class GameModel {
     field: TField = [];
@@ -17,7 +20,6 @@ export class GameModel {
         this.width = size.w;
         this.height = size.h;
         this.initField();
-        this.initBonuses();
     }
 
     createPlayer(states: IControlsStates) {
@@ -44,16 +46,6 @@ export class GameModel {
 
     getObject = (pos: IPoint) => {
         return this.sceneObjects.find(o => o.pos.x === pos.x && o.pos.y === pos.y);
-    }
-
-    private initBonuses() {
-        if (bonuses.length)
-            return;
-
-        Object.entries(BONUS_FILLING).forEach(([type, quantity]) => {
-            for (let i = 0; i < quantity; i++)
-                bonuses.push(+type);
-        });
     }
 
     private initField() {
