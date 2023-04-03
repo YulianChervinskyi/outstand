@@ -4,7 +4,7 @@ import {ECellType, IPoint, ISceneObject, ISize, TField} from "../types";
 import {BombModel} from "./BombModel";
 import {PlayerModel} from "./PlayerModel";
 
-export const bonuses: number[] = [];
+export const bonuses: (number | undefined)[] = [];
 
 export class GameModel {
     field: TField = [];
@@ -47,11 +47,13 @@ export class GameModel {
     }
 
     private initBonuses() {
+        if (bonuses.length)
+            return;
+
         Object.entries(BONUS_FILLING).forEach(([type, quantity]) => {
             for (let i = 0; i < quantity; i++)
                 bonuses.push(+type);
         });
-        console.log(bonuses);
     }
 
     private initField() {

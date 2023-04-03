@@ -1,12 +1,10 @@
-import {EBonusType, ECellType, IPoint, ISceneObject, TField} from "../types";
+import {ECellType, IPoint, ISceneObject, TField} from "../types";
 import {BONUS_LIFETIME} from "../config";
 
 export class BonusModel implements ISceneObject {
     private lifetime = 0;
-    type = 0;
 
-    constructor(readonly pos: IPoint, private field: TField) {
-        this.type = this.defineType();
+    constructor(readonly pos: IPoint, private field: TField, readonly type: number) {
     }
 
     detonate(): void {
@@ -24,9 +22,5 @@ export class BonusModel implements ISceneObject {
 
     get generatedObject(): ISceneObject | undefined {
         return undefined;
-    }
-
-    private defineType() {
-        return Math.round(Math.random() * (Object.keys(EBonusType).length / 2 - 1));
     }
 }

@@ -1,6 +1,7 @@
 import {ECellType, IPoint, ISceneObject, TField} from "../types";
-import {BONUS_GENERATION_CHANCE, EXPLOSION_LIFETIME, EXPLOSION_SPAWN_DELAY} from "../config";
+import {EXPLOSION_LIFETIME, EXPLOSION_SPAWN_DELAY} from "../config";
 import {BonusModel} from "./BonusModel";
+import {bonuses} from "./GameModel";
 
 export class ExplosionModel implements ISceneObject {
     private validPlaces = [ECellType.Empty, ECellType.Bonus, ECellType.Explosion];
@@ -37,13 +38,24 @@ export class ExplosionModel implements ISceneObject {
 
     private checkExplosionPlace() {
         const place = this.field[this.pos.y]?.[this.pos.x];
+
         this.power = place === ECellType.Bomb ? 0 : this.power;
         this.lifetime = place === ECellType.Bomb ? EXPLOSION_LIFETIME : 0;
 
         if ([ECellType.Bomb, ECellType.Bonus].includes(place))
             this.detonateObject?.(this.pos);
-        else if (place === ECellType.Wall && Math.random() <= BONUS_GENERATION_CHANCE)
-            this._generatedObject = new BonusModel(this.pos, this.field);
+
+        if (place !== ECellType.Wall)
+            return;
+
+        const wallNumber = this.field.reduce((acc, row) =>
+            acc + row.reduce((acc, cell) =>
+                acc + (cell === ECellType.Wall ? 1 : 0), 0), 0);
+
+        const typeIndex = wallNumber > 1 ? Math.floor(Math.random() * wallNumber) : 0;
+
+        this._generatedObject = bonuses[typeIndex] !== undefined ? new BonusModel(this.pos, this.field, bonuses[typeIndex] as number) : undefined;
+        bonuses.splice(typeIndex, 1);
     }
 
     private validateExpansion(pos: IPoint) {
