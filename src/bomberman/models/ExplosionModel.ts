@@ -52,7 +52,7 @@ export class ExplosionModel implements ISceneObject {
             acc + row.reduce((acc, cell) =>
                 acc + (cell === ECellType.Wall ? 1 : 0), 0), 0);
 
-        const typeIndex = wallNumber > 1 ? Math.floor(Math.random() * wallNumber) : 0;
+        const typeIndex = Math.floor(Math.random() * wallNumber);
 
         this._generatedObject = bonuses[typeIndex] !== undefined ? new BonusModel(this.pos, this.field, bonuses[typeIndex] as number) : undefined;
         bonuses.splice(typeIndex, 1);
