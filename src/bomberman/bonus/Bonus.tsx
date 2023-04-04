@@ -4,6 +4,6 @@ import "./Bonus.scss";
 
 export function Bonus(props: { bonus: BonusModel }) {
     return <div className="bonus">
-        <p>{EBonusType[props.bonus.type]}</p>
+        <p>{EBonusType[props.bonus.getType]}</p>
     </div>;
 }

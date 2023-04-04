@@ -144,7 +144,10 @@ export class PlayerModel {
     }
 
     private useBonus(bonus: BonusModel) {
-        switch (bonus?.type) {
+        switch (bonus.getType) {
+            case EBonusType.Lottery:
+                this.useBonus(bonus.changeType());
+                break;
             case EBonusType.Power:
                 this.bombPower++;
                 break;

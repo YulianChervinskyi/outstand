@@ -15,10 +15,11 @@ export const FIELD_SIZE = {
     h: 11,
 };
 
-export const BONUS_FILLING: {[type: number]: number} = {
+export const BONUS_FILLING: { [type: number]: number } = {
     [EBonusType.Power]: 5,
     [EBonusType.Supply]: 4,
     [EBonusType.Speed]: 3,
     [EBonusType.Push]: 2,
     [EBonusType.Spam]: 8,
+    [EBonusType.Lottery]: 5,
 }

@@ -4,8 +4,8 @@ import {ECellType, IPoint, ISceneObject, ISize, TField} from "../types";
 import {BombModel} from "./BombModel";
 import {PlayerModel} from "./PlayerModel";
 
-export const bonuses: (number | undefined)[] = Object.entries(BONUS_FILLING)
-    .reduce((acc,[type, quantity]) => acc.concat(Array(quantity).fill(+type)), [] as (number | undefined)[]);
+export const bonuses: (number)[] = Object.entries(BONUS_FILLING)
+    .reduce((acc, [type, quantity]) => acc.concat(Array(quantity).fill(+type)), [] as (number)[]);
 
 console.log(bonuses);
 
