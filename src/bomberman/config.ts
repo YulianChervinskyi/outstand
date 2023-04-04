@@ -8,6 +8,7 @@ export const BONUS_LIFETIME = 20;
 export const EXPLOSION_LIFETIME = 1;
 
 export const EXPLOSION_SPAWN_DELAY = 0.1;
+export const BOMB_SPAMMING_TIME = 15;
 
 export const FIELD_SIZE = {
     w: 15,
@@ -19,4 +20,5 @@ export const BONUS_FILLING: {[type: number]: number} = {
     [EBonusType.Supply]: 4,
     [EBonusType.Speed]: 3,
     [EBonusType.Push]: 2,
+    [EBonusType.Spam]: 8,
 }

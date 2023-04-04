@@ -2,6 +2,7 @@ import {IControlsStates} from "../Controls";
 import {EBonusType, ECellType, IPoint, ISceneObject, TField} from "../types";
 import {BombModel} from "./BombModel";
 import {BonusModel} from "./BonusModel";
+import {BOMB_SPAMMING_TIME} from "../config";
 
 const [abs, sign, round, min] = [Math.abs, Math.sign, Math.round, Math.min];
 
@@ -11,6 +12,7 @@ export class PlayerModel {
     private bombPower = 2;
     private bombSupply = 3;
     private bombPushAbility = false;
+    private bombSpamTime = 0;
     private activeBombs: BombModel[] = [];
     private validPlaces = [ECellType.Empty, ECellType.Explosion, ECellType.Bonus];
     private placeBomb?: (bomb: BombModel) => void;
@@ -30,7 +32,10 @@ export class PlayerModel {
     update(seconds: number) {
         this.updateMovement(seconds);
 
-        if (this.states.fire && this.bombSupply > 0)
+        if (this.bombSpamTime > 0)
+            this.bombSpamTime -= seconds;
+
+        if (this.bombSupply > 0 && (this.states.fire || this.bombSpamTime > 0))
             this.createBomb();
     }
 
@@ -151,6 +156,9 @@ export class PlayerModel {
                 break;
             case EBonusType.Push:
                 this.bombPushAbility = true;
+                break;
+            case EBonusType.Spam:
+                this.bombSpamTime += BOMB_SPAMMING_TIME;
                 break;
             default:
                 break;

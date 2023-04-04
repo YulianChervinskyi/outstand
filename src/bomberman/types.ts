@@ -12,6 +12,7 @@ export enum EBonusType {
     Supply,
     Speed,
     Push,
+    Spam,
 }
 
 export type TField = ECellType[][];

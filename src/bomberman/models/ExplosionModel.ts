@@ -53,6 +53,7 @@ export class ExplosionModel implements ISceneObject {
 
         const typeIndex = Math.floor(Math.random() * wallNumber);
         const type = bonuses[typeIndex];
+
         if (type !== undefined) {
             this._generatedObject = new BonusModel(this.pos, this.field, type);
             bonuses.splice(typeIndex, 1);
