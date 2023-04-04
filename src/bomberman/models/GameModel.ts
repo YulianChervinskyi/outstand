@@ -1,13 +1,11 @@
 import {BONUS_FILLING, FIELD_FILLING} from "../config";
 import {IControlsStates} from "../Controls";
-import {ECellType, IPoint, ISceneObject, ISize, TField} from "../types";
+import {EBonusType, ECellType, IPoint, ISceneObject, ISize, TField} from "../types";
 import {BombModel} from "./BombModel";
 import {PlayerModel} from "./PlayerModel";
 
-export const bonuses: (number)[] = Object.entries(BONUS_FILLING)
-    .reduce((acc, [type, quantity]) => acc.concat(Array(quantity).fill(+type)), [] as (number)[]);
-
-console.log(bonuses);
+export const bonuses = Object.entries(BONUS_FILLING)
+    .reduce((acc, [type, quantity]) => acc.concat(Array(quantity).fill(+type)), [] as EBonusType[]);
 
 export class GameModel {
     field: TField = [];

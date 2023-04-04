@@ -144,10 +144,7 @@ export class PlayerModel {
     }
 
     private useBonus(bonus: BonusModel) {
-        switch (bonus.getType) {
-            case EBonusType.Lottery:
-                this.useBonus(bonus.changeType());
-                break;
+        switch (bonus.realType) {
             case EBonusType.Power:
                 this.bombPower++;
                 break;
@@ -162,8 +159,6 @@ export class PlayerModel {
                 break;
             case EBonusType.Spam:
                 this.bombSpamTime += BOMB_SPAMMING_TIME;
-                break;
-            default:
                 break;
         }
         bonus.detonate();
