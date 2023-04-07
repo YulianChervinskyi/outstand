@@ -1,5 +1,5 @@
 import {IControlsStates} from "../Controls";
-import {EBonusType, ECellType, IPoint, ISceneObject, TField} from "../types";
+import {EBonusType, ECellType, IPlayerStats, IPoint, ISceneObject, TField} from "../types";
 import {BombModel} from "./BombModel";
 import {BonusModel} from "./BonusModel";
 import {BOMB_SPAMMING_TIME} from "../config";
@@ -7,18 +7,21 @@ import {BOMB_SPAMMING_TIME} from "../config";
 const [abs, sign, round, min] = [Math.abs, Math.sign, Math.round, Math.min];
 
 export class PlayerModel {
-    readonly pos: IPoint = {x: 0, y: 0};
-    private speed = 5;
-    private bombPower = 2;
-    private bombSupply = 3;
-    private bombPushAbility = false;
-    private bombSpamTime = 0;
+    readonly stats: IPlayerStats;
     private activeBombs: BombModel[] = [];
     private validPlaces = [ECellType.Empty, ECellType.Explosion, ECellType.Bonus];
     private placeBomb?: (bomb: BombModel) => void;
     private getObject?: (pos: IPoint) => ISceneObject | undefined;
 
     constructor(private states: IControlsStates, private field: TField) {
+        this.stats = {
+            pos: {x: 0, y: 0},
+            speed: 5,
+            bombPower: 2,
+            bombSupply: 3,
+            bombPushAbility: false,
+            bombSpamTime: 0,
+        };
     }
 
     setPlaceBomb(placeBomb: (bomb: BombModel) => void) {
@@ -32,45 +35,45 @@ export class PlayerModel {
     update(seconds: number) {
         this.updateMovement(seconds);
 
-        if (this.bombSpamTime > 0)
-            this.bombSpamTime -= seconds;
+        if (this.stats.bombSpamTime > 0)
+            this.stats.bombSpamTime -= seconds;
 
-        if (this.bombSupply > 0 && (this.states.fire || this.bombSpamTime > 0))
+        if (this.stats.bombSupply > 0 && (this.states.fire || this.stats.bombSpamTime > 0))
             this.createBomb();
     }
 
     private createBomb() {
-        const bombPos = {x: Math.round(this.pos.x), y: Math.round(this.pos.y)};
+        const bombPos = {x: round(this.stats.pos.x), y: round(this.stats.pos.y)};
 
         if (this.field[bombPos.y][bombPos.x] !== ECellType.Empty)
             return;
 
-        const newBomb = new BombModel(bombPos, this.bombPower, this.field, this.removeBomb);
+        const newBomb = new BombModel(bombPos, this.stats.bombPower, this.field, this.removeBomb);
 
-        this.bombSupply -= 1;
+        this.stats.bombSupply -= 1;
         this.placeBomb?.(newBomb);
         this.activeBombs.push(newBomb);
     }
 
     private removeBomb = (bombToRemove: BombModel) => {
-        this.bombSupply += 1;
+        this.stats.bombSupply += 1;
         this.activeBombs = this.activeBombs.filter((bomb) => bomb !== bombToRemove);
     }
 
     private updateMovement(seconds: number) {
-        const x = this.speed * seconds * (Number(this.states.right) - Number(this.states.left));
-        const y = this.speed * seconds * (Number(this.states.backward) - Number(this.states.forward));
+        const x = this.stats.speed * seconds * (Number(this.states.right) - Number(this.states.left));
+        const y = this.stats.speed * seconds * (Number(this.states.backward) - Number(this.states.forward));
 
         if (x || y) {
-            const offset = this.fixOffset(this.pos, {x, y});
+            const offset = this.fixOffset(this.stats.pos, {x, y});
             const diagCoefficient = x && y && offset.x === x && offset.y === y ? 1 / Math.sqrt(2) : 1;
             this.walk({x: offset.x * diagCoefficient, y: offset.y * diagCoefficient});
         }
     }
 
     private walk(offset: { x: number, y: number }) {
-        this.pos.x += offset.x;
-        this.pos.y += offset.y;
+        this.stats.pos.x += offset.x;
+        this.stats.pos.y += offset.y;
     }
 
     private fixOffset(pos: IPoint, offset: IPoint) {
@@ -137,8 +140,8 @@ export class PlayerModel {
 
         if (sceneObject instanceof BonusModel)
             this.useBonus(sceneObject);
-        else if (this.bombPushAbility && sceneObject instanceof BombModel)
-            sceneObject.move({x: sign(col - this.pos.x), y: sign(row - this.pos.y)});
+        else if (this.stats.bombPushAbility && sceneObject instanceof BombModel)
+            sceneObject.move({x: sign(col - this.stats.pos.x), y: sign(row - this.stats.pos.y)});
 
         return this.validPlaces.includes(this.field[row]?.[col]);
     }
@@ -146,19 +149,19 @@ export class PlayerModel {
     private useBonus(bonus: BonusModel) {
         switch (bonus.realType) {
             case EBonusType.Power:
-                this.bombPower++;
+                this.stats.bombPower++;
                 break;
             case EBonusType.Supply:
-                this.bombSupply++;
+                this.stats.bombSupply++;
                 break;
             case EBonusType.Speed:
-                this.speed++;
+                this.stats.speed++;
                 break;
             case EBonusType.Push:
-                this.bombPushAbility = true;
+                this.stats.bombPushAbility = true;
                 break;
             case EBonusType.Spam:
-                this.bombSpamTime += BOMB_SPAMMING_TIME;
+                this.stats.bombSpamTime += BOMB_SPAMMING_TIME;
                 break;
         }
         bonus.detonate();

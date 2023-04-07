@@ -8,7 +8,7 @@ export const BONUS_LIFETIME = 20;
 export const EXPLOSION_LIFETIME = 1;
 
 export const EXPLOSION_SPAWN_DELAY = 0.1;
-export const BOMB_SPAMMING_TIME = 15;
+export const BOMB_SPAMMING_TIME = 10;
 
 export const FIELD_SIZE = {
     w: 15,

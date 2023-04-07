@@ -28,6 +28,15 @@ export interface ISceneObject {
     get generatedObject(): ISceneObject | undefined;
 }
 
+export interface IPlayerStats {
+    pos: IPoint,
+    speed: number,
+    bombPower: number,
+    bombSupply: number,
+    bombPushAbility: boolean,
+    bombSpamTime: number,
+}
+
 export interface ISize {
     w: number,
     h: number,
