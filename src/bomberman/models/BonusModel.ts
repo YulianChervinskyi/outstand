@@ -31,7 +31,7 @@ export class BonusModel implements ISceneObject {
 
     private defineType() {
         const suitableBonuses = bonuses.filter(bonus => bonus !== EBonusType.Lottery) as ERealBonus[];
-        console.log(suitableBonuses[Math.floor(Math.random() * suitableBonuses.length)]);
+        console.log(EBonusType[suitableBonuses[Math.floor(Math.random() * suitableBonuses.length)]]);
         return suitableBonuses[Math.floor(Math.random() * suitableBonuses.length)];
     }
 }

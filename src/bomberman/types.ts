@@ -31,10 +31,10 @@ export interface ISceneObject {
 export interface IPlayerStats {
     pos: IPoint,
     speed: number,
-    bombPower: number,
-    bombSupply: number,
-    bombPushAbility: boolean,
-    bombSpamTime: number,
+    power: number,
+    supply: number,
+    pushAbility: boolean,
+    spamTime: number,
 }
 
 export interface ISize {

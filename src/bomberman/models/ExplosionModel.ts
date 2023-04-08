@@ -56,6 +56,7 @@ export class ExplosionModel implements ISceneObject {
 
         if (type !== undefined) {
             this._generatedObject = new BonusModel(this.pos, this.field, type);
+            console.log(bonuses.length);
             bonuses.splice(typeIndex, 1);
         }
     }

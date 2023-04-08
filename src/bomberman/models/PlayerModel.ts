@@ -17,10 +17,10 @@ export class PlayerModel {
         this.stats = {
             pos: {x: 0, y: 0},
             speed: 5,
-            bombPower: 2,
-            bombSupply: 3,
-            bombPushAbility: false,
-            bombSpamTime: 0,
+            power: 2,
+            supply: 3,
+            pushAbility: false,
+            spamTime: 0,
         };
     }
 
@@ -35,10 +35,10 @@ export class PlayerModel {
     update(seconds: number) {
         this.updateMovement(seconds);
 
-        if (this.stats.bombSpamTime > 0)
-            this.stats.bombSpamTime -= seconds;
+        if (this.stats.spamTime > 0)
+            this.stats.spamTime -= seconds;
 
-        if (this.stats.bombSupply > 0 && (this.states.fire || this.stats.bombSpamTime > 0))
+        if (this.stats.supply > 0 && (this.states.fire || this.stats.spamTime > 0))
             this.createBomb();
     }
 
@@ -48,15 +48,15 @@ export class PlayerModel {
         if (this.field[bombPos.y][bombPos.x] !== ECellType.Empty)
             return;
 
-        const newBomb = new BombModel(bombPos, this.stats.bombPower, this.field, this.removeBomb);
+        const newBomb = new BombModel(bombPos, this.stats.power, this.field, this.removeBomb);
 
-        this.stats.bombSupply -= 1;
+        this.stats.supply -= 1;
         this.placeBomb?.(newBomb);
         this.activeBombs.push(newBomb);
     }
 
     private removeBomb = (bombToRemove: BombModel) => {
-        this.stats.bombSupply += 1;
+        this.stats.supply += 1;
         this.activeBombs = this.activeBombs.filter((bomb) => bomb !== bombToRemove);
     }
 
@@ -120,6 +120,11 @@ export class PlayerModel {
             }
             axis1 = axis1 === "x" ? "y" : "x" as keyof IPoint;
         }
+
+        const sceneObject = this.getObject?.({x: round(p.x), y: round(p.y)});
+        if (sceneObject instanceof BonusModel)
+            this.useBonus(sceneObject);
+
         return {x: p.x - pos.x, y: p.y - pos.y};
     }
 
@@ -137,11 +142,11 @@ export class PlayerModel {
         const col = axis === "x" ? cA1 : cA2;
 
         const sceneObject = this.getObject?.({x: col, y: row});
-
-        if (sceneObject instanceof BonusModel)
-            this.useBonus(sceneObject);
-        else if (this.stats.bombPushAbility && sceneObject instanceof BombModel)
-            sceneObject.move({x: sign(col - this.stats.pos.x), y: sign(row - this.stats.pos.y)});
+        if (this.stats.pushAbility && sceneObject instanceof BombModel)
+            sceneObject.move({
+                x: sign(col - this.stats.pos.x),
+                y: sign(row - this.stats.pos.y),
+            });
 
         return this.validPlaces.includes(this.field[row]?.[col]);
     }
@@ -149,19 +154,19 @@ export class PlayerModel {
     private useBonus(bonus: BonusModel) {
         switch (bonus.realType) {
             case EBonusType.Power:
-                this.stats.bombPower++;
+                this.stats.power++;
                 break;
             case EBonusType.Supply:
-                this.stats.bombSupply++;
+                this.stats.supply++;
                 break;
             case EBonusType.Speed:
                 this.stats.speed++;
                 break;
             case EBonusType.Push:
-                this.stats.bombPushAbility = true;
+                this.stats.pushAbility = true;
                 break;
             case EBonusType.Spam:
-                this.stats.bombSpamTime += BOMB_SPAMMING_TIME;
+                this.stats.spamTime += BOMB_SPAMMING_TIME;
                 break;
         }
         bonus.detonate();
