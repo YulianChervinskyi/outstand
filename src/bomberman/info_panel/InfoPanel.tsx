@@ -6,9 +6,9 @@ export function InfoPanel(props: { stats: IPlayerStats }) {
         <div className="info-panel">
             <div className="player-stats">
                 {Object.entries(props.stats).map(([key, value]) =>
-                    !(value instanceof Object) && <div key={key}>
+                    <div key={key}>
                         {`${key}`}
-                        <div>{`${(value)}`}</div>
+                        <div>{`${(value instanceof Object) ? JSON.stringify(value) : value}`}</div>
                     </div>)}
             </div>
         </div>

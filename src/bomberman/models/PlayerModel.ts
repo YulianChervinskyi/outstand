@@ -2,26 +2,21 @@ import {IControlsStates} from "../Controls";
 import {EBonusType, ECellType, IPlayerStats, IPoint, ISceneObject, TField} from "../types";
 import {BombModel} from "./BombModel";
 import {BonusModel} from "./BonusModel";
-import {BOMB_SPAMMING_TIME} from "../config";
+import {BOMB_SPAMMING_TIME, DEATH_MOVING_TIME, INIT_STATS} from "../config";
 
 const [abs, sign, round, min] = [Math.abs, Math.sign, Math.round, Math.min];
 
 export class PlayerModel {
     readonly stats: IPlayerStats;
+    private deathPoint?: IPoint;
+    private deathMovingMode: boolean = false;
     private activeBombs: BombModel[] = [];
     private validPlaces = [ECellType.Empty, ECellType.Explosion, ECellType.Bonus];
     private placeBomb?: (bomb: BombModel) => void;
     private getObject?: (pos: IPoint) => ISceneObject | undefined;
 
     constructor(private states: IControlsStates, private field: TField) {
-        this.stats = {
-            pos: {x: 0, y: 0},
-            speed: 5,
-            power: 2,
-            supply: 3,
-            pushAbility: false,
-            spamTime: 0,
-        };
+        this.stats = INIT_STATS;
     }
 
     setPlaceBomb(placeBomb: (bomb: BombModel) => void) {
@@ -35,10 +30,16 @@ export class PlayerModel {
     update(seconds: number) {
         this.updateMovement(seconds);
 
-        if (this.stats.spamTime > 0)
-            this.stats.spamTime -= seconds;
+        if (!this.stats.pos.x && !this.stats.pos.y && this.deathMovingMode)
+            this.deathMovingMode = false;
 
-        if (this.stats.supply > 0 && (this.states.fire || this.stats.spamTime > 0))
+        if (this.field[round(this.stats.pos.y)][round(this.stats.pos.x)] === ECellType.Explosion && !this.deathMovingMode)
+            this.die();
+
+        if (this.stats.diarrhoea > 0)
+            this.stats.diarrhoea -= seconds;
+
+        if (this.stats.supply > 0 && (this.states.fire || this.stats.diarrhoea > 0))
             this.createBomb();
     }
 
@@ -64,11 +65,18 @@ export class PlayerModel {
         const x = this.stats.speed * seconds * (Number(this.states.right) - Number(this.states.left));
         const y = this.stats.speed * seconds * (Number(this.states.backward) - Number(this.states.forward));
 
-        if (x || y) {
-            const offset = this.fixOffset(this.stats.pos, {x, y});
-            const diagCoefficient = x && y && offset.x === x && offset.y === y ? 1 / Math.sqrt(2) : 1;
+        if (x || y || this.deathMovingMode) {
+            const offset: IPoint = !this.deathMovingMode
+                ? this.fixOffset(this.stats.pos, {x, y})
+                : {x: this.calcDeathStep(seconds, "x"), y: this.calcDeathStep(seconds, "y")};
+            const diagCoefficient = !this.deathMovingMode && x && y && offset.x === x && offset.y === y ? 1 / Math.sqrt(2) : 1;
             this.walk({x: offset.x * diagCoefficient, y: offset.y * diagCoefficient});
         }
+    }
+
+    private calcDeathStep(seconds: number, axis: keyof IPoint = "x") {
+        const step = this.deathPoint?.[axis] ? (-this.deathPoint?.[axis]) / DEATH_MOVING_TIME * seconds : 0;
+        return this.stats.pos[axis] + step <= 0 ? -this.stats.pos[axis] : step;
     }
 
     private walk(offset: { x: number, y: number }) {
@@ -151,6 +159,12 @@ export class PlayerModel {
         return this.validPlaces.includes(this.field[row]?.[col]);
     }
 
+    private die() {
+        this.stats.life--;
+        this.deathMovingMode = true;
+        this.deathPoint = {x: this.stats.pos.x, y: this.stats.pos.y};
+    }
+
     private useBonus(bonus: BonusModel) {
         switch (bonus.realType) {
             case EBonusType.Power:
@@ -166,7 +180,7 @@ export class PlayerModel {
                 this.stats.pushAbility = true;
                 break;
             case EBonusType.Spam:
-                this.stats.spamTime += BOMB_SPAMMING_TIME;
+                this.stats.diarrhoea += BOMB_SPAMMING_TIME;
                 break;
         }
         bonus.detonate();
