@@ -19,6 +19,11 @@
 
     .pos {
       display: flex;
+
+      div {
+        margin: 0 2px 0 2px;
+        display: flex;
+      }
     }
   }
 }
