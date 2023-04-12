@@ -70,7 +70,7 @@ export class Bomberman extends React.Component<IComponentProps, {}> {
                  style={{
                      width: this.props.width,
                      height: this.props.height,
-                     fontSize: Math.min(this.props.height * 0.05, this.props.width * 0.05),
+                     fontSize: Math.min(this.props.height * 0.01, this.props.width * 0.01),
                  }}>
                 <InfoPanel stats={this.player.stats}/>
                 <div className="game-area" ref={this.gameAreaRef}>

@@ -8,11 +8,17 @@
 
   .player-stats {
     display: flex;
+    align-items: center;
     width: max-content;
+    height: max-content;
 
-    div {
+    .state-prop {
       margin: 0 5px 0 5px;
       text-align: center;
+    }
+
+    .pos {
+      display: flex;
     }
   }
 }

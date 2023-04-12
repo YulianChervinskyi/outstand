@@ -1,18 +1,24 @@
 import "./InfoPanel.scss";
 import {IPlayerStats} from "../types";
 
+function StateProp(props: { name: string, value: any }) {
+    return <div className="state-prop">
+        <div>{props.name}</div>
+        <div>{typeof (props.value) === "number" ? props.value.toFixed(1) : JSON.stringify(props.value)}</div>
+    </div>
+}
+
 export function InfoPanel(props: { stats: IPlayerStats }) {
 
     const parseObject = (obj: object) => {
         return Object.entries(obj).map(([key, value]) =>
-            <div key={key}>
-                {`${key}`}
-                <div>{
-                    value instanceof Object
-                        ? parseObject(value)
-                        : typeof (value) === "number" ? value.toFixed(4) : value
-                }</div>
-            </div>)
+            value instanceof Object
+                ? <div className="state-prop" key={key}>
+                    <div>{key}</div>
+                    <div className={key}>{parseObject(value)}</div>
+                </div>
+                : <StateProp key={key} name={key} value={value}/>
+        );
     }
 
     return (

@@ -9,7 +9,7 @@ export const EXPLOSION_LIFETIME = 1;
 
 export const EXPLOSION_SPAWN_DELAY = 0.1;
 export const BOMB_SPAMMING_TIME = 10;
-export const DEATH_MOVING_TIME = 2;
+export const DEATH_MOVING_TIME = 0.2;
 
 export const FIELD_SIZE = {
     w: 15,
@@ -27,10 +27,10 @@ export const BONUS_FILLING: { [type: number]: number } = {
 
 export const INIT_STATS: IPlayerStats = {
     pos: {x: 0, y: 0},
-    speed: 3,
+    speed: 5,
     life: 3,
-    power: 1,
-    supply: 1,
+    power: 2,
+    supply: 3,
     diarrhoea: 0,
     pushAbility: false,
 }
