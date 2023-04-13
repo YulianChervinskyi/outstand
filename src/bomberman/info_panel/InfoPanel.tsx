@@ -7,10 +7,11 @@ function StateProp(props: { name: string, value: any }) {
     const activeUntil = useRef<number>(0);
 
     useEffect(() => {
-        if (value.current !== props.value) {
-            value.current = props.value;
-            activeUntil.current = Date.now() + 1000;
-        }
+        if (value.current === props.value)
+            return;
+
+        value.current = props.value;
+        activeUntil.current = Date.now() + 1000;
     });
 
     const style = activeUntil.current > Date.now()
