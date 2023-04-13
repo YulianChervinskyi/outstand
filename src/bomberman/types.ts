@@ -35,7 +35,7 @@ export interface IPlayerStats {
     speed: number,
     power: number,
     supply: number,
-    diarrhoea: number,
+    diarrhea: number,
     pushAbility: boolean,
 }
 

@@ -36,22 +36,11 @@ export class PlayerModel {
         if (this.stats.immortality <= 0 && !this.deathMovingMode && this.field[round(this.stats.pos.y)][round(this.stats.pos.x)] === ECellType.Explosion)
             this.die();
 
-        this.reduceStat({prop: this.stats.immortality}, seconds);
-        this.reduceStat({prop: this.stats.diarrhoea}, seconds);
+        this.stats.immortality = decrease(this.stats.immortality, seconds);
+        this.stats.diarrhea = decrease(this.stats.diarrhea, seconds);
 
-        // if (this.stats.immortality > 0)
-        //     this.stats.immortality -= seconds;
-        //
-        // if (this.stats.diarrhoea > 0)
-        //     this.stats.diarrhoea -= seconds;
-
-        if (this.stats.supply > 0 && (this.states.fire || this.stats.diarrhoea > 0))
+        if (this.stats.supply > 0 && (this.states.fire || this.stats.diarrhea > 0))
             this.createBomb();
-    }
-
-    private reduceStat(stat: {prop: number}, seconds: number) {
-        if (stat.prop > 0)
-            stat.prop -= seconds;
     }
 
     private createBomb() {
@@ -191,9 +180,13 @@ export class PlayerModel {
                 this.stats.pushAbility = true;
                 break;
             case EBonusType.Spam:
-                this.stats.diarrhoea += BOMB_SPAMMING_TIME;
+                this.stats.diarrhea += BOMB_SPAMMING_TIME;
                 break;
         }
         bonus.detonate();
     }
+}
+
+function decrease(value: number, seconds: number) {
+    return value > seconds ? value - seconds : 0;
 }

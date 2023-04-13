@@ -33,6 +33,6 @@ export const INIT_STATS: IPlayerStats = {
     speed: 5,
     power: 2,
     supply: 3,
-    diarrhoea: 0,
+    diarrhea: 0,
     pushAbility: false,
 }
