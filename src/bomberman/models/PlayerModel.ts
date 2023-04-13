@@ -2,12 +2,12 @@ import {IControlsStates} from "../Controls";
 import {EBonusType, ECellType, IPlayerStats, IPoint, ISceneObject, TField} from "../types";
 import {BombModel} from "./BombModel";
 import {BonusModel} from "./BonusModel";
-import {BOMB_SPAMMING_TIME, DEATH_MOVING_TIME, INIT_STATS} from "../config";
+import {BOMB_SPAMMING_TIME, DEATH_MOVING_TIME, IMMORTALITY_TIME, INIT_STATS} from "../config";
 
 const [abs, sign, round, min] = [Math.abs, Math.sign, Math.round, Math.min];
 
 export class PlayerModel {
-    readonly stats: IPlayerStats;
+    public stats: IPlayerStats;
     private deathPoint?: IPoint;
     private deathMovingMode: boolean = false;
     private activeBombs: BombModel[] = [];
@@ -30,17 +30,28 @@ export class PlayerModel {
     update(seconds: number) {
         this.updateMovement(seconds);
 
-        if (!this.stats.pos.x && !this.stats.pos.y && this.deathMovingMode)
+        if (this.deathMovingMode && !this.stats.pos.x && !this.stats.pos.y)
             this.deathMovingMode = false;
 
-        if (this.field[round(this.stats.pos.y)][round(this.stats.pos.x)] === ECellType.Explosion && !this.deathMovingMode)
+        if (this.stats.immortality <= 0 && !this.deathMovingMode && this.field[round(this.stats.pos.y)][round(this.stats.pos.x)] === ECellType.Explosion)
             this.die();
 
-        if (this.stats.diarrhoea > 0)
-            this.stats.diarrhoea -= seconds;
+        this.reduceStat({prop: this.stats.immortality}, seconds);
+        this.reduceStat({prop: this.stats.diarrhoea}, seconds);
+
+        // if (this.stats.immortality > 0)
+        //     this.stats.immortality -= seconds;
+        //
+        // if (this.stats.diarrhoea > 0)
+        //     this.stats.diarrhoea -= seconds;
 
         if (this.stats.supply > 0 && (this.states.fire || this.stats.diarrhoea > 0))
             this.createBomb();
+    }
+
+    private reduceStat(stat: {prop: number}, seconds: number) {
+        if (stat.prop > 0)
+            stat.prop -= seconds;
     }
 
     private createBomb() {
@@ -160,9 +171,9 @@ export class PlayerModel {
     }
 
     private die() {
-        this.stats.life--;
         this.deathMovingMode = true;
         this.deathPoint = {x: this.stats.pos.x, y: this.stats.pos.y};
+        this.stats = {...INIT_STATS, ...{life: this.stats.life -= 1, immortality: IMMORTALITY_TIME}};
     }
 
     private useBonus(bonus: BonusModel) {

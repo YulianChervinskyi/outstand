@@ -30,8 +30,9 @@ export interface ISceneObject {
 
 export interface IPlayerStats {
     pos: IPoint,
-    speed: number,
     life: number,
+    immortality: number,
+    speed: number,
     power: number,
     supply: number,
     diarrhoea: number,
