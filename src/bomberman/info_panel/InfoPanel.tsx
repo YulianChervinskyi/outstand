@@ -3,7 +3,7 @@ import {IPlayerStats} from "../types";
 import {useEffect, useRef} from "react";
 
 function StateProp(props: { name: string, value: any }) {
-    const value = useRef<any>(null);
+    const value = useRef<any>(props.value);
     const activeUntil = useRef<number>(0);
 
     useEffect(() => {
@@ -13,17 +13,18 @@ function StateProp(props: { name: string, value: any }) {
         }
     });
 
-    const isActive = activeUntil.current > Date.now();
-    const style = isActive
+    const style = activeUntil.current > Date.now()
         ? {fontWeight: "bold", color: "lightgoldenrodyellow"}
         : {fontWeight: "inherit", color: "inherit"};
 
-    return <div className="state-prop">
-        <div>{props.name}</div>
-        <div style={style}>
-            {typeof props.value === "number" ? props.value.toFixed(1) : JSON.stringify(props.value)}
+    return (
+        <div className="state-prop">
+            <div>{props.name}</div>
+            <div style={style}>
+                {typeof props.value === "number" ? props.value.toFixed(1) : JSON.stringify(props.value)}
+            </div>
         </div>
-    </div>
+    );
 }
 
 export function InfoPanel(props: { stats: IPlayerStats }) {

@@ -8,13 +8,13 @@
 
   .player-stats {
     display: flex;
+    width: 100%;
     align-items: center;
-    width: max-content;
-    height: max-content;
 
     .state-prop {
       margin: 0 5px 0 5px;
       text-align: center;
+      width: 100%;
     }
 
     .pos {
