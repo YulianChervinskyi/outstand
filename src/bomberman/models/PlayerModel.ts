@@ -1,13 +1,17 @@
 import {IControlsStates} from "../Controls";
-import {EBonusType, ECellType, IPlayerStats, IPoint, ISceneObject, TField} from "../types";
+import {EBonusType, ECellType, IPlayerState, IPoint, ISceneObject, TField} from "../types";
 import {BombModel} from "./BombModel";
 import {BonusModel} from "./BonusModel";
-import {BOMB_SPAMMING_TIME, DEATH_MOVING_TIME, IMMORTALITY_TIME, INIT_STATS} from "../config";
+import {BOMB_SPAMMING_TIME, DEATH_MOVING_TIME, IMMORTALITY_TIME, INIT_PLAYER_STATE} from "../config";
 
 const [abs, sign, round, min] = [Math.abs, Math.sign, Math.round, Math.min];
 
 export class PlayerModel {
-    public stats: IPlayerStats;
+    readonly pos: IPoint = {x: 0, y: 0};
+
+    private _state: IPlayerState = {...INIT_PLAYER_STATE};
+    private diarrhea = 0;
+    private immortality = 0;
     private deathPoint?: IPoint;
     private deathMovingMode: boolean = false;
     private activeBombs: BombModel[] = [];
@@ -15,9 +19,7 @@ export class PlayerModel {
     private placeBomb?: (bomb: BombModel) => void;
     private getObject?: (pos: IPoint) => ISceneObject | undefined;
 
-    constructor(private states: IControlsStates, private field: TField) {
-        this.stats = INIT_STATS;
-    }
+    constructor(private states: IControlsStates, private field: TField) {}
 
     setPlaceBomb(placeBomb: (bomb: BombModel) => void) {
         this.placeBomb = placeBomb;
@@ -30,44 +32,53 @@ export class PlayerModel {
     update(seconds: number) {
         this.updateMovement(seconds);
 
-        if (this.deathMovingMode && !this.stats.pos.x && !this.stats.pos.y)
+        if (this.deathMovingMode && !this.pos.x && !this.pos.y)
             this.deathMovingMode = false;
 
-        if (this.stats.immortality <= 0 && !this.deathMovingMode && this.field[round(this.stats.pos.y)][round(this.stats.pos.x)] === ECellType.Explosion)
+        if (this.immortality <= 0 && !this.deathMovingMode && this.field[round(this.pos.y)][round(this.pos.x)] === ECellType.Explosion)
             this.die();
 
-        this.stats.immortality = decrease(this.stats.immortality, seconds);
-        this.stats.diarrhea = decrease(this.stats.diarrhea, seconds);
+        this.immortality = decrease(this.immortality, seconds);
+        this.diarrhea = decrease(this.diarrhea, seconds);
 
-        if (this.stats.supply > 0 && (this.states.fire || this.stats.diarrhea > 0))
+        if (this._state.supply > 0 && (this.states.fire || this.diarrhea > 0))
             this.createBomb();
     }
 
+    get state() {
+        return {
+            pos: this.pos,
+            immortality: this.immortality,
+            diarrhea: this.diarrhea,
+            ...this._state,
+        };
+    }
+
     private createBomb() {
-        const bombPos = {x: round(this.stats.pos.x), y: round(this.stats.pos.y)};
+        const bombPos = {x: round(this.pos.x), y: round(this.pos.y)};
 
         if (this.field[bombPos.y][bombPos.x] !== ECellType.Empty)
             return;
 
-        const newBomb = new BombModel(bombPos, this.stats.power, this.field, this.removeBomb);
+        const newBomb = new BombModel(bombPos, this._state.power, this.field, this.removeBomb);
 
-        this.stats.supply -= 1;
+        this._state.supply -= 1;
         this.placeBomb?.(newBomb);
         this.activeBombs.push(newBomb);
     }
 
     private removeBomb = (bombToRemove: BombModel) => {
-        this.stats.supply += 1;
+        this._state.supply += 1;
         this.activeBombs = this.activeBombs.filter((bomb) => bomb !== bombToRemove);
     }
 
     private updateMovement(seconds: number) {
-        const x = this.stats.speed * seconds * (Number(this.states.right) - Number(this.states.left));
-        const y = this.stats.speed * seconds * (Number(this.states.backward) - Number(this.states.forward));
+        const x = this._state.speed * seconds * (Number(this.states.right) - Number(this.states.left));
+        const y = this._state.speed * seconds * (Number(this.states.backward) - Number(this.states.forward));
 
         if (x || y || this.deathMovingMode) {
             const offset: IPoint = !this.deathMovingMode
-                ? this.fixOffset(this.stats.pos, {x, y})
+                ? this.fixOffset(this.pos, {x, y})
                 : {x: this.calcDeathStep(seconds, "x"), y: this.calcDeathStep(seconds, "y")};
             const diagCoefficient = !this.deathMovingMode && x && y && offset.x === x && offset.y === y ? 1 / Math.sqrt(2) : 1;
             this.walk({x: offset.x * diagCoefficient, y: offset.y * diagCoefficient});
@@ -76,12 +87,12 @@ export class PlayerModel {
 
     private calcDeathStep(seconds: number, axis: keyof IPoint = "x") {
         const step = this.deathPoint?.[axis] ? (-this.deathPoint?.[axis]) / DEATH_MOVING_TIME * seconds : 0;
-        return this.stats.pos[axis] + step <= 0 ? -this.stats.pos[axis] : step;
+        return this.pos[axis] + step <= 0 ? -this.pos[axis] : step;
     }
 
     private walk(offset: { x: number, y: number }) {
-        this.stats.pos.x += offset.x;
-        this.stats.pos.y += offset.y;
+        this.pos.x += offset.x;
+        this.pos.y += offset.y;
     }
 
     private fixOffset(pos: IPoint, offset: IPoint) {
@@ -150,37 +161,47 @@ export class PlayerModel {
         const col = axis === "x" ? cA1 : cA2;
 
         const sceneObject = this.getObject?.({x: col, y: row});
-        if (this.stats.pushAbility && sceneObject instanceof BombModel)
+        if (this._state.pushAbility && sceneObject instanceof BombModel)
             sceneObject.move({
-                x: sign(col - this.stats.pos.x),
-                y: sign(row - this.stats.pos.y),
+                x: sign(col - this.pos.x),
+                y: sign(row - this.pos.y),
             });
 
         return this.validPlaces.includes(this.field[row]?.[col]);
     }
 
     private die() {
+        this.resetState();
         this.deathMovingMode = true;
-        this.deathPoint = {x: this.stats.pos.x, y: this.stats.pos.y};
-        this.stats = {...INIT_STATS, ...{life: this.stats.life -= 1, immortality: IMMORTALITY_TIME}};
+        this.immortality = IMMORTALITY_TIME;
+        this.diarrhea = 0;
+        this.deathPoint = {x: this.pos.x, y: this.pos.y};
+    }
+
+    private resetState() {
+        this._state.life = this._state.life > 0 ? this._state.life -= 1 : 0;
+        this._state.supply = INIT_PLAYER_STATE.supply;
+        this._state.speed = INIT_PLAYER_STATE.speed;
+        this._state.power = INIT_PLAYER_STATE.power;
+        this._state.pushAbility = INIT_PLAYER_STATE.pushAbility;
     }
 
     private useBonus(bonus: BonusModel) {
         switch (bonus.realType) {
             case EBonusType.Power:
-                this.stats.power++;
+                this._state.power++;
                 break;
             case EBonusType.Supply:
-                this.stats.supply++;
+                this._state.supply++;
                 break;
             case EBonusType.Speed:
-                this.stats.speed++;
+                this._state.speed++;
                 break;
             case EBonusType.Push:
-                this.stats.pushAbility = true;
+                this._state.pushAbility = true;
                 break;
             case EBonusType.Spam:
-                this.stats.diarrhea += BOMB_SPAMMING_TIME;
+                this.diarrhea += BOMB_SPAMMING_TIME;
                 break;
         }
         bonus.detonate();

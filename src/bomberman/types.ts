@@ -28,14 +28,11 @@ export interface ISceneObject {
     get generatedObject(): ISceneObject | undefined;
 }
 
-export interface IPlayerStats {
-    pos: IPoint,
+export interface IPlayerState {
     life: number,
-    immortality: number,
     speed: number,
     power: number,
     supply: number,
-    diarrhea: number,
     pushAbility: boolean,
 }
 

@@ -1,4 +1,4 @@
-import {EBonusType, IPlayerStats} from "./types";
+import {EBonusType, IPlayerState} from "./types";
 
 export const CELL_SIZE = 64;
 export const FIELD_FILLING = 0.75;
@@ -26,13 +26,10 @@ export const BONUS_FILLING: { [type: number]: number } = {
     [EBonusType.Lottery]: 5,
 }
 
-export const INIT_STATS: IPlayerStats = {
-    pos: {x: 0, y: 0},
+export const INIT_PLAYER_STATE: IPlayerState = {
     life: 3,
-    immortality: 0,
     speed: 5,
     power: 2,
     supply: 3,
-    diarrhea: 0,
     pushAbility: false,
 }

@@ -48,8 +48,8 @@ export class Bomberman extends React.Component<IComponentProps, {}> {
         const fieldWidth = this.model.width * CELL_SIZE + 2;
         const fieldHeight = this.model.height * CELL_SIZE + 2;
 
-        const playerX = CELL_SIZE * (this.player.stats.pos.x + 0.5) + 1;
-        const playerY = CELL_SIZE * (this.player.stats.pos.y + 0.5) + 1;
+        const playerX = CELL_SIZE * (this.player.pos.x + 0.5) + 1;
+        const playerY = CELL_SIZE * (this.player.pos.y + 0.5) + 1;
         const playerCenterOffsetX = areaWidth / 2 - playerX;
         const playerCenterOffsetY = areaHeight / 2 - playerY;
 
@@ -72,11 +72,11 @@ export class Bomberman extends React.Component<IComponentProps, {}> {
                      height: this.props.height,
                      fontSize: Math.min(this.props.height * 0.01, this.props.width * 0.01),
                  }}>
-                <InfoPanel stats={this.player.stats}/>
+                <InfoPanel stats={this.player.state}/>
                 <div className="game-area" ref={this.gameAreaRef}>
                     <div className="scene">
                         <Field model={this.model} offset={offset}/>
-                        <Player position={this.player.stats.pos} offset={offset}/>
+                        <Player position={this.player.pos} offset={offset}/>
                     </div>
                 </div>
             </div>
