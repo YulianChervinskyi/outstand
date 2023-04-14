@@ -30,6 +30,6 @@ export const INIT_PLAYER_STATE: IPlayerState = {
     life: 3,
     speed: 5,
     power: 2,
-    supply: 3,
+    maxSupply: 3,
     pushAbility: false,
 }

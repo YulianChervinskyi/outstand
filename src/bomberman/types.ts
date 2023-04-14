@@ -32,7 +32,7 @@ export interface IPlayerState {
     life: number,
     speed: number,
     power: number,
-    supply: number,
+    maxSupply: number,
     pushAbility: boolean,
 }
 

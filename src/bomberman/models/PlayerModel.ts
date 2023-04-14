@@ -8,14 +8,17 @@ const [abs, sign, round, min] = [Math.abs, Math.sign, Math.round, Math.min];
 
 export class PlayerModel {
     readonly pos: IPoint = {x: 0, y: 0};
+    private deathPoint?: IPoint;
 
-    private _state: IPlayerState = {...INIT_PLAYER_STATE};
     private diarrhea = 0;
     private immortality = 0;
-    private deathPoint?: IPoint;
     private deathMovingMode: boolean = false;
+    private currentSupply = INIT_PLAYER_STATE.maxSupply;
+    private _state: IPlayerState = {...INIT_PLAYER_STATE};
+
     private activeBombs: BombModel[] = [];
-    private validPlaces = [ECellType.Empty, ECellType.Explosion, ECellType.Bonus];
+    private validPlaces: ECellType[] = [ECellType.Empty, ECellType.Explosion, ECellType.Bonus];
+
     private placeBomb?: (bomb: BombModel) => void;
     private getObject?: (pos: IPoint) => ISceneObject | undefined;
 
@@ -36,13 +39,13 @@ export class PlayerModel {
         if (this.deathMovingMode && !this.pos.x && !this.pos.y)
             this.deathMovingMode = false;
 
-        if (this.immortality <= 0 && !this.deathMovingMode && this.field[round(this.pos.y)][round(this.pos.x)] === ECellType.Explosion)
+        if (!this.immortality && !this.deathMovingMode && this.field[round(this.pos.y)][round(this.pos.x)] === ECellType.Explosion)
             this.die();
 
         this.diarrhea = decrease(this.diarrhea, seconds);
         this.immortality = decrease(this.immortality, seconds);
 
-        if (this._state.supply > 0 && (this.states.fire || this.diarrhea > 0))
+        if (this.currentSupply > 0 && (this.states.fire || this.diarrhea))
             this.createBomb();
     }
 
@@ -51,6 +54,7 @@ export class PlayerModel {
             pos: this.pos,
             immortality: this.immortality,
             diarrhea: this.diarrhea,
+            currSupply: this.currentSupply,
             ...this._state,
         };
     }
@@ -63,13 +67,13 @@ export class PlayerModel {
 
         const newBomb = new BombModel(bombPos, this._state.power, this.field, this.removeBomb);
 
-        this._state.supply -= 1;
+        this.currentSupply -= 1;
         this.placeBomb?.(newBomb);
         this.activeBombs.push(newBomb);
     }
 
     private removeBomb = (bombToRemove: BombModel) => {
-        this._state.supply += 1;
+        this.currentSupply += this.currentSupply < this._state.maxSupply ? 1 : 0;
         this.activeBombs = this.activeBombs.filter((bomb) => bomb !== bombToRemove);
     }
 
@@ -185,7 +189,8 @@ export class PlayerModel {
                 this._state.power++;
                 break;
             case EBonusType.Supply:
-                this._state.supply++;
+                this.currentSupply++;
+                this._state.maxSupply++;
                 break;
             case EBonusType.Speed:
                 this._state.speed++;
