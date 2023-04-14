@@ -19,7 +19,8 @@ export class PlayerModel {
     private placeBomb?: (bomb: BombModel) => void;
     private getObject?: (pos: IPoint) => ISceneObject | undefined;
 
-    constructor(private states: IControlsStates, private field: TField) {}
+    constructor(private states: IControlsStates, private field: TField) {
+    }
 
     setPlaceBomb(placeBomb: (bomb: BombModel) => void) {
         this.placeBomb = placeBomb;
@@ -38,8 +39,8 @@ export class PlayerModel {
         if (this.immortality <= 0 && !this.deathMovingMode && this.field[round(this.pos.y)][round(this.pos.x)] === ECellType.Explosion)
             this.die();
 
-        this.immortality = decrease(this.immortality, seconds);
         this.diarrhea = decrease(this.diarrhea, seconds);
+        this.immortality = decrease(this.immortality, seconds);
 
         if (this._state.supply > 0 && (this.states.fire || this.diarrhea > 0))
             this.createBomb();
@@ -171,19 +172,11 @@ export class PlayerModel {
     }
 
     private die() {
-        this.resetState();
-        this.deathMovingMode = true;
         this.immortality = IMMORTALITY_TIME;
         this.diarrhea = 0;
+        this.deathMovingMode = true;
         this.deathPoint = {x: this.pos.x, y: this.pos.y};
-    }
-
-    private resetState() {
-        this._state.life = this._state.life > 0 ? this._state.life -= 1 : 0;
-        this._state.supply = INIT_PLAYER_STATE.supply;
-        this._state.speed = INIT_PLAYER_STATE.speed;
-        this._state.power = INIT_PLAYER_STATE.power;
-        this._state.pushAbility = INIT_PLAYER_STATE.pushAbility;
+        this._state = {...INIT_PLAYER_STATE, ...{life: this._state.life -= 1}};
     }
 
     private useBonus(bonus: BonusModel) {
