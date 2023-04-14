@@ -45,7 +45,7 @@ export class PlayerModel {
         this.diarrhea = decrease(this.diarrhea, seconds);
         this.immortality = decrease(this.immortality, seconds);
 
-        if (this.currentSupply > 0 && (this.states.fire || this.diarrhea))
+        if (this.currentSupply > 0 && (this.states.fire || this.diarrhea) && !this.deathMovingMode)
             this.createBomb();
     }
 
@@ -53,16 +53,16 @@ export class PlayerModel {
         return {
             pos: this.pos,
             immortality: this.immortality,
-            diarrhea: this.diarrhea,
-            currSupply: this.currentSupply,
             ...this._state,
+            currSupply: this.currentSupply,
+            diarrhea: this.diarrhea,
         };
     }
 
     private createBomb() {
         const bombPos = {x: round(this.pos.x), y: round(this.pos.y)};
 
-        if (this.field[bombPos.y][bombPos.x] !== ECellType.Empty)
+        if (this.field[bombPos.y][bombPos.x] !== ECellType.Empty || this.getObject?.(bombPos))
             return;
 
         const newBomb = new BombModel(bombPos, this._state.power, this.field, this.removeBomb);
@@ -180,6 +180,7 @@ export class PlayerModel {
         this.diarrhea = 0;
         this.deathMovingMode = true;
         this.deathPoint = {x: this.pos.x, y: this.pos.y};
+        this.currentSupply = INIT_PLAYER_STATE.maxSupply;
         this._state = {...INIT_PLAYER_STATE, ...{life: this._state.life -= 1}};
     }
 
