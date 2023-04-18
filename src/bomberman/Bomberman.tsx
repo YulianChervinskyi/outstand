@@ -39,7 +39,15 @@ export class Bomberman extends React.Component<IComponentProps, {}> {
         if (!this.props.active)
             return;
 
+        if (this.player.state.life < 0)
+            this.resetGame();
+
         this.model.update(seconds);
+    }
+
+    private resetGame() {
+        this.model = new GameModel(FIELD_SIZE);
+        this.player = this.model.createPlayer(this.controls.states);
     }
 
     private calcOffset() {
