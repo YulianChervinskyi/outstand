@@ -1,5 +1,5 @@
 import {BONUS_FILLING, FIELD_FILLING} from "../config";
-import {IControlsStates} from "../Controls";
+import {Controls, IControlsStates} from "../Controls";
 import {EBonusType, ECellType, IPoint, ISceneObject, ISize, TField} from "../types";
 import {BombModel} from "./BombModel";
 import {PlayerModel} from "./PlayerModel";
@@ -9,6 +9,7 @@ export const bonuses = Object.entries(BONUS_FILLING)
 
 export class GameModel {
     field: TField = [];
+    controls = new Controls();
     sceneObjects: ISceneObject[] = [];
     players: PlayerModel[] = [];
     width: number = 0;
@@ -17,6 +18,7 @@ export class GameModel {
     constructor(size: ISize) {
         this.width = size.w;
         this.height = size.h;
+        this.createPlayer(this.controls.states);
         this.initField();
     }
 
