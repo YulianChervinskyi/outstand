@@ -62,7 +62,7 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
     }
 
     private update(seconds: number) {
-        if (!this.props.active || this.state.gameOver)
+        if (!this.props.active || this.state.gameOver || this.state.gamePause)
             return;
 
         this.state.model.update(seconds);

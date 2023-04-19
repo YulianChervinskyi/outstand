@@ -10,7 +10,7 @@ export const EXPLOSION_LIFETIME = 1;
 export const EXPLOSION_SPAWN_DELAY = 0.1;
 export const BOMB_SPAMMING_TIME = 10;
 export const DEATH_MOVING_TIME = 0.2;
-export const IMMORTALITY_TIME = 1;
+export const IMMORTALITY_TIME = 10;
 
 export const FIELD_SIZE = {
     w: 15,
