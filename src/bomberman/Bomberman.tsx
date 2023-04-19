@@ -20,12 +20,18 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
 
     constructor(props: IComponentProps) {
         super(props);
+
         this.state = {
             model: new GameModel(FIELD_SIZE),
             gamePause: false,
             gameOver: false,
             victory: false,
         };
+
+        this.props.onChangeGeometry({
+            minSize: {w: FIELD_SIZE.w * 40, h: FIELD_SIZE.h * 40},
+            aspectRatio: {w: FIELD_SIZE.w, h: FIELD_SIZE.h},
+        });
     }
 
     componentDidMount() {
