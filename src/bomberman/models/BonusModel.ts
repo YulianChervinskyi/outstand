@@ -8,8 +8,10 @@ export class BonusModel implements ISceneObject {
     readonly realType: ERealBonus;
     private lifetime = 0;
 
-    constructor(readonly pos: IPoint, private field: TField, readonly type: EBonusType) {
-        this.realType = type === EBonusType.Lottery ? this.defineType() : type;
+    type = this.constructor.name;
+
+    constructor(readonly pos: IPoint, private field: TField, readonly _type: EBonusType) {
+        this.realType = _type === EBonusType.Lottery ? this.defineType() : _type;
     }
 
     detonate(): void {
@@ -32,5 +34,12 @@ export class BonusModel implements ISceneObject {
     private defineType() {
         const suitableBonuses = bonuses.filter(bonus => bonus !== EBonusType.Lottery) as ERealBonus[];
         return suitableBonuses[Math.floor(Math.random() * suitableBonuses.length)];
+    }
+
+    static deserialize(obj: any) {
+        const bonus = new BonusModel(obj.pos, obj.field, obj._type);
+        bonus.lifetime = obj.lifetime;
+
+        return bonus;
     }
 }

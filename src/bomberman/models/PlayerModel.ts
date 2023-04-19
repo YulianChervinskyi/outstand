@@ -72,6 +72,24 @@ export class PlayerModel {
         this.activeBombs.push(newBomb);
     }
 
+    deserialize(obj: any) {
+        this.pos.x = obj.pos.x;
+        this.pos.y = obj.pos.y;
+
+        this.deathPoint = obj.deathPoint;
+        this.diarrhea = obj.diarrhea;
+        this.immortality = obj.immortality;
+        this.deathMovingMode = obj.deathMovingMode;
+        this.currentSupply = obj.currentSupply;
+        this._state = obj._state;
+
+        this.activeBombs = obj.activeBombs.map((b: any) => {
+            const bomb = BombModel.deserialize(b, this.field, this.removeBomb);
+            this.placeBomb?.(bomb);
+            return bomb;
+        });
+    }
+
     private removeBomb = (bombToRemove: BombModel) => {
         this.currentSupply += this.currentSupply < this._state.maxSupply ? 1 : 0;
         this.activeBombs = this.activeBombs.filter((bomb) => bomb !== bombToRemove);

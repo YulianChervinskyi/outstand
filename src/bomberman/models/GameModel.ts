@@ -3,6 +3,8 @@ import {Controls, IControlsStates} from "../Controls";
 import {EBonusType, ECellType, IPoint, ISceneObject, ISize, TField} from "../types";
 import {BombModel} from "./BombModel";
 import {PlayerModel} from "./PlayerModel";
+import {BonusModel} from "./BonusModel";
+import {ExplosionModel} from "./ExplosionModel";
 
 export const bonuses = Object.entries(BONUS_FILLING)
     .reduce((acc, [type, quantity]) => acc.concat(Array(quantity).fill(+type)), [] as EBonusType[]);
@@ -37,10 +39,20 @@ export class GameModel {
         this.width = data.width;
         this.height = data.height;
 
-        data?.players.forEach((p: PlayerModel) => {
-            const newPlayer = new PlayerModel(this.controls.states, this.field);
-            newPlayer.state = p.state;
-            this.players.push(newPlayer);
+        data?.players.map((obj: any, i: number) => {
+            this.createPlayer(this.controls.states);
+            this.players[i].deserialize(obj);
+        });
+
+        data?.sceneObjects.map((obj: any) => {
+            switch (obj.type) {
+                case "BonusModel":
+                    this.addObject(BonusModel.deserialize(obj));
+                    break;
+                case "ExplosionModel":
+                    this.addObject(ExplosionModel.deserialize(obj, this.addObject, this.detonateObject));
+                    break;
+            }
         });
     }
 
@@ -49,7 +61,6 @@ export class GameModel {
         this.players.push(player);
         player.setPlaceBomb(this.placeBomb);
         player.setGetObject(this.getObject);
-        return player;
     }
 
     placeBomb = (bomb: BombModel) => {
@@ -92,8 +103,10 @@ export class GameModel {
         this.sceneObjects = this.sceneObjects.filter((o) => o !== object);
         this.field[object.pos.y][object.pos.x] = ECellType.Empty;
 
+        console.log(this.sceneObjects);
         if (object.generatedObject)
             this.sceneObjects.push(object.generatedObject);
+        console.log(this.sceneObjects);
     }
 
     private detonateObject = (pos: IPoint) => {

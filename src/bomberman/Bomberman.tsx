@@ -102,8 +102,8 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
         const fieldWidth = this.state.model.width * CELL_SIZE + 2;
         const fieldHeight = this.state.model.height * CELL_SIZE + 2;
 
-        const playerX = CELL_SIZE * (this.state.model.players[0].pos.x + 0.5) + 1;
-        const playerY = CELL_SIZE * (this.state.model.players[0].pos.y + 0.5) + 1;
+        const playerX = CELL_SIZE * (this.state.model?.players[0].pos.x + 0.5) + 1;
+        const playerY = CELL_SIZE * (this.state.model?.players[0].pos.y + 0.5) + 1;
         const playerCenterOffsetX = areaWidth / 2 - playerX;
         const playerCenterOffsetY = areaHeight / 2 - playerY;
 

@@ -19,11 +19,15 @@ export enum EBonusType {
 export type TField = ECellType[][];
 
 export interface ISceneObject {
+    type: string,
+
     pos: IPoint,
 
     update(seconds: number): boolean,
 
     detonate(): void,
+
+    // deserialize(obj: any): ISceneObject,
 
     get generatedObject(): ISceneObject | undefined;
 }

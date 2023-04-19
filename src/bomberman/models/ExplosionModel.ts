@@ -8,6 +8,8 @@ export class ExplosionModel implements ISceneObject {
     private _generatedObject?: ISceneObject;
     private lifetime = 0;
 
+    type = this.constructor.name;
+
     constructor(readonly pos: IPoint,
                 private power: number,
                 private field: TField,
@@ -83,5 +85,13 @@ export class ExplosionModel implements ISceneObject {
             this.addObject(explosion);
         }
         this.power = 0;
+    }
+
+    static deserialize(obj: any, addObject: (object: ISceneObject) => void, detonateObject: (pos: IPoint) => void) {
+        const explosion = new ExplosionModel(obj.pos, obj.power, obj.field, addObject, detonateObject, obj?.direction);
+        explosion._generatedObject = obj._generatedObject;
+        explosion.lifetime = obj.lifetime;
+
+        return explosion;
     }
 }

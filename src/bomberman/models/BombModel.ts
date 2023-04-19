@@ -5,10 +5,10 @@ import {ExplosionModel} from "./ExplosionModel";
 export class BombModel implements ISceneObject {
     private lifetime = 0;
     private validPlaces = [ECellType.Empty, ECellType.Explosion];
-    private detonateObject: (pos: IPoint) => void = () => {
-    };
-    private addObject: (object: ISceneObject) => void = () => {
-    };
+    private detonateObject: (pos: IPoint) => void = () => {};
+    private addObject: (object: ISceneObject) => void = () => {};
+
+    type = this.constructor.name;
 
     constructor(
         readonly pos: IPoint,
@@ -53,5 +53,12 @@ export class BombModel implements ISceneObject {
 
     get generatedObject(): ISceneObject | undefined {
         return new ExplosionModel(this.pos, this.power, this.field, this.addObject, this.detonateObject);
+    }
+
+    static deserialize(obj: any, field: TField, onDetonate: (bomb: BombModel) => void) {
+        const bomb = new BombModel(obj.pos, obj.power, field, onDetonate);
+        bomb.lifetime = obj.lifetime;
+
+        return bomb;
     }
 }
