@@ -15,11 +15,33 @@ export class GameModel {
     width: number = 0;
     height: number = 0;
 
-    constructor(size: ISize) {
-        this.width = size.w;
-        this.height = size.h;
-        this.createPlayer(this.controls.states);
-        this.initField();
+    constructor(size: ISize, text: string) {
+        if (!text) {
+            this.width = size.w;
+            this.height = size.h;
+            this.createPlayer(this.controls.states);
+            this.initField();
+        } else {
+            this.deserialize(text);
+        }
+    }
+
+    serialize() {
+        return JSON.stringify(this);
+    }
+
+    deserialize(text: string) {
+        const data = JSON.parse(text);
+
+        this.field = data.field;
+        this.width = data.width;
+        this.height = data.height;
+
+        data?.players.forEach((p: PlayerModel) => {
+            const newPlayer = new PlayerModel(this.controls.states, this.field);
+            newPlayer.state = p.state;
+            this.players.push(newPlayer);
+        });
     }
 
     createPlayer(states: IControlsStates) {

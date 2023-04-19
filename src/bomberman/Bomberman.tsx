@@ -22,7 +22,7 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
         super(props);
 
         this.state = {
-            model: new GameModel(FIELD_SIZE),
+            model: new GameModel(FIELD_SIZE, this.props.text),
             gamePause: false,
             gameOver: false,
             victory: false,
@@ -31,6 +31,12 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
         this.props.onChangeGeometry({
             minSize: {w: FIELD_SIZE.w * 40, h: FIELD_SIZE.h * 40},
             aspectRatio: {w: FIELD_SIZE.w, h: FIELD_SIZE.h},
+        });
+    }
+
+    setState<K extends keyof IState>(state: Pick<IState, K> | IState | null) {
+        super.setState(state, () => {
+            this.props.onChange({text: this.state.model.serialize()});
         });
     }
 
@@ -83,7 +89,7 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
 
     private resetGame() {
         this.setState({
-            model: new GameModel(FIELD_SIZE),
+            model: new GameModel(FIELD_SIZE, ""),
             gamePause: false,
             gameOver: false,
             victory: false,
