@@ -36,8 +36,8 @@ export class BonusModel implements ISceneObject {
         return suitableBonuses[Math.floor(Math.random() * suitableBonuses.length)];
     }
 
-    static deserialize(obj: any) {
-        const bonus = new BonusModel(obj.pos, obj.field, obj._type);
+    static deserialize(obj: any, field: TField) {
+        const bonus = new BonusModel(obj.pos, field, obj.realType);
         bonus.lifetime = obj.lifetime;
 
         return bonus;

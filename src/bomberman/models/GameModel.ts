@@ -47,10 +47,10 @@ export class GameModel {
         data?.sceneObjects.map((obj: any) => {
             switch (obj.type) {
                 case "BonusModel":
-                    this.addObject(BonusModel.deserialize(obj));
+                    this.addObject(BonusModel.deserialize(obj, this.field));
                     break;
                 case "ExplosionModel":
-                    this.addObject(ExplosionModel.deserialize(obj, this.addObject, this.detonateObject));
+                    this.addObject(ExplosionModel.deserialize(obj, this.field, this.addObject, this.detonateObject));
                     break;
             }
         });
@@ -103,7 +103,6 @@ export class GameModel {
         this.sceneObjects = this.sceneObjects.filter((o) => o !== object);
         this.field[object.pos.y][object.pos.x] = ECellType.Empty;
 
-        console.log(this.sceneObjects);
         if (object.generatedObject)
             this.sceneObjects.push(object.generatedObject);
         console.log(this.sceneObjects);

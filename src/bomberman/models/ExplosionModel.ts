@@ -56,7 +56,7 @@ export class ExplosionModel implements ISceneObject {
         const typeIndex = Math.floor(Math.random() * wallNumber);
         const type = bonuses[typeIndex];
 
-        if (type !== undefined) {
+        if (type !== undefined && !this._generatedObject) {
             this._generatedObject = new BonusModel(this.pos, this.field, type);
             bonuses.splice(typeIndex, 1);
         }
@@ -87,9 +87,9 @@ export class ExplosionModel implements ISceneObject {
         this.power = 0;
     }
 
-    static deserialize(obj: any, addObject: (object: ISceneObject) => void, detonateObject: (pos: IPoint) => void) {
-        const explosion = new ExplosionModel(obj.pos, obj.power, obj.field, addObject, detonateObject, obj?.direction);
-        explosion._generatedObject = obj._generatedObject;
+    static deserialize(obj: any, field: TField, addObject: (object: ISceneObject) => void, detonateObject: (pos: IPoint) => void) {
+        const explosion = new ExplosionModel(obj.pos, obj.power, field, addObject, detonateObject, obj?.direction);
+        explosion._generatedObject = obj._generatedObject ? BonusModel.deserialize(obj._generatedObject, field) : undefined;
         explosion.lifetime = obj.lifetime;
 
         return explosion;
