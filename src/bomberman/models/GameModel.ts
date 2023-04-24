@@ -29,7 +29,12 @@ export class GameModel {
     }
 
     serialize() {
-        return JSON.stringify(this);
+        const obj = Object.assign({}, this) as GameModel;
+        obj.players = obj.players.map(p => p.serialize());
+        obj.sceneObjects = obj.sceneObjects.filter((o) => !(o instanceof BombModel))
+            .map(o => o.serialize());
+
+        return JSON.stringify(obj);
     }
 
     deserialize(text: string) {
@@ -105,7 +110,6 @@ export class GameModel {
 
         if (object.generatedObject)
             this.sceneObjects.push(object.generatedObject);
-        console.log(this.sceneObjects);
     }
 
     private detonateObject = (pos: IPoint) => {

@@ -72,6 +72,14 @@ export class PlayerModel {
         this.activeBombs.push(newBomb);
     }
 
+    serialize() {
+        const obj = Object.assign({}, this) as PlayerModel;
+        obj.activeBombs = obj.activeBombs.map(o => o.serialize());
+        obj.field = [];
+
+        return obj;
+    }
+
     deserialize(obj: any) {
         this.pos.x = obj.pos.x;
         this.pos.y = obj.pos.y;

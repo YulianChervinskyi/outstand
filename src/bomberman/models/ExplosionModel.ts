@@ -87,9 +87,23 @@ export class ExplosionModel implements ISceneObject {
         this.power = 0;
     }
 
+    serialize() {
+        const obj = Object.assign({}, this) as ExplosionModel;
+
+        if (obj._generatedObject instanceof BonusModel)
+            obj._generatedObject.serialize();
+
+        obj.field = [];
+
+        return obj;
+    }
+
     static deserialize(obj: any, field: TField, addObject: (object: ISceneObject) => void, detonateObject: (pos: IPoint) => void) {
         const explosion = new ExplosionModel(obj.pos, obj.power, field, addObject, detonateObject, obj?.direction);
-        explosion._generatedObject = obj._generatedObject ? BonusModel.deserialize(obj._generatedObject, field) : undefined;
+
+        if (explosion._generatedObject instanceof BonusModel)
+            explosion._generatedObject = BonusModel.deserialize(obj._generatedObject, explosion.field);
+
         explosion.lifetime = obj.lifetime;
 
         return explosion;
