@@ -72,15 +72,20 @@ export class PlayerModel {
         this.activeBombs.push(newBomb);
     }
 
-    serialize() {
-        const obj = Object.assign({}, this) as PlayerModel;
-        obj.activeBombs = obj.activeBombs.map(o => o.serialize());
-        obj.field = [];
-
-        return obj;
+    store() {
+        return {
+            pos: this.pos,
+            deathPoint: this.deathPoint,
+            diarrhea: this.diarrhea,
+            immortality: this.immortality,
+            deathMovingMode: this.deathMovingMode,
+            currentSupply: this.currentSupply,
+            _state: this._state,
+            activeBombs: this.activeBombs.map(o => o.serialize()),
+        };
     }
 
-    deserialize(obj: any) {
+    restore(obj: any) {
         this.pos.x = obj.pos.x;
         this.pos.y = obj.pos.y;
 

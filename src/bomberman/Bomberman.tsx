@@ -36,7 +36,7 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
 
     setState<K extends keyof IState>(state: Pick<IState, K> | IState | null) {
         super.setState(state, () => {
-            this.props.onChange({text: this.state.model.serialize()});
+            this.props.onChange({text: this.state.model.store()});
         });
     }
 

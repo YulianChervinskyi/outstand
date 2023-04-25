@@ -24,29 +24,27 @@ export class GameModel {
             this.createPlayer(this.controls.states);
             this.initField();
         } else {
-            this.deserialize(text);
+            this.restore(text);
         }
     }
 
-    serialize() {
-        const obj = Object.assign({}, this) as GameModel;
-        obj.players = obj.players.map(p => p.serialize());
-        obj.sceneObjects = obj.sceneObjects.filter((o) => !(o instanceof BombModel))
+    store() {
+        const obj = Object.assign({}, this) as any;
+        obj.players = this.players.map(p => p.store());
+        obj.sceneObjects = this.sceneObjects.filter((o) => !(o instanceof BombModel))
             .map(o => o.serialize());
 
-        return JSON.stringify(obj);
+        return obj;
     }
 
-    deserialize(text: string) {
-        const data = JSON.parse(text);
-
+    restore(data: any) {
         this.field = data.field;
         this.width = data.width;
         this.height = data.height;
 
         data?.players.map((obj: any, i: number) => {
             this.createPlayer(this.controls.states);
-            this.players[i].deserialize(obj);
+            this.players[i].restore(obj);
         });
 
         data?.sceneObjects.map((obj: any) => {

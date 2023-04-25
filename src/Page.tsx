@@ -9,7 +9,7 @@ interface IBoxData {
     width: number,
     height: number,
     active: boolean,
-    text: string,
+    text: any,
     type: BoxType,
 }
 
@@ -104,6 +104,7 @@ export class Page extends React.Component<{}, IState> {
     }
 
     changeBoxState = (id: number, data: Partial<IBoxData>) => {
+        // TODO split common state to separate box states
         this.state.boxes[id] = {...this.state.boxes[id], ...data};
         this.updateState();
     }
