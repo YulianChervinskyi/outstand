@@ -27,7 +27,7 @@ export interface ISceneObject {
 
     detonate(): void,
 
-    serialize(): ISceneObject,
+    store(): any,
 
     get generatedObject(): ISceneObject | undefined;
 }

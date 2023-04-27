@@ -32,7 +32,7 @@ export class GameModel {
         const obj = Object.assign({}, this) as any;
         obj.players = this.players.map(p => p.store());
         obj.sceneObjects = this.sceneObjects.filter((o) => !(o instanceof BombModel))
-            .map(o => o.serialize());
+            .map(o => o.store());
 
         return obj;
     }
@@ -50,7 +50,7 @@ export class GameModel {
         data?.sceneObjects.map((obj: any) => {
             switch (obj.type) {
                 case "BonusModel":
-                    this.addObject(BonusModel.deserialize(obj, this.field));
+                    this.addObject(BonusModel.restore(obj, this.field));
                     break;
                 case "ExplosionModel":
                     this.addObject(ExplosionModel.deserialize(obj, this.field, this.addObject, this.detonateObject));

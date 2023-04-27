@@ -55,14 +55,17 @@ export class BombModel implements ISceneObject {
         return new ExplosionModel(this.pos, this.power, this.field, this.addObject, this.detonateObject);
     }
 
-    serialize() {
-        const obj = Object.assign({}, this) as BombModel;
-        obj.field = [];
-
-        return obj;
+    store(): any {
+        return {
+            field: [],
+            pos: this.pos,
+            type: this.type,
+            power: this.power,
+            lifetime: this.lifetime,
+        };
     }
 
-    static deserialize(obj: any, field: TField, onDetonate: (bomb: BombModel) => void) {
+    static restore(obj: any, field: TField, onDetonate: (bomb: BombModel) => void) {
         const bomb = new BombModel(obj.pos, obj.power, field, onDetonate);
         bomb.lifetime = obj.lifetime;
 

@@ -81,7 +81,7 @@ export class PlayerModel {
             deathMovingMode: this.deathMovingMode,
             currentSupply: this.currentSupply,
             _state: this._state,
-            activeBombs: this.activeBombs.map(o => o.serialize()),
+            activeBombs: this.activeBombs.map(o => o.store()),
         };
     }
 
@@ -97,7 +97,7 @@ export class PlayerModel {
         this._state = obj._state;
 
         this.activeBombs = obj.activeBombs.map((b: any) => {
-            const bomb = BombModel.deserialize(b, this.field, this.removeBomb);
+            const bomb = BombModel.restore(b, this.field, this.removeBomb);
             this.placeBomb?.(bomb);
             return bomb;
         });
