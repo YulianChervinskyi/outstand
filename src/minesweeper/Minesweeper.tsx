@@ -65,7 +65,7 @@ export class Minesweeper extends React.Component<IComponentProps, IState> {
         if (this.state.gamePause || this.state.gameOver || this.state.isDifficultySelector)
             return;
 
-        if (prevProps.active && !this.props.active)
+        if (prevProps.active && !this.props?.active)
             this.pauseGame();
     }
 
