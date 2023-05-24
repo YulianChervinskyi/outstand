@@ -20,12 +20,13 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
 
     constructor(props: IComponentProps) {
         super(props);
+        const data = JSON.parse(this.props.text || '{}');
 
         this.state = {
-            model: new GameModel(FIELD_SIZE, this.props.text),
-            gamePause: false,
-            gameOver: false,
-            victory: false,
+            model: new GameModel(FIELD_SIZE, data.model),
+            gamePause: data?.gamePause || false,
+            gameOver: data?.gameOver || false,
+            victory: data?.victory || false,
         };
 
         this.props.onChangeGeometry({
@@ -36,7 +37,16 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
 
     setState<K extends keyof IState>(state: Pick<IState, K> | IState | null) {
         super.setState(state, () => {
-            this.props.onChange({text: this.state.model.store()});
+            this.props.onChange({text: this.store()});
+        });
+    }
+
+    private store() {
+        return JSON.stringify({
+            model: this.state.model.store(),
+            gamePause: this.state.gamePause,
+            gameOver: this.state.gameOver,
+            victory: this.state.victory,
         });
     }
 

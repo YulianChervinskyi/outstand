@@ -17,7 +17,7 @@ export class GameModel {
     width: number = 0;
     height: number = 0;
 
-    constructor(size: ISize, text: string) {
+    constructor(size: ISize, text: any) {
         if (!text) {
             this.width = size.w;
             this.height = size.h;
