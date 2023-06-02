@@ -5,8 +5,6 @@ import React from "react";
 import "./Bonus.scss";
 
 export function Bonus(props: { bonus: BonusModel }) {
-    const angle = Math.round(props.bonus._lifetime * 100);
-
     const getSrc = () => {
         switch (props.bonus._type) {
             case EBonusType.Lottery:
@@ -24,10 +22,7 @@ export function Bonus(props: { bonus: BonusModel }) {
         }
     }
 
-    return <img
-        style={{background: `repeating-conic-gradient(from ${angle}deg at 50%, #FF0000 0deg 10deg, #FFA500 10deg 20deg, #FFFF00 20deg 30deg, #7FFF00 30deg 40deg, #00FFFF 40deg 50deg, #0000FF 50deg 60deg, #9932CC 60deg 70deg, #FF1493 70deg 80deg)`}}
-        className="bonus"
-        src={getSrc()}
-        alt="wall"
-    />
+    return <div className="bonus-box">
+        <img className="bonus" src={getSrc()} alt="wall"/>
+    </div>
 }
