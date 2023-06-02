@@ -1,7 +1,6 @@
 import {EXPLOSION_LIFETIME, EXPLOSION_SPAWN_DELAY} from "../config";
-import {ECellType, IPoint, ISceneObject, TField} from "../types";
+import {EBonusType, ECellType, IPoint, ISceneObject, TField} from "../types";
 import {BonusModel} from "./BonusModel";
-import {bonuses} from "./GameModel";
 
 export class ExplosionModel implements ISceneObject {
     private validPlaces = [ECellType.Empty, ECellType.Bonus, ECellType.Explosion];
@@ -15,6 +14,7 @@ export class ExplosionModel implements ISceneObject {
                 private field: TField,
                 private addObject: (object: ISceneObject) => void,
                 private detonateObject: (pos: IPoint) => void,
+                private bonuses: EBonusType[],
                 readonly direction?: IPoint) {
         this.checkExplosionPlace();
     }
@@ -54,12 +54,14 @@ export class ExplosionModel implements ISceneObject {
             acc + row.reduce((acc, cell) => acc + Number(cell === ECellType.Wall), 0), 0);
 
         const typeIndex = Math.floor(Math.random() * wallNumber);
-        const type = bonuses[typeIndex];
+        const type = this.bonuses[typeIndex];
 
+        console.log("before:", this.bonuses.length);
         if (type !== undefined && !this._generatedObject) {
-            this._generatedObject = new BonusModel(this.pos, this.field, type);
-            bonuses.splice(typeIndex, 1);
+            this._generatedObject = new BonusModel(this.pos, this.field, type, this.bonuses);
+            this.bonuses.splice(typeIndex, 1);
         }
+        console.log("after:", this.bonuses.length);
     }
 
     private validateExpansion(pos: IPoint) {
@@ -81,7 +83,7 @@ export class ExplosionModel implements ISceneObject {
             if (this.field[pos.y]?.[pos.x] === undefined || this.field[pos.y]?.[pos.x] === ECellType.AzovSteel)
                 continue;
 
-            const explosion = new ExplosionModel(pos, power, this.field, this.addObject, this.detonateObject, direction);
+            const explosion = new ExplosionModel(pos, power, this.field, this.addObject, this.detonateObject, this.bonuses, direction);
             this.addObject(explosion);
         }
         this.power = 0;
@@ -99,11 +101,11 @@ export class ExplosionModel implements ISceneObject {
         };
     }
 
-    static deserialize(obj: any, field: TField, addObject: (object: ISceneObject) => void, detonateObject: (pos: IPoint) => void) {
-        const explosion = new ExplosionModel(obj.pos, obj.power, field, addObject, detonateObject, obj?.direction);
+    static restore(obj: any, field: TField, bonuses: EBonusType[], addObject: (object: ISceneObject) => void, detonateObject: (pos: IPoint) => void) {
+        const explosion = new ExplosionModel(obj.pos, obj.power, field, addObject, detonateObject, bonuses, obj?.direction);
 
         if (obj._generatedObject)
-            explosion._generatedObject = BonusModel.restore(obj._generatedObject, explosion.field);
+            explosion._generatedObject = BonusModel.restore(obj._generatedObject, explosion.field, bonuses);
 
         explosion.lifetime = obj.lifetime;
 

@@ -1,6 +1,5 @@
 import {EBonusType, ECellType, IPoint, ISceneObject, TField} from "../types";
 import {BONUS_LIFETIME} from "../config";
-import {bonuses} from "./GameModel";
 
 type ERealBonus = Exclude<EBonusType, EBonusType.Lottery>;
 
@@ -10,7 +9,7 @@ export class BonusModel implements ISceneObject {
 
     type = this.constructor.name;
 
-    constructor(readonly pos: IPoint, private field: TField, readonly _type: EBonusType) {
+    constructor(readonly pos: IPoint, private field: TField, readonly _type: EBonusType, private bonuses: EBonusType[]) {
         this.realType = _type === EBonusType.Lottery ? this.defineType() : _type;
     }
 
@@ -36,7 +35,7 @@ export class BonusModel implements ISceneObject {
     }
 
     private defineType() {
-        const suitableBonuses = bonuses.filter(bonus => bonus !== EBonusType.Lottery) as ERealBonus[];
+        const suitableBonuses = this.bonuses.filter(bonus => bonus !== EBonusType.Lottery) as ERealBonus[];
         return suitableBonuses[Math.floor(Math.random() * suitableBonuses.length)];
     }
 
@@ -50,8 +49,8 @@ export class BonusModel implements ISceneObject {
         };
     }
 
-    static restore(obj: any, field: TField) {
-        const bonus = new BonusModel(obj.pos, field, obj._type);
+    static restore(obj: any, field: TField, bonuses: EBonusType[]) {
+        const bonus = new BonusModel(obj.pos, field, obj._type, bonuses);
         bonus.lifetime = obj.lifetime;
 
         return bonus;

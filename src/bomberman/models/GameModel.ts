@@ -1,13 +1,10 @@
-import {BONUS_FILLING, FIELD_FILLING} from "../config";
+import {FIELD_FILLING} from "../config";
 import {Controls, IControlsStates} from "../Controls";
 import {EBonusType, ECellType, IPoint, ISceneObject, ISize, TField} from "../types";
 import {BombModel} from "./BombModel";
 import {PlayerModel} from "./PlayerModel";
 import {BonusModel} from "./BonusModel";
 import {ExplosionModel} from "./ExplosionModel";
-
-export const bonuses = Object.entries(BONUS_FILLING)
-    .reduce((acc, [type, quantity]) => acc.concat(Array(quantity).fill(+type)), [] as EBonusType[]);
 
 export class GameModel {
     field: TField = [];
@@ -17,7 +14,7 @@ export class GameModel {
     width: number = 0;
     height: number = 0;
 
-    constructor(size: ISize, text: any) {
+    constructor(size: ISize, text: any, private bonuses: EBonusType[]) {
         if (!text) {
             this.width = size.w;
             this.height = size.h;
@@ -50,17 +47,17 @@ export class GameModel {
         data?.sceneObjects.map((obj: any) => {
             switch (obj.type) {
                 case "BonusModel":
-                    this.addObject(BonusModel.restore(obj, this.field));
+                    this.addObject(BonusModel.restore(obj, this.field, this.bonuses));
                     break;
                 case "ExplosionModel":
-                    this.addObject(ExplosionModel.deserialize(obj, this.field, this.addObject, this.detonateObject));
+                    this.addObject(ExplosionModel.restore(obj, this.field, this.bonuses, this.addObject, this.detonateObject));
                     break;
             }
         });
     }
 
     createPlayer(states: IControlsStates) {
-        const player = new PlayerModel(states, this.field);
+        const player = new PlayerModel(states, this.field, this.bonuses);
         this.players.push(player);
         player.setPlaceBomb(this.placeBomb);
         player.setGetObject(this.getObject);

@@ -1,4 +1,4 @@
-import {ECellType, IPoint, ISceneObject, TField} from "../types";
+import {EBonusType, ECellType, IPoint, ISceneObject, TField} from "../types";
 import {BOMB_LIFETIME} from "../config";
 import {ExplosionModel} from "./ExplosionModel";
 
@@ -14,6 +14,7 @@ export class BombModel implements ISceneObject {
         readonly pos: IPoint,
         readonly power: number,
         private field: TField,
+        private bonuses: EBonusType[],
         private onDetonate: (bomb: BombModel) => void,
     ) {
     }
@@ -52,7 +53,7 @@ export class BombModel implements ISceneObject {
     }
 
     get generatedObject(): ISceneObject | undefined {
-        return new ExplosionModel(this.pos, this.power, this.field, this.addObject, this.detonateObject);
+        return new ExplosionModel(this.pos, this.power, this.field, this.addObject, this.detonateObject, this.bonuses);
     }
 
     store(): any {
@@ -65,8 +66,8 @@ export class BombModel implements ISceneObject {
         };
     }
 
-    static restore(obj: any, field: TField, onDetonate: (bomb: BombModel) => void) {
-        const bomb = new BombModel(obj.pos, obj.power, field, onDetonate);
+    static restore(obj: any, field: TField, bonuses: EBonusType[], onDetonate: (bomb: BombModel) => void) {
+        const bomb = new BombModel(obj.pos, obj.power, field, bonuses, onDetonate);
         bomb.lifetime = obj.lifetime;
 
         return bomb;

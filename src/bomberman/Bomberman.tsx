@@ -1,32 +1,35 @@
 import {IComponentProps} from "../Box";
-import {CELL_SIZE, FIELD_SIZE} from "./config";
+import {BONUS_FILLING, CELL_SIZE, FIELD_SIZE} from "./config";
 import {GameModel} from "./models/GameModel";
 import {InfoPanel} from "./info_panel/InfoPanel";
 import {Field} from "./field/Field";
 import {Player} from "./player/Player";
 import "./Bomberman.scss";
 import React from "react";
+import {EBonusType} from "./types";
 
 interface IState {
-    model: GameModel,
     gamePause: boolean,
     gameOver: boolean,
     victory: boolean,
+    model: GameModel,
 }
 
 export class Bomberman extends React.Component<IComponentProps, IState> {
     gameAreaRef = React.createRef<HTMLDivElement>();
+    bonuses: EBonusType[] | undefined;
     prevTime = 0;
 
     constructor(props: IComponentProps) {
         super(props);
         const data = JSON.parse(this.props.text || '{}');
+        this.bonuses = data?.bonuses || this.fillBonuses();
 
         this.state = {
-            model: new GameModel(FIELD_SIZE, data.model),
             gamePause: data?.gamePause || false,
             gameOver: data?.gameOver || false,
             victory: data?.victory || false,
+            model: new GameModel(FIELD_SIZE, data?.model, this.bonuses as EBonusType[]),
         };
 
         this.props.onChangeGeometry({
@@ -47,6 +50,7 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
             gamePause: this.state.gamePause,
             gameOver: this.state.gameOver,
             victory: this.state.victory,
+            bonuses: this.bonuses,
         });
     }
 
@@ -98,12 +102,18 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
     }
 
     private resetGame() {
+        this.bonuses = this.fillBonuses();
         this.setState({
-            model: new GameModel(FIELD_SIZE, ""),
             gamePause: false,
             gameOver: false,
             victory: false,
+            model: new GameModel(FIELD_SIZE, "", this.bonuses),
         });
+    }
+
+    private fillBonuses() {
+        return Object.entries(BONUS_FILLING)
+            .reduce((acc, [type, quantity]) => acc.concat(Array(quantity).fill(+type)), [] as EBonusType[]);
     }
 
     private calcOffset() {

@@ -22,7 +22,7 @@ export class PlayerModel {
     private placeBomb?: (bomb: BombModel) => void;
     private getObject?: (pos: IPoint) => ISceneObject | undefined;
 
-    constructor(private states: IControlsStates, private field: TField) {
+    constructor(private states: IControlsStates, private field: TField, private bonuses: EBonusType[]) {
     }
 
     setPlaceBomb(placeBomb: (bomb: BombModel) => void) {
@@ -65,7 +65,7 @@ export class PlayerModel {
         if (this.field[bombPos.y][bombPos.x] !== ECellType.Empty || this.getObject?.(bombPos))
             return;
 
-        const newBomb = new BombModel(bombPos, this._state.power, this.field, this.removeBomb);
+        const newBomb = new BombModel(bombPos, this._state.power, this.field, this.bonuses, this.removeBomb);
 
         this.currentSupply -= 1;
         this.placeBomb?.(newBomb);
@@ -97,7 +97,7 @@ export class PlayerModel {
         this._state = obj._state;
 
         this.activeBombs = obj.activeBombs.map((b: any) => {
-            const bomb = BombModel.restore(b, this.field, this.removeBomb);
+            const bomb = BombModel.restore(b, this.field, this.bonuses, this.removeBomb);
             this.placeBomb?.(bomb);
             return bomb;
         });
