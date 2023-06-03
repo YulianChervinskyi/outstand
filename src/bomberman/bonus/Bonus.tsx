@@ -19,10 +19,14 @@ export function Bonus(props: { bonus: BonusModel }) {
                 return bonus_img.spam;
             case EBonusType.Power:
                 return bonus_img.power;
+            default:
+                return "";
         }
     }
 
-    return <div className="bonus-box">
-        <img className="bonus" src={getSrc()} alt="wall"/>
-    </div>
+    return (
+        <div className="bonus-box">
+            <img className="bonus" src={getSrc()} alt="wall"/>
+        </div>
+    );
 }
