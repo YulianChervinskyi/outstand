@@ -1,4 +1,5 @@
-@property --a{
+//noinspection ALL
+@property --a {
   syntax: '<angle>';
   inherits: false;
   initial-value: 0deg;
@@ -22,9 +23,9 @@
 
 @keyframes gradient {
   from {
-    --a:0deg;
+    --a: 0deg;
   }
   to {
-    --a:360deg;
+    --a: 360deg;
   }
 }

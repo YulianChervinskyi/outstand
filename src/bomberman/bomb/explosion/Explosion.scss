@@ -1,5 +1,20 @@
 .explosion {
-  height: 100%;
   width: 100%;
-  background-color: #0729d3;
+  height: 100%;
+  animation: fire 0.15s linear infinite;
+}
+
+@keyframes fire {
+  from {
+    background-color: #ff4d00;
+  }
+  25% {
+    background-color: #ff8000;
+  }
+  50% {
+    background-color: #ffae00;
+  }
+  to {
+    background-color: #ffff00;
+  }
 }
