@@ -1,16 +1,20 @@
 import {IComponentProps} from "../Box";
 import {BONUS_FILLING, CELL_SIZE, FIELD_SIZE} from "./config";
 import {GameModel} from "./models/GameModel";
-import {InfoPanel} from "./info_panel/InfoPanel";
+import {InfoPanelDev} from "./info_panel_dev/InfoPanelDev";
 import {Field} from "./field/Field";
 import {Player} from "./player/Player";
 import "./Bomberman.scss";
 import React from "react";
 import {EBonusType} from "./types";
+import {InfoPanel} from "./info_panel/InfoPanel";
+
+const keyPressed: Record<string, boolean> = {};
 
 interface IState {
     gamePause: boolean,
     gameOver: boolean,
+    devMode: boolean,
     victory: boolean,
     model: GameModel,
 }
@@ -28,6 +32,7 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
         this.state = {
             gamePause: data?.gamePause || false,
             gameOver: data?.gameOver || false,
+            devMode: data?.devMode || false,
             victory: data?.victory || false,
             model: new GameModel(FIELD_SIZE, data?.model, this.bonuses as EBonusType[]),
         };
@@ -49,6 +54,7 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
             model: this.state.model.store(),
             gamePause: this.state.gamePause,
             gameOver: this.state.gameOver,
+            devMode: this.state.devMode,
             victory: this.state.victory,
             bonuses: this.bonuses,
         });
@@ -56,6 +62,7 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
 
     componentDidMount() {
         document.body.addEventListener("keydown", this.handleKeyDown);
+        document.body.addEventListener("keyup", this.handleKeyUp);
         requestAnimationFrame(this.frame);
     }
 
@@ -69,6 +76,7 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
 
     componentWillUnmount() {
         document.body.removeEventListener("keydown", this.handleKeyDown);
+        document.body.removeEventListener("keyup", this.handleKeyUp);
     }
 
     private frame = (time: number) => {
@@ -97,15 +105,24 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
         if (!this.props.active || this.state.gameOver)
             return;
 
+        keyPressed[e.key] = true;
+
         if (e.key === 'Escape')
             this.setState({gamePause: !this.state.gamePause});
+        else if (keyPressed['Control'] && e.key === '`')
+            this.setState({devMode: !this.state.devMode});
     }
 
-    private resetGame() {
+    private handleKeyUp = (e: KeyboardEvent) => {
+        delete keyPressed[e.key];
+    }
+
+    resetGame() {
         this.bonuses = this.fillBonuses();
         this.setState({
             gamePause: false,
             gameOver: false,
+            devMode: false,
             victory: false,
             model: new GameModel(FIELD_SIZE, "", this.bonuses),
         });
@@ -147,7 +164,9 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
                      fontSize: Math.min(this.props.height * 0.05, this.props.width * 0.05),
                  }}>
 
-                <InfoPanel stats={this.state.model.players[0].state}/>
+                {this.state.devMode
+                    ? <InfoPanelDev stats={this.state.model.players[0].state}/>
+                    : <InfoPanel/>}
 
                 <div className="game-area" ref={this.gameAreaRef}>
                     <div className="scene">

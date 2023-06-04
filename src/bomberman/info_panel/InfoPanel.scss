@@ -5,28 +5,4 @@
   background-color: #515160;
   border-bottom: 0.1px solid black;
   font-size: 14px;
-
-  .player-stats {
-    display: flex;
-    width: 100%;
-    align-items: center;
-
-    .state-prop {
-      margin: 0 5px 0 5px;
-      text-align: center;
-      width: 100%;
-    }
-
-    .pos {
-      display: flex;
-      justify-content: center;
-      width: 100%;
-
-      div {
-        display: flex;
-        padding: 0 2px 0 2px;
-        justify-content: center;
-      }
-    }
-  }
 }
