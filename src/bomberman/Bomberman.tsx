@@ -9,8 +9,6 @@ import React from "react";
 import {EBonusType} from "./types";
 import {InfoPanel} from "./info_panel/InfoPanel";
 
-const keyPressed: Record<string, boolean> = {};
-
 interface IState {
     gamePause: boolean,
     gameOver: boolean,
@@ -62,7 +60,6 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
 
     componentDidMount() {
         document.body.addEventListener("keydown", this.handleKeyDown);
-        document.body.addEventListener("keyup", this.handleKeyUp);
         requestAnimationFrame(this.frame);
     }
 
@@ -76,7 +73,6 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
 
     componentWillUnmount() {
         document.body.removeEventListener("keydown", this.handleKeyDown);
-        document.body.removeEventListener("keyup", this.handleKeyUp);
     }
 
     private frame = (time: number) => {
@@ -105,16 +101,10 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
         if (!this.props.active || this.state.gameOver)
             return;
 
-        keyPressed[e.key] = true;
-
         if (e.key === 'Escape')
             this.setState({gamePause: !this.state.gamePause});
-        else if (keyPressed['Control'] && e.key === '`')
+        else if (e.ctrlKey && e.key === '`')
             this.setState({devMode: !this.state.devMode});
-    }
-
-    private handleKeyUp = (e: KeyboardEvent) => {
-        delete keyPressed[e.key];
     }
 
     resetGame() {
