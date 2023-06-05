@@ -1,6 +1,5 @@
-import "./InfoPanelDev.scss";
-import {IPlayerState} from "../types";
 import {useEffect, useRef} from "react";
+import "./InfoPanelDev.scss";
 
 function StateProp(props: { name: string, value: any }) {
     const value = useRef<any>(props.value);
@@ -28,7 +27,7 @@ function StateProp(props: { name: string, value: any }) {
     );
 }
 
-export function InfoPanelDev(props: { stats: IPlayerState }) {
+export function InfoPanelDev(props: { stats: object }) {
     const parseObject = (obj: object) => {
         return Object.entries(obj).map(([key, value]) =>
             value instanceof Object

@@ -40,6 +40,13 @@ export interface IPlayerState {
     pushAbility: boolean,
 }
 
+export interface IFullPlayerState extends IPlayerState {
+    pos: IPoint,
+    immortality: number,
+    currSupply: number,
+    diarrhea: number,
+}
+
 export interface ISize {
     w: number,
     h: number,

@@ -1,5 +1,5 @@
 import {IControlsStates} from "../Controls";
-import {EBonusType, ECellType, IPlayerState, IPoint, ISceneObject, TField} from "../types";
+import {EBonusType, ECellType, IFullPlayerState, IPlayerState, IPoint, ISceneObject, TField} from "../types";
 import {BombModel} from "./BombModel";
 import {BonusModel} from "./BonusModel";
 import {BOMB_SPAMMING_TIME, DEATH_MOVING_TIME, IMMORTALITY_TIME, INIT_PLAYER_STATE} from "../config";
@@ -49,7 +49,7 @@ export class PlayerModel {
             this.createBomb();
     }
 
-    get state() {
+    get state(): IFullPlayerState {
         return {
             pos: this.pos,
             immortality: this.immortality,

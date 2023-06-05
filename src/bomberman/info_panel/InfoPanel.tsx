@@ -1,22 +1,16 @@
-import "./InfoPanel.scss";
 import {images, player} from "../assets";
-import {IPlayerState} from "../types";
+import {IFullPlayerState} from "../types";
+import "./InfoPanel.scss";
 
-export function InfoPanel(props: { stats: IPlayerState }) {
-    const getValueByKey = (key: string) => {
-        for (const [_key, value] of Object.entries(props.stats))
-            if (_key === key)
-                return value;
-    }
-
+export function InfoPanel(props: { stats: IFullPlayerState }) {
     const lifeStyle = {
-        border: getValueByKey('immortality') ? "5px ridge white" : "5px ridge #1f1f1f",
+        border: props.stats.immortality ? "5px ridge white" : "5px ridge #1f1f1f",
     };
 
     const supplyStyle = {
-        border: getValueByKey('diarrhea')
-            ? "5px ridge red" : props.stats.pushAbility
-                ? "5px ridge green" : "5px ridge #1f1f1f",
+        border: props.stats.diarrhea
+            ? "5px ridge red"
+            : props.stats.pushAbility ? "5px ridge green" : "5px ridge #1f1f1f",
     };
 
     return (
@@ -29,7 +23,7 @@ export function InfoPanel(props: { stats: IPlayerState }) {
             <div className="section">
                 <img style={supplyStyle} src={images.bomb} alt="supply"/>
                 <div className="value">
-                    {getValueByKey('currSupply')}
+                    {props.stats.currSupply}
                 </div>
             </div>
         </div>
