@@ -17,11 +17,15 @@ export function InfoPanel(props: { stats: IFullPlayerState }) {
         <div className="info-panel">
             <div className="name">Player1</div>
             <div className="section">
-                <img style={lifeStyle} src={player} alt="life"/>
+                <div style={lifeStyle} className="img-box">
+                    <img  src={player} alt="life"/>
+                </div>
                 <div className="value">{props.stats.life}</div>
             </div>
             <div className="section">
-                <img style={supplyStyle} src={images.bomb} alt="supply"/>
+                <div style={supplyStyle} className="img-box">
+                    <img src={images.bomb} alt="supply"/>
+                </div>
                 <div className="value">
                     {props.stats.currSupply}
                 </div>
