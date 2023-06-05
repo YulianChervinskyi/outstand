@@ -156,7 +156,7 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
 
                 {this.state.devMode
                     ? <InfoPanelDev stats={this.state.model.players[0].state}/>
-                    : <InfoPanel/>}
+                    : <InfoPanel stats={this.state.model.players[0].state}/>}
 
                 <div className="game-area" ref={this.gameAreaRef}>
                     <div className="scene">
