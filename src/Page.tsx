@@ -2,6 +2,7 @@ import React from "react";
 import {Box, BoxType} from "./Box";
 import {iconsPng} from "./icons/images";
 import {ModeSelector} from "./ModeSelector";
+import {ThemeChanger} from "./ThemeChanger";
 
 interface IBoxData {
     x: number,
@@ -16,6 +17,7 @@ interface IBoxData {
 interface IState {
     boxes: { [id: number]: IBoxData };
     modeType: BoxType | undefined,
+    lightTheme: boolean,
 }
 
 export class Page extends React.Component<{}, IState> {
@@ -26,7 +28,7 @@ export class Page extends React.Component<{}, IState> {
         super(props);
 
         const stateData = localStorage.getItem('state');
-        this.state = stateData ? JSON.parse(stateData) : {boxes: {}, modeType: undefined};
+        this.state = stateData ? JSON.parse(stateData) : {boxes: {}, modeType: undefined, lightTheme: true};
 
         const keys = Object.keys(this.state.boxes);
         this.counter = keys.length > 0 ? Number(keys[keys.length - 1]) : this.counter;
@@ -57,6 +59,10 @@ export class Page extends React.Component<{}, IState> {
         e.stopPropagation();
     }
 
+    handleChangeTheme = () => {
+        this.setState({lightTheme: !this.state.lightTheme});
+    }
+
     handleClick = (e: React.MouseEvent) => {
         if (this.state.modeType === undefined)
             return;
@@ -81,7 +87,10 @@ export class Page extends React.Component<{}, IState> {
         return (
             <div className="App"
                  onClick={this.handleClick}
-                 style={{cursor: this.state.modeType !== undefined ? `url(${iconsPng[this.state.modeType]}), auto` : "default"}}>
+                 style={{
+                     cursor: this.state.modeType !== undefined ? `url(${iconsPng[this.state.modeType]}), auto` : "default",
+                     background: this.state.lightTheme ? "white" : "black",
+                 }}>
                 {Object.entries(this.state.boxes).map(([key, b]) => <Box
                     x={b.x}
                     y={b.y}
@@ -99,6 +108,7 @@ export class Page extends React.Component<{}, IState> {
                     type={b.type}
                 />)}
                 <ModeSelector selected={this.state.modeType} onSelectMode={this.handleSelectMode}/>
+                <ThemeChanger lightTheme={this.state.lightTheme} onChangeTheme={this.handleChangeTheme}/>
             </div>
         );
     }

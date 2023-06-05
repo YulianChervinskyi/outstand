@@ -6,6 +6,10 @@ import fpe from "./fpe.png";
 import asteroids from "./asteroids.png";
 import minesweeper from "./minesweeper.png";
 import bomberman from "./bomberman.png";
+import darkTheme from "./dark_theme.png";
+import lightTheme from "./light_theme.png";
+
+export {darkTheme, lightTheme};
 
 export const iconsPng = {
     [BoxType.Note]: note,
