@@ -1,28 +1,28 @@
 export interface IControlsStates {
-    'left': boolean,
-    'right': boolean,
-    'forward': boolean,
-    'backward': boolean,
-    "fire": boolean,
-    "pause": boolean,
+    left: boolean,
+    right: boolean,
+    up: boolean,
+    down: boolean,
+    place: boolean,
+    pause?: boolean,
 }
 
-export class Controls {
+export class HumanController {
     codes = {
         37: 'left',
         39: 'right',
-        38: 'forward',
-        40: 'backward',
-        32: 'fire',
+        38: 'up',
+        40: 'down',
+        32: 'place',
         27: 'pause',
     };
 
     states: IControlsStates = {
         left: false,
         right: false,
-        forward: false,
-        backward: false,
-        fire: false,
+        up: false,
+        down: false,
+        place: false,
         pause: false,
     };
 
@@ -43,16 +43,35 @@ export class Controls {
     }
 
     onTouchEnd(e: TouchEvent) {
-        this.states = {left: false, right: false, forward: false, backward: false, fire: false, pause: false};
+        this.states = {left: false, right: false, up: false, down: false, place: false, pause: false};
         e.preventDefault();
         e.stopPropagation();
     };
 
     onKey(val: boolean, e: { keyCode: number, preventDefault?: () => void, stopPropagation?: () => void }) {
-        const state = this.codes[e.keyCode as keyof Controls['codes']] as keyof Controls['states'];
+        const state = this.codes[e.keyCode as keyof HumanController['codes']] as keyof HumanController['states'];
         if (typeof state === 'undefined') return;
         this.states[state] = val;
         e.preventDefault && e.preventDefault();
         e.stopPropagation && e.stopPropagation();
+    }
+}
+
+export class ServerController {
+    states: IControlsStates = {
+        left: false,
+        right: false,
+        up: false,
+        down: false,
+        place: false,
+    };
+
+    setControls(states: IControlsStates) {
+        this.states.left = states.left;
+        this.states.right = states.right;
+        this.states.up = states.up;
+        this.states.down = states.down;
+        this.states.place = states.place;
+        console.log(JSON.stringify(states));
     }
 }

@@ -7,7 +7,6 @@ import {BOMB_SPAMMING_TIME, DEATH_MOVING_TIME, IMMORTALITY_TIME, INIT_PLAYER_STA
 const [abs, sign, round, min] = [Math.abs, Math.sign, Math.round, Math.min];
 
 export class PlayerModel {
-    readonly pos: IPoint = {x: 0, y: 0};
     private deathPoint?: IPoint;
 
     private diarrhea = 0;
@@ -22,7 +21,10 @@ export class PlayerModel {
     private placeBomb?: (bomb: BombModel) => void;
     private getObject?: (pos: IPoint) => ISceneObject | undefined;
 
-    constructor(private states: IControlsStates, private field: TField, private bonuses: EBonusType[]) {
+    constructor(readonly pos: IPoint,
+                private states: IControlsStates,
+                private field: TField,
+                private bonuses: EBonusType[]) {
     }
 
     setPlaceBomb(placeBomb: (bomb: BombModel) => void) {
@@ -45,7 +47,7 @@ export class PlayerModel {
         this.diarrhea = decrease(this.diarrhea, seconds);
         this.immortality = decrease(this.immortality, seconds);
 
-        if (this.currentSupply > 0 && (this.states.fire || this.diarrhea) && !this.deathMovingMode)
+        if (this.currentSupply > 0 && (this.states.place || this.diarrhea) && !this.deathMovingMode)
             this.createBomb();
     }
 
@@ -110,7 +112,7 @@ export class PlayerModel {
 
     private updateMovement(seconds: number) {
         const x = this._state.speed * seconds * (Number(this.states.right) - Number(this.states.left));
-        const y = this._state.speed * seconds * (Number(this.states.backward) - Number(this.states.forward));
+        const y = this._state.speed * seconds * (Number(this.states.down) - Number(this.states.up));
 
         if (x || y || this.deathMovingMode) {
             const offset: IPoint = !this.deathMovingMode

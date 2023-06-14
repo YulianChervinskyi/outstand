@@ -1,24 +1,28 @@
 import {FIELD_FILLING} from "../config";
-import {Controls, IControlsStates} from "../Controls";
+import {IControlsStates} from "../Controls";
 import {EBonusType, ECellType, IPoint, ISceneObject, ISize, TField} from "../types";
 import {BombModel} from "./BombModel";
 import {PlayerModel} from "./PlayerModel";
 import {BonusModel} from "./BonusModel";
 import {ExplosionModel} from "./ExplosionModel";
+import {IModelState} from "../services/AIService";
 
 export class GameModel {
     field: TField = [];
-    controls = new Controls();
     sceneObjects: ISceneObject[] = [];
     players: PlayerModel[] = [];
     width: number = 0;
     height: number = 0;
+    playerPlaces: IPoint[] = [];
 
-    constructor(size: ISize, text: any, private bonuses: EBonusType[]) {
+    constructor(size: ISize, text: any, private bonuses: EBonusType[], private controlStates: IControlsStates[]) {
         if (!text) {
             this.width = size.w;
             this.height = size.h;
-            this.createPlayer(this.controls.states);
+            this.createPlayerPlaces();
+            for (const controlState of controlStates) {
+                this.createPlayer(controlState);
+            }
             this.initField();
         } else {
             this.restore(text);
@@ -38,10 +42,13 @@ export class GameModel {
         this.field = data.field;
         this.width = data.width;
         this.height = data.height;
+        this.createPlayerPlaces();
 
-        data?.players.map((obj: any, i: number) => {
-            this.createPlayer(this.controls.states);
-            this.players[i].restore(obj);
+        data?.players.forEach((obj: any, i: number) => {
+            if (i < this.controlStates.length) {
+                this.createPlayer(this.controlStates[i]);
+                this.players[i].restore(obj);
+            }
         });
 
         data?.sceneObjects.map((obj: any) => {
@@ -57,7 +64,11 @@ export class GameModel {
     }
 
     createPlayer(states: IControlsStates) {
-        const player = new PlayerModel(states, this.field, this.bonuses);
+        const pos = this.playerPlaces.shift();
+        if (!pos)
+            throw new Error("No more player places");
+
+        const player = new PlayerModel(pos, states, this.field, this.bonuses);
         this.players.push(player);
         player.setPlaceBomb(this.placeBomb);
         player.setGetObject(this.getObject);
@@ -79,6 +90,18 @@ export class GameModel {
 
     getObject = (pos: IPoint) => {
         return this.sceneObjects.find(o => o.pos.x === pos.x && o.pos.y === pos.y);
+    }
+
+    getModelStateByPlayer(playerId: number): IModelState {
+        const player = this.players[playerId];
+        const x = Math.round(player.pos.x);
+        const y = Math.round(player.pos.y);
+        return {
+            right: x + 1 < this.width ? this.field[y][x + 1] : ECellType.AzovSteel,
+            left: x - 1 >= 0 ? this.field[y][x - 1] : ECellType.AzovSteel,
+            up: y - 1 >= 0 ? this.field[y - 1][x] : ECellType.AzovSteel,
+            down: y + 1 < this.height ? this.field[y + 1][x] : ECellType.AzovSteel,
+        };
     }
 
     private initField() {
@@ -109,5 +132,14 @@ export class GameModel {
 
     private detonateObject = (pos: IPoint) => {
         this.sceneObjects.find(o => o.pos.x === pos.x && o.pos.y === pos.y)?.detonate();
+    }
+
+    private createPlayerPlaces() {
+        this.playerPlaces = [
+            {x: 0, y: 0},
+            {x: this.width - 1, y: this.height - 1},
+            {x: this.width - 1, y: 0},
+            {x: 0, y: this.height - 1},
+        ];
     }
 }

@@ -8,6 +8,8 @@ import "./Bomberman.scss";
 import React from "react";
 import {EBonusType} from "./types";
 import {InfoPanel} from "./info_panel/InfoPanel";
+import {AIService} from "./services/AIService";
+import {ServerController, HumanController} from "./Controls";
 
 interface IState {
     gamePause: boolean,
@@ -19,10 +21,13 @@ interface IState {
 
 export class Bomberman extends React.Component<IComponentProps, IState> {
     gameAreaRef = React.createRef<HTMLDivElement>();
-    bonuses: EBonusType[] | undefined;
+    bonuses: EBonusType[];
     prevTime = 0;
+    service = new AIService();
+    controllers = [new HumanController(), new ServerController()];
 
     constructor(props: IComponentProps) {
+        console.log('constructor');
         super(props);
         const data = JSON.parse(this.props.text || '{}');
         this.bonuses = data?.bonuses || this.fillBonuses();
@@ -32,12 +37,12 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
             gameOver: data?.gameOver || false,
             devMode: data?.devMode || false,
             victory: data?.victory || false,
-            model: new GameModel(FIELD_SIZE, data?.model, this.bonuses as EBonusType[]),
+            model: new GameModel(FIELD_SIZE, data?.model, this.bonuses, this.controllers.map(c => c.states)),
         };
 
         this.props.onChangeGeometry({
             minSize: {w: FIELD_SIZE.w * 40, h: FIELD_SIZE.h * 40},
-            aspectRatio: {w: FIELD_SIZE.w, h: FIELD_SIZE.h},
+            // aspectRatio: {w: FIELD_SIZE.w, h: FIELD_SIZE.h},
         });
     }
 
@@ -75,26 +80,34 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
         document.body.removeEventListener("keydown", this.handleKeyDown);
     }
 
-    private frame = (time: number) => {
+    private frame = async (time: number) => {
         const seconds = (time - this.prevTime) / 1000;
         this.prevTime = time;
 
         if (seconds > 0 && seconds < 0.2)
-            this.update(seconds);
+            await this.update(seconds);
 
         requestAnimationFrame(this.frame);
     }
 
-    private update(seconds: number) {
+    private async update(seconds: number) {
         if (!this.props.active || this.state.gameOver || this.state.gamePause)
             return;
 
         this.state.model.update(seconds);
+        await this.processServerControllers();
 
         if (this.state.model.players.find(p => p.state.life < 0))
             this.setState({gameOver: true});
         else if (!this.state.gamePause)
             this.setState(this.state);
+    }
+
+    private async processServerControllers() {
+        const modelState = this.state.model.getModelStateByPlayer(1);
+        const controller = this.controllers[1] as ServerController;
+        const controls = await this.service.sendState(modelState);
+        controller.setControls(controls);
     }
 
     private handleKeyDown = (e: KeyboardEvent) => {
@@ -114,7 +127,7 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
             gameOver: false,
             devMode: false,
             victory: false,
-            model: new GameModel(FIELD_SIZE, "", this.bonuses),
+            model: new GameModel(FIELD_SIZE, "", this.bonuses, this.controllers.map(c => c.states)),
         });
     }
 
@@ -161,7 +174,9 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
                 <div className="game-area" ref={this.gameAreaRef}>
                     <div className="scene">
                         <Field model={this.state.model} offset={offset}/>
-                        <Player position={this.state.model.players[0].pos} offset={offset}/>
+                        {this.state.model.players.map(p =>
+                            <Player position={p.pos} offset={offset}/>)}
+                        {/*<Player position={this.state.model.players[0].pos} offset={offset}/>*/}
                     </div>
                 </div>
 
