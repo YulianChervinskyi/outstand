@@ -20,11 +20,12 @@ interface IState {
 }
 
 export class Bomberman extends React.Component<IComponentProps, IState> {
-    gameAreaRef = React.createRef<HTMLDivElement>();
-    bonuses: EBonusType[];
-    prevTime = 0;
-    service = new AIService();
-    controllers = [new HumanController(), new ServerController()];
+    private gameAreaRef = React.createRef<HTMLDivElement>();
+    private bonuses: EBonusType[];
+    private prevTime = 0;
+    private service = new AIService();
+    private controllers = [new HumanController(), new ServerController()];
+    private areControllersInProgress = false;
 
     constructor(props: IComponentProps) {
         console.log('constructor');
@@ -95,7 +96,11 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
             return;
 
         this.state.model.update(seconds);
-        await this.processServerControllers();
+
+        if (!this.areControllersInProgress)
+             this.processServerControllers()
+                 .catch(console.error)
+                 .finally(() => this.areControllersInProgress = false);
 
         if (this.state.model.players.find(p => p.state.life < 0))
             this.setState({gameOver: true});
