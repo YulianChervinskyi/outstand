@@ -8,6 +8,7 @@ const [abs, sign, round, min] = [Math.abs, Math.sign, Math.round, Math.min];
 
 export class PlayerModel {
     private deathPoint?: IPoint;
+    private readonly spawnPoint: IPoint;
 
     private diarrhea = 0;
     private immortality = 0;
@@ -25,6 +26,7 @@ export class PlayerModel {
                 private states: IControlsStates,
                 private field: TField,
                 private bonuses: EBonusType[]) {
+        this.spawnPoint = {x: pos.x, y: pos.y};
     }
 
     setPlaceBomb(placeBomb: (bomb: BombModel) => void) {
@@ -38,7 +40,7 @@ export class PlayerModel {
     update(seconds: number) {
         this.updateMovement(seconds);
 
-        if (this.deathMovingMode && !this.pos.x && !this.pos.y)
+        if (this.deathMovingMode && this.pos.x === this.spawnPoint.x && this.pos.y === this.spawnPoint.y)
             this.deathMovingMode = false;
 
         if (!this.immortality && !this.deathMovingMode && this.field[round(this.pos.y)][round(this.pos.x)] === ECellType.Explosion)
@@ -123,9 +125,16 @@ export class PlayerModel {
         }
     }
 
-    private calcDeathStep(seconds: number, axis: keyof IPoint = "x") {
-        const step = this.deathPoint?.[axis] ? (-this.deathPoint?.[axis]) / DEATH_MOVING_TIME * seconds : 0;
-        return this.pos[axis] + step <= 0 ? -this.pos[axis] : step;
+    private calcDeathStep(seconds: number, axis: keyof IPoint) {
+        const step = this.deathPoint && this.deathPoint?.[axis] !== this.spawnPoint[axis]
+            ? (this.spawnPoint[axis] - this.deathPoint?.[axis]) / DEATH_MOVING_TIME * seconds : 0;
+
+        if (!step)
+            return 0;
+        else if (sign(step) > 0)
+            return this.pos[axis] + step < this.spawnPoint[axis] ? step : this.spawnPoint[axis] - this.pos[axis];
+        else
+            return this.pos[axis] + step > this.spawnPoint[axis] ? step : this.spawnPoint[axis] - this.pos[axis];
     }
 
     private walk(offset: { x: number, y: number }) {
