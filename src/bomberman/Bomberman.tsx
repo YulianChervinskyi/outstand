@@ -43,7 +43,7 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
 
         this.props.onChangeGeometry({
             minSize: {w: FIELD_SIZE.w * 40, h: FIELD_SIZE.h * 40},
-            // aspectRatio: {w: FIELD_SIZE.w, h: FIELD_SIZE.h},
+            aspectRatio: {w: FIELD_SIZE.w, h: FIELD_SIZE.h},
         });
     }
 
@@ -174,7 +174,7 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
 
                 {this.state.devMode
                     ? <InfoPanelDev stats={this.state.model.players[0].state}/>
-                    : <InfoPanel stats={this.state.model.players[0].state}/>}
+                    : <InfoPanel stats={this.state.model.players.map(p => p.state)}/>}
 
                 <div className="game-area" ref={this.gameAreaRef}>
                     <div className="scene">
