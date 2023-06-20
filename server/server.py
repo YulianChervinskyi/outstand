@@ -1,6 +1,8 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
+import random
 
+direction = None
 
 class S(BaseHTTPRequestHandler):
     def _set_headers(self):
@@ -19,17 +21,20 @@ class S(BaseHTTPRequestHandler):
     def do_POST(self):
         content_length = int(self.headers['Content-Length'])
         post_data = self.rfile.read(content_length)
-        print(post_data)
+        data = json.loads(post_data)
+
+        global direction
+        if direction is None or 0 < data[direction] < 5:
+            variants = []
+            for key in data:
+                if data[key] != 2:
+                    variants.append(key)
+
+            direction = variants[random.randint(0, len(variants) - 1)]
+
+        response = {"left": 0, "right": 0, "up": 0, "down": 0, "place": 0, direction: 1}
+
         self._set_headers()
-
-        response = {
-            "left": 0,
-            "right": 1,
-            "up": 0,
-            "down": 1,
-            "place": 0,
-        }
-
         self.wfile.write(json.dumps(response).encode("utf-8"))
 
 
