@@ -43,7 +43,6 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
 
         this.props.onChangeGeometry({
             minSize: {w: FIELD_SIZE.w * 40, h: FIELD_SIZE.h * 40},
-            aspectRatio: {w: FIELD_SIZE.w, h: FIELD_SIZE.h},
         });
     }
 
@@ -169,7 +168,7 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
                  style={{
                      width: this.props.width,
                      height: this.props.height,
-                     fontSize: Math.min(this.props.height * 0.05, this.props.width * 0.05),
+                     fontSize: Math.min(this.props.height * 0.06, this.props.width * 0.05),
                  }}>
 
                 {this.state.devMode
