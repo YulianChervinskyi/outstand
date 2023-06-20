@@ -1,6 +1,8 @@
 import {IControlsStates} from "../Controls";
 
 export interface IModelState {
+    x: number;
+    y: number;
     left: number;
     right: number;
     up: number;

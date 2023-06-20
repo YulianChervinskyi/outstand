@@ -4,6 +4,7 @@ import random
 
 direction = None
 
+
 class S(BaseHTTPRequestHandler):
     def _set_headers(self):
         self.send_response(200)
@@ -23,12 +24,27 @@ class S(BaseHTTPRequestHandler):
         post_data = self.rfile.read(content_length)
         data = json.loads(post_data)
 
+        variants = []
+        for key in ["left", "right", "up", "down"]:
+            if data[key] == 0 or data[key] == 5:
+                variants.append(key)
+
         global direction
         if direction is None or 0 < data[direction] < 5:
-            variants = []
-            for key in data:
-                if data[key] != 2:
-                    variants.append(key)
+            direction = variants[random.randint(0, len(variants) - 1)]
+        else:
+            # variants.remove(direction)
+            if direction == "up" and "down" in variants:
+                variants.remove("down")
+            elif direction == "down" and "up" in variants:
+                variants.remove("up")
+            elif direction == "left" and "right" in variants:
+                variants.remove("right")
+            elif direction == "right" and "left" in variants:
+                variants.remove("left")
+
+            for i in range(10):
+                variants.append(direction)
 
             direction = variants[random.randint(0, len(variants) - 1)]
 
