@@ -99,10 +99,12 @@ export class GameModel {
         return {
             x: player.pos.x,
             y: player.pos.y,
+            bombs: player.state.maxSupply - player.state.currSupply,
             left: x - 1 >= 0 ? this.field[y][x - 1] : ECellType.AzovSteel,
             right: x + 1 < this.width ? this.field[y][x + 1] : ECellType.AzovSteel,
             up: y - 1 >= 0 ? this.field[y - 1][x] : ECellType.AzovSteel,
             down: y + 1 < this.height ? this.field[y + 1][x] : ECellType.AzovSteel,
+            center: this.field[y][x],
         };
     }
 

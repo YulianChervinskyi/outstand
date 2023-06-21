@@ -3,6 +3,7 @@ import json
 import random
 
 direction = None
+change_direction = False
 
 
 class S(BaseHTTPRequestHandler):
@@ -14,7 +15,7 @@ class S(BaseHTTPRequestHandler):
 
     def do_GET(self):
         self._set_headers()
-        self.wfile.write("Hello World!".encode("utf-8"))
+        self.wfile.write("Status: OK".encode("utf-8"))
 
     def do_HEAD(self):
         self._set_headers()
@@ -30,25 +31,49 @@ class S(BaseHTTPRequestHandler):
                 variants.append(key)
 
         global direction
-        if direction is None or 0 < data[direction] < 5:
-            direction = variants[random.randint(0, len(variants) - 1)]
-        else:
-            # variants.remove(direction)
-            if direction == "up" and "down" in variants:
-                variants.remove("down")
-            elif direction == "down" and "up" in variants:
-                variants.remove("up")
-            elif direction == "left" and "right" in variants:
-                variants.remove("right")
-            elif direction == "right" and "left" in variants:
-                variants.remove("left")
+        global change_direction
 
-            for i in range(10):
-                variants.append(direction)
+        place = 0
+        if data["center"] != 3 and data["bombs"] == 0:
+            for key in ["left", "right", "up", "down"]:
+                if data[key] == 1:
+                    place = 1
+                    break
 
-            direction = variants[random.randint(0, len(variants) - 1)]
+        if change_direction:
+            change_direction = False
+            if direction == "up":
+                direction = "down"
+            elif direction == "down":
+                direction = "up"
+            elif direction == "left":
+                direction = "right"
+            elif direction == "right":
+                direction = "left"
 
-        response = {"left": 0, "right": 0, "up": 0, "down": 0, "place": 0, direction: 1}
+        elif not place:
+            if direction is None or 0 < data[direction] < 5:
+                direction = variants[random.randint(0, len(variants) - 1)]
+            else:
+                # variants.remove(direction)
+                if direction == "up" and "down" in variants:
+                    variants.remove("down")
+                elif direction == "down" and "up" in variants:
+                    variants.remove("up")
+                elif direction == "left" and "right" in variants:
+                    variants.remove("right")
+                elif direction == "right" and "left" in variants:
+                    variants.remove("left")
+
+                for i in range(20):
+                    variants.append(direction)
+
+                direction = variants[random.randint(0, len(variants) - 1)]
+
+        if place == 1:
+            change_direction = True
+
+        response = {"left": 0, "right": 0, "up": 0, "down": 0, "place": place, direction: 1}
 
         self._set_headers()
         self.wfile.write(json.dumps(response).encode("utf-8"))

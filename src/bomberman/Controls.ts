@@ -4,7 +4,6 @@ export interface IControlsStates {
     up: boolean,
     down: boolean,
     place: boolean,
-    pause?: boolean,
 }
 
 export class HumanController {
@@ -14,7 +13,6 @@ export class HumanController {
         38: 'up',
         40: 'down',
         32: 'place',
-        27: 'pause',
     };
 
     states: IControlsStates = {
@@ -23,7 +21,6 @@ export class HumanController {
         up: false,
         down: false,
         place: false,
-        pause: false,
     };
 
     constructor() {
@@ -43,7 +40,7 @@ export class HumanController {
     }
 
     onTouchEnd(e: TouchEvent) {
-        this.states = {left: false, right: false, up: false, down: false, place: false, pause: false};
+        this.states = {left: false, right: false, up: false, down: false, place: false};
         e.preventDefault();
         e.stopPropagation();
     };

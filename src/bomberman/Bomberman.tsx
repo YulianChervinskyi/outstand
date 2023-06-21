@@ -85,21 +85,23 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
         this.prevTime = time;
 
         if (seconds > 0 && seconds < 0.2)
-            await this.update(seconds);
+            this.update(seconds);
 
         requestAnimationFrame(this.frame);
     }
 
-    private async update(seconds: number) {
+    private update(seconds: number) {
         if (!this.props.active || this.state.gameOver || this.state.gamePause)
             return;
 
         this.state.model.update(seconds);
 
-        if (!this.areControllersInProgress)
-             this.processServerControllers()
-                 .catch(console.error)
-                 .finally(() => this.areControllersInProgress = false);
+        if (!this.areControllersInProgress) {
+            this.areControllersInProgress = true;
+            this.processServerControllers()
+                .catch(console.error)
+                .finally(() => this.areControllersInProgress = false);
+        }
 
         if (this.state.model.players.find(p => p.state.life < 0))
             this.setState({gameOver: true});
