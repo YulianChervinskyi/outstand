@@ -180,9 +180,8 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
                 <div className="game-area" ref={this.gameAreaRef}>
                     <div className="scene">
                         <Field model={this.state.model} offset={offset}/>
-                        {this.state.model.players.map(p =>
-                            <Player position={p.pos} offset={offset}/>)}
-                        {/*<Player position={this.state.model.players[0].pos} offset={offset}/>*/}
+                        {this.state.model.players.map((p, key) =>
+                            <Player position={p.pos} offset={offset} key={key} id={key}/>)}
                     </div>
                 </div>
 

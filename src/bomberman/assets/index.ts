@@ -1,7 +1,8 @@
 import wall from "./img/wall.png";
 import azov_steel from "./img/azov_steel.png";
 import bomb from "./img/bomb.png";
-import player from "./img/player.png";
+import player1 from "./img/player1.png";
+import player2 from "./img/player2.png";
 
 import lottery from "./img/bonuses/lottery.png";
 import push from "./img/bonuses/push.png";
@@ -25,4 +26,4 @@ export const bonus_img = {
     supply,
 }
 
-export {player};
+export const playerImg = [player1, player2];
