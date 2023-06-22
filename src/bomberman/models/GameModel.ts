@@ -106,11 +106,45 @@ export class GameModel {
                 up: y - 1 >= 0 ? this.field[y - 1][x] : ECellType.AzovSteel,
                 down: y + 1 < this.height ? this.field[y + 1][x] : ECellType.AzovSteel,
                 center: this.field[y][x],
+                dangerLeft: this.computeDanger(x, y, {x: -1, y: 0}),
+                dangerRight: this.computeDanger(x, y, {x: 1, y: 0}),
+                dangerUp: this.computeDanger(x, y, {x: 0, y: -1}),
+                dangerDown: this.computeDanger(x, y, {x: 0, y: 1}),
             },
             reward: 0,
-            done: false,
+            done: !!this.players.find(p => p.state.life < 0),
             score: 0,
         };
+    }
+
+    private computeDanger(x: number, y: number, dir: IPoint): boolean {
+        const cell: IPoint = {x: x + dir.x, y: y + dir.y};
+
+        const checkDistance = (start: IPoint, end: IPoint, minDistance: number): boolean => {
+            const distanceX = end.x === start.x ? 0 : Math.abs(end.x - start.x);
+            const distanceY = end.y === start.y ? 0 : Math.abs(end.y - start.y);
+
+            return distanceY > minDistance || distanceX > minDistance;
+        }
+
+        while ((cell.x >= 0 && cell.x < this.width) && (cell.y >= 0 && cell.y < this.height)) {
+
+            if (this.field[cell.y][cell.x] === ECellType.Bomb) {
+                return !checkDistance({x: x, y: y}, cell, (this.getObject(cell) as BombModel).power);
+            }
+            else if (this.field[cell.y][cell.x] === ECellType.Explosion) {
+                const explDir = (this.getObject(cell) as ExplosionModel).direction;
+
+                // check if the explosion's direction is opposite to checked direction
+                if (explDir && dir.x + explDir.x + dir.y + explDir.y)
+                    return !checkDistance({x: x, y: y}, cell, (this.getObject(cell) as ExplosionModel)._power);
+            }
+
+            cell.x += dir.x;
+            cell.y += dir.y;
+        }
+
+        return false;
     }
 
     private initField() {

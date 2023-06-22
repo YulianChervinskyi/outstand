@@ -26,6 +26,10 @@ export class ExplosionModel implements ISceneObject {
         return this._generatedObject;
     }
 
+    get _power(): number {
+        return this.power;
+    }
+
     update(seconds: number) {
         this.lifetime += seconds;
 

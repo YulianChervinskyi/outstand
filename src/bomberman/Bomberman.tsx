@@ -111,6 +111,7 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
 
     private async processServerControllers() {
         const modelState = this.state.model.getModelStateByPlayer(1);
+        console.log(modelState.state.dangerUp, modelState.state.dangerDown, modelState.state.dangerLeft, modelState.state.dangerRight);
         const controller = this.controllers[1] as ServerController;
         const controls = await this.service.sendState(modelState);
         controller.setControls(controls);
@@ -174,7 +175,7 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
                  }}>
 
                 {this.state.devMode
-                    ? <InfoPanelDev stats={this.state.model.players[0].state}/>
+                    ? <InfoPanelDev stats={this.state.model.players?.[1].state}/>
                     : <InfoPanel stats={this.state.model.players.map(p => p.state)}/>}
 
                 <div className="game-area" ref={this.gameAreaRef}>

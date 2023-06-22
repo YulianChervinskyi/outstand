@@ -10,6 +10,5 @@ export function Player(props: { position: IPoint, offset: IPoint, id: number }) 
         width: CELL_SIZE,
     };
 
-    console.log(props.id);
     return <img className="player" src={playerImg[props.id]} style={style} alt="player"/>;
 }
