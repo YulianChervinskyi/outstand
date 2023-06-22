@@ -1,14 +1,18 @@
 import {IControlsStates} from "../Controls";
 
 export interface IModelState {
-    x: number;
-    y: number;
-    bombs: number;
-    left: number;
-    right: number;
-    up: number;
-    down: number;
-    center: number;
+    state: {
+        x: number;
+        y: number;
+        bombs: number;
+        left: number;
+        right: number;
+        up: number;
+        down: number;
+        center: number;
+    }
+    reward: number;
+    done: boolean;
 }
 
 export class AIService {

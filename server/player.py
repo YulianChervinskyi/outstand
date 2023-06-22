@@ -6,7 +6,8 @@ class Player:
         self.direction = None
         self.change_direction = False
 
-    def play(self, state):
+    def play(self, game_state):
+        state = game_state["state"]
         variants = []
         for key in ["left", "right", "up", "down"]:
             if state[key] == 0 or state[key] == 5:

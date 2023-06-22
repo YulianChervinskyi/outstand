@@ -2,13 +2,13 @@ import torch
 import random
 import numpy as np
 from collections import deque
-# from game import SnakeGameAI, Direction, Point
 from model import Linear_QNet, QTrainer
 from helper import plot
 
 MAX_MEMORY = 100_000
 BATCH_SIZE = 1000
 LR = 0.001
+
 
 class Agent:
 
@@ -17,9 +17,11 @@ class Agent:
         self.epsilon = 0 # randomness
         self.gamma = 0.9 # discount rate
         self.memory = deque(maxlen=MAX_MEMORY) # popleft()
-        self.model = Linear_QNet(14, 256, 3)
+        self.model = Linear_QNet(8, 1024, 5)
         self.model.load()
         self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
+        self.state_old = None
+        self.final_move = [0,0,0,0,0]
 
         self.plot_scores = []
         self.plot_mean_scores = []
@@ -27,8 +29,9 @@ class Agent:
         self.record = 0
 
     def get_state(self, raw_state):
-        state = [
-        ]
+        state = []
+        for key in raw_state:
+            state.append(raw_state[key])
 
         return np.array(state, dtype=int)
 
@@ -52,9 +55,9 @@ class Agent:
     def get_action(self, state):
         # random moves: tradeoff exploration / exploitation
         self.epsilon = 80 - self.n_games
-        final_move = [0,0,0]
+        final_move = [0,0,0,0,0]
         if not self.model.loaded and random.randint(0, 200) < self.epsilon:
-            move = random.randint(0, 2)
+            move = random.randint(0, len(final_move) - 1)
             final_move[move] = 1
         else:
             state0 = torch.tensor(state, dtype=torch.float)
@@ -65,44 +68,37 @@ class Agent:
         return final_move
 
 
-    def train(self, raw_state):
-        # agent = Agent()
-        # game = SnakeGameAI()
-        while True:
-            # get old state
-            state_old = self.get_state(raw_state)
+    def train(self, game_state):
+        # get states
+        state_new = self.get_state(game_state.state)
+        state_old = state_new if self.state_old is None else self.state_old
 
-            # get move
-            final_move = self.get_action(state_old)
+        # train short memory
+        self.train_short_memory(state_old, self.final_move, game_state.reward, state_new, game_state.done)
 
-            # perform move and get new state
-            reward, done, score = game.play_step(final_move)
-            state_new = self.get_state(game)
+        # remember
+        self.remember(state_old, self.final_move, game_state.reward, state_new, game_state.done)
+        self.state_old = state_new
 
-            # train short memory
-            self.train_short_memory(state_old, final_move, reward, state_new, done)
+        if game_state.done:
+            # train long memory, plot result
+            # game.reset() should be made automatically
+            self.n_games += 1
+            self.train_long_memory()
 
-            # remember
-            self.remember(state_old, final_move, reward, state_new, done)
+            if game_state.score > self.record:
+                self.record = game_state.score
+                self.model.save()
 
-            if done:
-                # train long memory, plot result
-                game.reset()
-                self.n_games += 1
-                self.train_long_memory()
+            print('Game', self.n_games, 'Score', game_state.score, 'Record:', self.record)
 
-                if score > record:
-                    record = score
-                    self.model.save()
+            self.plot_scores.append(game_state.score)
+            self.total_score += game_state.score
+            mean_score = self.total_score / self.n_games
+            self.plot_mean_scores.append(mean_score)
+            plot(self.plot_scores, self.plot_mean_scores)
 
-                print('Game', self.n_games, 'Score', score, 'Record:', record)
+        # perform move
+        self.final_move = self.get_action(self.state_old)
 
-                self.plot_scores.append(score)
-                self.total_score += score
-                mean_score = self.total_score / self.n_games
-                self.plot_mean_scores.append(mean_score)
-                plot(self.plot_scores, self.plot_mean_scores)
-
-
-# if __name__ == '__main__':
-#     train()
+        return self.final_move
