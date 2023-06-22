@@ -26,8 +26,8 @@ class S(BaseHTTPRequestHandler):
         post_data = self.rfile.read(content_length)
         state = json.loads(post_data)
 
-        action = player.play(state)
-        # action = agent.train(state)
+        # action = player.play(state)
+        action = agent.train(state)
 
         self._set_headers()
         self.wfile.write(json.dumps(action).encode("utf-8"))

@@ -109,6 +109,7 @@ export class GameModel {
             },
             reward: 0,
             done: false,
+            score: 0,
         };
     }
 

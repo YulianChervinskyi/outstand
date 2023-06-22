@@ -13,6 +13,7 @@ export interface IModelState {
     }
     reward: number;
     done: boolean;
+    score: number;
 }
 
 export class AIService {
