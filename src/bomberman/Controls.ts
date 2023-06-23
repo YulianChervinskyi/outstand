@@ -69,6 +69,5 @@ export class ServerController {
         this.states.up = states.up;
         this.states.down = states.down;
         this.states.place = states.place;
-        console.log(JSON.stringify(states));
     }
 }

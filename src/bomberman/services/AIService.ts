@@ -10,10 +10,10 @@ export interface IModelState {
         up: number;
         down: number;
         center: number;
-        dangerLeft: boolean,
-        dangerRight: boolean,
-        dangerUp: boolean,
-        dangerDown: boolean,
+        dangerLeft: number,
+        dangerRight: number,
+        dangerUp: number,
+        dangerDown: number,
     }
     reward: number;
     done: boolean;

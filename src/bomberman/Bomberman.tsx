@@ -26,6 +26,7 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
     private service = new AIService();
     private controllers = [new HumanController(), new ServerController()];
     private areControllersInProgress = false;
+    private learningMode = true;
 
     constructor(props: IComponentProps) {
         console.log('constructor');
@@ -111,10 +112,15 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
 
     private async processServerControllers() {
         const modelState = this.state.model.getModelStateByPlayer(1);
-        console.log(modelState.state.dangerUp, modelState.state.dangerDown, modelState.state.dangerLeft, modelState.state.dangerRight);
+        // console.log(modelState.state.dangerUp, modelState.state.dangerDown, modelState.state.dangerLeft, modelState.state.dangerRight);
         const controller = this.controllers[1] as ServerController;
         const controls = await this.service.sendState(modelState);
-        controller.setControls(controls);
+        // console.log(controls);
+
+        if (this.learningMode && modelState.done)
+            this.resetGame();
+        else
+            controller.setControls(controls);
     }
 
     private handleKeyDown = (e: KeyboardEvent) => {
@@ -175,7 +181,7 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
                  }}>
 
                 {this.state.devMode
-                    ? <InfoPanelDev stats={this.state.model.players?.[1].state}/>
+                    ? <InfoPanelDev stats={this.state.model.players?.[0].state}/>
                     : <InfoPanel stats={this.state.model.players.map(p => p.state)}/>}
 
                 <div className="game-area" ref={this.gameAreaRef}>

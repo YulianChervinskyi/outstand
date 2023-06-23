@@ -63,6 +63,10 @@ export class PlayerModel {
         };
     }
 
+    get bombs() {
+        return this.activeBombs;
+    }
+
     private createBomb() {
         const bombPos = {x: round(this.pos.x), y: round(this.pos.y)};
 

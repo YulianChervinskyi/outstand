@@ -1,11 +1,13 @@
 import {FIELD_FILLING} from "../config";
 import {IControlsStates} from "../Controls";
-import {EBonusType, ECellType, IPoint, ISceneObject, ISize, TField} from "../types";
+import {EBonusType, ECellType, IFullPlayerState, IPoint, ISceneObject, ISize, TField} from "../types";
 import {BombModel} from "./BombModel";
 import {PlayerModel} from "./PlayerModel";
 import {BonusModel} from "./BonusModel";
 import {ExplosionModel} from "./ExplosionModel";
 import {IModelState} from "../services/AIService";
+
+const NO_MOTION_LIMIT = 400;
 
 export class GameModel {
     field: TField = [];
@@ -92,59 +94,106 @@ export class GameModel {
         return this.sceneObjects.find(o => o.pos.x === pos.x && o.pos.y === pos.y);
     }
 
+    playerStates: IFullPlayerState[] = [];
+    playerScores: number[] = [];
+    playerPositions: IPoint[] = [];
+    noMotionCounter = 0;
+
     getModelStateByPlayer(playerId: number): IModelState {
         const player = this.players[playerId];
         const x = Math.round(player.pos.x);
         const y = Math.round(player.pos.y);
+
+        this.noMotionCounter = this.playerPositions[playerId]?.x === x && this.playerPositions[playerId]?.y === y
+            ? this.noMotionCounter + 1
+            : 0;
+
+        // console.log("noMotionCounter:", this.noMotionCounter);
+
+        const state = player.state;
+        const prevState = this.playerStates[playerId] || state;
+        this.playerStates[playerId] = state;
+
+        const bombPlaced = state.currSupply < prevState.currSupply;
+        const playerDied = state.life < prevState.life || this.noMotionCounter > NO_MOTION_LIMIT;
+
+        let reward = (bombPlaced ? 1 : 0) + (playerDied ? -10 : 0);
+        let score = this.playerScores[playerId] || 0;
+
+        if (bombPlaced) {
+            const lastBomb = player.bombs.at(-1);
+            if (lastBomb) {
+                const {x, y} = lastBomb.pos;
+                Object.values(this.getCellsAround(x, y)).forEach((cell) => {
+                    if (cell === ECellType.Wall) {
+                        reward += 5;
+                        score += 1;
+                    }
+                });
+            }
+        }
+        // console.log("reward:", reward);
+        this.playerScores[playerId] = score;
+        this.playerPositions[playerId] = {x, y};
+
+        const around = this.getCellsAround(x, y);
         return {
             state: {
-                x: player.pos.x,
-                y: player.pos.y,
-                bombs: player.state.maxSupply - player.state.currSupply,
-                left: x - 1 >= 0 ? this.field[y][x - 1] : ECellType.AzovSteel,
-                right: x + 1 < this.width ? this.field[y][x + 1] : ECellType.AzovSteel,
-                up: y - 1 >= 0 ? this.field[y - 1][x] : ECellType.AzovSteel,
-                down: y + 1 < this.height ? this.field[y + 1][x] : ECellType.AzovSteel,
-                center: this.field[y][x],
+                x: player.pos.x / (this.width - 1),
+                y: player.pos.y / (this.height - 1),
+                bombs: player.state.currSupply / player.state.maxSupply,
+                left: around.left / 5,
+                right: around.right / 5,
+                up: around.up / 5,
+                down: around.down / 5,
+                center: this.field[y][x] / 5,
                 dangerLeft: this.computeDanger(x, y, {x: -1, y: 0}),
                 dangerRight: this.computeDanger(x, y, {x: 1, y: 0}),
                 dangerUp: this.computeDanger(x, y, {x: 0, y: -1}),
                 dangerDown: this.computeDanger(x, y, {x: 0, y: 1}),
             },
-            reward: 0,
-            done: !!this.players.find(p => p.state.life < 0),
-            score: 0,
+            reward,
+            done: playerDied,
+            score,
         };
     }
 
-    private computeDanger(x: number, y: number, dir: IPoint): boolean {
+    private getCellsAround(x: number, y: number) {
+        return {
+            left: x - 1 >= 0 ? this.field[y][x - 1] : ECellType.AzovSteel,
+            right: x + 1 < this.width ? this.field[y][x + 1] : ECellType.AzovSteel,
+            up: y - 1 >= 0 ? this.field[y - 1][x] : ECellType.AzovSteel,
+            down: y + 1 < this.height ? this.field[y + 1][x] : ECellType.AzovSteel,
+        }
+    }
+
+    private computeDanger(x: number, y: number, dir: IPoint): number {
         const cell: IPoint = {x: x + dir.x, y: y + dir.y};
 
-        const checkDistance = (start: IPoint, end: IPoint, minDistance: number): boolean => {
+        const checkDistance = (start: IPoint, end: IPoint, minDistance: number): number => {
             const distanceX = end.x === start.x ? 0 : Math.abs(end.x - start.x);
             const distanceY = end.y === start.y ? 0 : Math.abs(end.y - start.y);
 
-            return distanceY > minDistance || distanceX > minDistance;
+            return distanceY > minDistance || distanceX > minDistance ? 0 : 1;
         }
 
         while ((cell.x >= 0 && cell.x < this.width) && (cell.y >= 0 && cell.y < this.height)) {
 
             if (this.field[cell.y][cell.x] === ECellType.Bomb) {
-                return !checkDistance({x: x, y: y}, cell, (this.getObject(cell) as BombModel).power);
-            }
-            else if (this.field[cell.y][cell.x] === ECellType.Explosion) {
+                return checkDistance({x: x, y: y}, cell, (this.getObject(cell) as BombModel).power);
+            } else if (this.field[cell.y][cell.x] === ECellType.Explosion) {
                 const explDir = (this.getObject(cell) as ExplosionModel).direction;
 
                 // check if the explosion's direction is opposite to checked direction
                 if (explDir && dir.x + explDir.x + dir.y + explDir.y)
-                    return !checkDistance({x: x, y: y}, cell, (this.getObject(cell) as ExplosionModel)._power);
+                    return checkDistance({x: x, y: y}, cell, (this.getObject(cell) as ExplosionModel)._power);
             }
 
             cell.x += dir.x;
             cell.y += dir.y;
         }
 
-        return false;
+        return 0;
     }
 
     private initField() {
