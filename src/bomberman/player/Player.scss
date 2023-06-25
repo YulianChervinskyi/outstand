@@ -2,4 +2,51 @@
   top: 0;
   left: 0;
   position: absolute;
+
+  .control {
+    position: absolute;
+    width: 0;
+    height: 0;
+    z-index: 1;
+
+    &.left {
+      top: 16px;
+      border-top: 16px solid transparent;
+      border-bottom: 16px solid transparent;
+      border-right: 16px solid red;
+    }
+
+    &.right {
+      left: 48px;
+      top: 16px;
+      border-top: 16px solid transparent;
+      border-bottom: 16px solid transparent;
+      border-left: 16px solid red;
+    }
+
+    &.up {
+      left: 16px;
+      border-left: 16px solid transparent;
+      border-right: 16px solid transparent;
+      border-bottom: 16px solid red;
+    }
+
+    &.down {
+      left: 16px;
+      top: 48px;
+      border-left: 16px solid transparent;
+      border-right: 16px solid transparent;
+      border-top: 16px solid red;
+    }
+
+    &.bomb {
+      left: 20px;
+      top: 20px;
+      width: 24px;
+      height: 24px;
+      border-radius: 12px;
+      background: red;
+    }
+
+  }
 }

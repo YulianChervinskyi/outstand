@@ -23,7 +23,7 @@ export class PlayerModel {
     private getObject?: (pos: IPoint) => ISceneObject | undefined;
 
     constructor(readonly pos: IPoint,
-                private states: IControlsStates,
+                readonly states: IControlsStates,
                 private field: TField,
                 private bonuses: EBonusType[]) {
         this.spawnPoint = {x: pos.x, y: pos.y};

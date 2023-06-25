@@ -126,7 +126,7 @@ export class GameModel {
                 const {x, y} = lastBomb.pos;
                 Object.values(this.getCellsAround(x, y)).forEach((cell) => {
                     if (cell === ECellType.Wall) {
-                        reward += 5;
+                        reward += 1;
                         score += 1;
                     }
                 });

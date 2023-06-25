@@ -64,10 +64,10 @@ export class ServerController {
     };
 
     setControls(states: IControlsStates) {
-        this.states.left = states.left;
-        this.states.right = states.right;
-        this.states.up = states.up;
-        this.states.down = states.down;
-        this.states.place = states.place;
+        this.states.left = Boolean(states.left);
+        this.states.right = Boolean(states.right);
+        this.states.up = Boolean(states.up);
+        this.states.down = Boolean(states.down);
+        this.states.place = Boolean(states.place);
     }
 }

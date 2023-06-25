@@ -188,7 +188,7 @@ export class Bomberman extends React.Component<IComponentProps, IState> {
                     <div className="scene">
                         <Field model={this.state.model} offset={offset}/>
                         {this.state.model.players.map((p, key) =>
-                            <Player position={p.pos} offset={offset} key={key} id={key}/>)}
+                            <Player player={p} offset={offset} key={key} id={key}/>)}
                     </div>
                 </div>
 
