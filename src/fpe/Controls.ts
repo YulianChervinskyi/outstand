@@ -1,24 +1,51 @@
-export interface IControlsStates {
-    'left': boolean,
-    'right': boolean,
-    'forward': boolean,
-    'backward': boolean,
+export interface IKeybControlsStates {
+    left: boolean,
+    right: boolean,
+    forward: boolean,
+    backward: boolean,
+}
+
+export interface IControlsStates extends IKeybControlsStates {
+    pointerLock: boolean,
+    movementX: number,
+    movementY: number,
 }
 
 export class Controls {
-    codes = {37: 'left', 39: 'right', 38: 'forward', 40: 'backward'};
-    states: IControlsStates = {'left': false, 'right': false, 'forward': false, 'backward': false};
+    codes = {
+        37: 'left',
+        39: 'right',
+        38: 'forward',
+        40: 'backward',
+        65: "left",
+        68: "right",
+        87: "forward",
+        83: "backward"
+    };
 
-    constructor() {
+    states: IControlsStates = {
+        left: false,
+        right: false,
+        forward: false,
+        backward: false,
+        pointerLock: false,
+        movementX: 0,
+        movementY: 0,
+    };
+
+    constructor(private readonly el: HTMLElement) {
         document.addEventListener('keydown', this.onKey.bind(this, true), false);
         document.addEventListener('keyup', this.onKey.bind(this, false), false);
         document.addEventListener('touchstart', this.onTouch.bind(this), false);
         document.addEventListener('touchmove', this.onTouch.bind(this), false);
         document.addEventListener('touchend', this.onTouchEnd.bind(this), false);
+        document.addEventListener("mousemove", this.onMouseMove.bind(this), false);
+        el.addEventListener("click", this.requestPointerLock.bind(this), false);
+        document.addEventListener('pointerlockchange', this.onPointerLockChange.bind(this), false);
     }
 
     onTouch(e: TouchEvent) {
-        var t = e.touches[0];
+        const t = e.touches[0];
         this.onTouchEnd(e);
         if (t.pageY < window.innerHeight * 0.5) this.onKey(true, {keyCode: 38});
         else if (t.pageX < window.innerWidth * 0.5) this.onKey(true, {keyCode: 37});
@@ -26,16 +53,34 @@ export class Controls {
     }
 
     onTouchEnd(e: TouchEvent) {
-        this.states = {'left': false, 'right': false, 'forward': false, 'backward': false};
+        this.states = {...this.states, left: false, right: false, forward: false, backward: false};
         e.preventDefault();
         e.stopPropagation();
     };
 
+    ox?: number;
+
+    onMouseMove(e: MouseEvent) {
+        if (!this.states.pointerLock)
+            return;
+
+        this.states.movementX = e.movementX;
+        this.states.movementY = e.movementY;
+    }
+
     onKey(val: boolean, e: { keyCode: number, preventDefault?: () => void, stopPropagation?: () => void }) {
-        var state = this.codes[e.keyCode as keyof Controls['codes']] as keyof Controls['states'];
+        const state = this.codes[e.keyCode as keyof Controls['codes']] as keyof IKeybControlsStates;
         if (typeof state === 'undefined') return;
         this.states[state] = val;
         e.preventDefault && e.preventDefault();
         e.stopPropagation && e.stopPropagation();
+    }
+
+    requestPointerLock() {
+        this.el.requestPointerLock();
+    }
+
+    onPointerLockChange() {
+        this.states.pointerLock = document.pointerLockElement === this.el;
     }
 }

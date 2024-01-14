@@ -19,7 +19,7 @@ export class GameLoop {
         if (!this.callback)
             return;
 
-        var seconds = (time - this.lastTime) / 1000;
+        const seconds = (time - this.lastTime) / 1000;
         this.lastTime = time;
         if (seconds < 0.2) this.callback(seconds);
         requestAnimationFrame(this.frame);
