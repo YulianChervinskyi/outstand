@@ -15,10 +15,13 @@ export class Camera {
         this.ctx = canvas.getContext('2d')!;
     }
 
-    render(player: Player, map: Map) {
+    render(player: Player, map: Map, showMap: boolean = false) {
         this.drawSky(player.direction, map.skybox, map.light);
         this.drawColumns(player, map);
         this.drawWeapon(player.weapon, player.paces);
+
+        if (showMap)
+            this.drawMap(player, map);
     };
 
     drawSky(direction: number, sky: Bitmap, ambient: number) {
@@ -60,14 +63,60 @@ export class Camera {
         this.ctx.drawImage(weapon.image, left, top, weapon.width * this.scale, weapon.height * this.scale);
     };
 
+    drawMap(player: Player, map: Map) {
+        const ctx = this.ctx;
+        ctx.save();
+
+        const cSize = this.spacing * 6;
+        const pSize = cSize * 0.5;
+        const zx = this.width - map.size * cSize - 20
+        const zy = this.height - map.size * cSize - 20;
+
+        for (let y = 0; y < map.size; y++) {
+            for (let x = 0; x < map.size; x++) {
+                const wall = map.wallGrid[y * map.size + x];
+                if (wall > 0) {
+                    ctx.fillStyle = '#ffffff';
+                    ctx.globalAlpha = 0.4;
+                    ctx.fillRect(zx + x * cSize, zy + y * cSize, cSize, cSize);
+                }
+            }
+        }
+
+        ctx.fillStyle = 'red';
+        ctx.globalAlpha = 1;
+        ctx.fillRect(zx + player.x * cSize - pSize / 2, zy + player.y * cSize - pSize / 2, pSize, pSize);
+
+        ctx.beginPath();
+        for (let column = 0; column < this.resolution; column++) {
+            const y = column / this.resolution - 0.5;
+            const angle = Math.atan2(y, this.focalLength);
+            const ray = map.cast(player, player.direction + angle, this.range);
+            const hit = ray.find(r => r.height > 0);
+
+            ctx.moveTo(zx + player.x * cSize, zy + player.y * cSize);
+            if (hit) {
+                ctx.lineTo(zx + hit.x * cSize, zy + hit.y * cSize);
+            } else {
+                const a = player.direction + angle;
+                const rangeX = Math.cos(a) * this.range;
+                const rangeY = Math.sin(a) * this.range;
+                ctx.lineTo(zx + (player.x + rangeX) * cSize, zy + (player.y + rangeY) * cSize);
+            }
+
+        }
+        ctx.strokeStyle = 'rgba(0, 255, 0, 0.05)';
+        ctx.stroke();
+        ctx.restore();
+    }
+
     drawColumn(column: number, ray: TRay, angle: number, map: Map) {
         const ctx = this.ctx;
         const texture = map.wallTexture;
         const left = Math.floor(column * this.spacing);
         const width = Math.ceil(this.spacing);
 
-        let hit = -1;
-        while (++hit < ray.length && ray[hit].height <= 0) {}
+        const hit = ray.findIndex(r => r.height > 0);
 
         for (let s = ray.length - 1; s >= 0; s--) {
             const step = ray[s];

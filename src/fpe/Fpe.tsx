@@ -8,12 +8,14 @@ import {Map} from "./Map";
 
 interface IState {
     paused: boolean;
+    showMap: boolean;
     playerData: { x: number, y: number, direction: number };
     mapData?: number[];
 }
 
 const initialState: IState = {
     paused: false,
+    showMap: false,
     playerData: {x: 15.3, y: -1.2, direction: Math.PI * 0.3},
 }
 
@@ -63,10 +65,18 @@ export class Fpe extends React.Component<IComponentProps, IState> {
             this._camera = new Camera(this.canvasRef.current, 640, 0.8);
             this.loop.start(this.tick);
         }
+        document.addEventListener("keydown", this.handleKeyDown);
     }
 
     componentWillUnmount() {
         this.loop.stop();
+        document.removeEventListener("keydown", this.handleKeyDown);
+    }
+
+    private handleKeyDown = (e: KeyboardEvent) => {
+        if (e.code === "KeyM") {
+            this.setState({showMap: !this.state.showMap});
+        }
     }
 
     private tick = (seconds: number) => {
@@ -75,7 +85,7 @@ export class Fpe extends React.Component<IComponentProps, IState> {
 
         this.map.update(seconds);
         this.player.update(this.controls.states, this.map, seconds);
-        this.camera.render(this.player, this.map);
+        this.camera.render(this.player, this.map, this.state.showMap);
 
         if (this.init) {
             this.init = false;
