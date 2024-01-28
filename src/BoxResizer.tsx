@@ -3,6 +3,10 @@ import {IGeometry} from "./Box";
 
 const MIN_WIDTH = 150;
 const MIN_HEIGHT = 165;
+const HEADER = 20;
+const BORDER = 2;
+const WIDTH_EXTRA = 2 * BORDER;
+const HEIGHT_EXTRA = HEADER + 2 * BORDER;
 
 export interface IBoxResizerProps {
     width: number,
@@ -24,7 +28,9 @@ export class BoxResizer extends React.Component<IBoxResizerProps, { dragging: bo
     private startWidth: number = this.props.width;
     private startHeight: number = this.props.height;
 
-    componentDidUpdate(prevProps: Readonly<IBoxResizerProps>, prevState: Readonly<{ dragging: boolean }>, snapshot?: any) {
+    componentDidUpdate(prevProps: Readonly<IBoxResizerProps>, prevState: Readonly<{
+        dragging: boolean
+    }>, snapshot?: any) {
         if (prevProps.geometry?.minSize?.w !== this.props.geometry?.minSize?.w ||
             prevProps.geometry?.minSize?.h !== this.props.geometry?.minSize?.h ||
             prevProps.geometry?.aspectRatio?.w !== this.props.geometry?.aspectRatio?.w ||
@@ -62,7 +68,10 @@ export class BoxResizer extends React.Component<IBoxResizerProps, { dragging: bo
         }
     }
 
-    private resize = (w: number, h: number) => {
+    private resize = (width: number, height: number) => {
+        let w = width - WIDTH_EXTRA;
+        let h = height - HEIGHT_EXTRA;
+
         if (this.props.geometry?.aspectRatio) {
             const {w: aw, h: ah} = this.props.geometry.aspectRatio;
             if (w / h > aw / ah) {
@@ -73,8 +82,8 @@ export class BoxResizer extends React.Component<IBoxResizerProps, { dragging: bo
         }
 
         this.props.onResize({
-            w: Math.max(w, this.props.geometry?.minSize?.w || MIN_WIDTH, MIN_WIDTH),
-            h: Math.max(h, this.props.geometry?.minSize?.h || MIN_HEIGHT, MIN_HEIGHT),
+            w: Math.max(w, this.props.geometry?.minSize?.w || MIN_WIDTH, MIN_WIDTH) + WIDTH_EXTRA,
+            h: Math.max(h, this.props.geometry?.minSize?.h || MIN_HEIGHT, MIN_HEIGHT) + HEIGHT_EXTRA,
         });
     }
 
