@@ -33,6 +33,7 @@ export class Fpe extends React.Component<IComponentProps, IState> {
     constructor(props: IComponentProps) {
         super(props);
         this.state = this.props.text ? JSON.parse(this.props.text) : initialState;
+        this.props.onChangeGeometry({minSize: {w: 320, h: 240}, aspectRatio: {w: 4, h: 3}});
 
         const x = this.state.playerData?.x || initialState.playerData.x;
         const y = this.state.playerData?.y || initialState.playerData.y
