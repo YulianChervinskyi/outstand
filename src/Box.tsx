@@ -9,6 +9,7 @@ import {NoteEditor} from "./note_editor/NoteEditor";
 import {Tetris} from "./tetris/Tetris";
 import {Minesweeper} from "./minesweeper/Minesweeper";
 import {Bomberman} from "./bomberman/Bomberman";
+import {Fpb} from "./fpb/Fpb";
 
 export interface ISize {
     w: number,
@@ -37,6 +38,7 @@ export enum BoxType {
     Asteroids = "Asteroids",
     Minesweeper = "Minesweeper",
     Bomberman = "Bomberman",
+    Fpb = "Fpb",
 }
 
 interface BoxProps {
@@ -122,6 +124,11 @@ export function Box(props: BoxProps) {
 
             {props.type === BoxType.Bomberman
                 && <Bomberman width={width} height={height} text={props.text} active={props.active}
+                                onChange={(e) => props.onChange(props.id, e)}
+                                onChangeGeometry={setGeometry}/>}
+
+            {props.type === BoxType.Fpb
+                && <Fpb width={width} height={height} text={props.text} active={props.active}
                                 onChange={(e) => props.onChange(props.id, e)}
                                 onChangeGeometry={setGeometry}/>}
 
