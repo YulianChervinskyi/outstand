@@ -1,7 +1,7 @@
 import React from "react";
 import {IComponentProps} from "../Box";
 import {Camera} from "./Camera";
-import {Controls} from "./Controls";
+import {Controls} from "../Controls";
 import {Player} from "./Player";
 import {Map} from "./Map";
 

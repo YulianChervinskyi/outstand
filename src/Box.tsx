@@ -10,6 +10,7 @@ import {Tetris} from "./tetris/Tetris";
 import {Minesweeper} from "./minesweeper/Minesweeper";
 import {Bomberman} from "./bomberman/Bomberman";
 import {Fpb} from "./fpb/Fpb";
+import {Drive} from "./drive/Drive";
 
 export interface ISize {
     w: number,
@@ -39,6 +40,7 @@ export enum BoxType {
     Minesweeper = "Minesweeper",
     Bomberman = "Bomberman",
     Fpb = "Fpb",
+    Drive = "Drive",
 }
 
 interface BoxProps {
@@ -124,13 +126,18 @@ export function Box(props: BoxProps) {
 
             {props.type === BoxType.Bomberman
                 && <Bomberman width={width} height={height} text={props.text} active={props.active}
-                                onChange={(e) => props.onChange(props.id, e)}
-                                onChangeGeometry={setGeometry}/>}
+                              onChange={(e) => props.onChange(props.id, e)}
+                              onChangeGeometry={setGeometry}/>}
 
             {props.type === BoxType.Fpb
                 && <Fpb width={width} height={height} text={props.text} active={props.active}
-                                onChange={(e) => props.onChange(props.id, e)}
-                                onChangeGeometry={setGeometry}/>}
+                        onChange={(e) => props.onChange(props.id, e)}
+                        onChangeGeometry={setGeometry}/>}
+
+            {props.type === BoxType.Drive
+                && <Drive width={width} height={height} text={props.text} active={props.active}
+                          onChange={(e) => props.onChange(props.id, e)}
+                          onChangeGeometry={setGeometry}/>}
 
             <BoxResizer width={size.w} height={size.h} onResize={handleResize}
                         geometry={geometry}/>

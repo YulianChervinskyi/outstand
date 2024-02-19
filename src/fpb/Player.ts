@@ -1,4 +1,4 @@
-import {IControlsStates} from "./Controls";
+import {IControlsStates} from "../Controls";
 import {Map} from "./Map";
 import {CIRCLE} from "../fpe/common";
 

@@ -9,6 +9,7 @@ import minesweeper from "./minesweeper.png";
 import bomberman from "./bomberman.png";
 import darkTheme from "./dark_theme.png";
 import lightTheme from "./light_theme.png";
+import drive from "./drive.png";
 
 export {darkTheme, lightTheme};
 
@@ -21,4 +22,5 @@ export const iconsPng = {
     [BoxType.Minesweeper]: minesweeper,
     [BoxType.Bomberman]: bomberman,
     [BoxType.Fpb]: fpb,
+    [BoxType.Drive]: drive,
 };
