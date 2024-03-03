@@ -13,8 +13,10 @@ export class Car {
     private driveChangeTime = 0;
     private wheelBase = LENGTH * 0.6;
     private turningPoint?: { x: number, y: number };
-    private hypotenuse: number = Infinity;
     private leg = Infinity;
+    private hypotenuse: number = Infinity;
+    private hypotenuse1: number = Infinity;
+    private hypotenuse2: number = Infinity;
 
     constructor(data: ICarData) {
         this.x = data.x;
@@ -42,6 +44,10 @@ export class Car {
 
         this.hypotenuse = this.wheelBase / Math.sin(this.turning);
         this.leg = Math.cos(this.turning) * this.hypotenuse;
+
+        const hypotenuseSign = Math.sign(this.hypotenuse);
+        this.hypotenuse1 = hypotenuseSign * Math.sqrt((this.leg - WIDTH * 0.5) ** 2 + this.wheelBase ** 2);
+        this.hypotenuse2 = hypotenuseSign * Math.sqrt((this.leg + WIDTH * 0.5) ** 2 + this.wheelBase ** 2);
     }
 
     drive(diff: number) {
@@ -60,10 +66,14 @@ export class Car {
     render(ctx: CanvasRenderingContext2D, options?: IRenderOptions) {
         const wheelOffsetX = WIDTH * 0.5;
         const wheelOffsetY = this.wheelBase * 0.5;
+        const turningSign = Math.sign(this.turning);
+        const angle1 = turningSign * Math.acos((this.leg - wheelOffsetX) / this.hypotenuse1);
+        const angle2 = turningSign * Math.acos((this.leg + wheelOffsetX) / this.hypotenuse2);
+
         this.renderWheel(ctx, -wheelOffsetX, +wheelOffsetY, 0);
         this.renderWheel(ctx, wheelOffsetX, +wheelOffsetY, 0);
-        this.renderWheel(ctx, -wheelOffsetX, -wheelOffsetY, this.turning);
-        this.renderWheel(ctx, +wheelOffsetX, -wheelOffsetY, this.turning);
+        this.renderWheel(ctx, -wheelOffsetX, -wheelOffsetY, angle1);
+        this.renderWheel(ctx, +wheelOffsetX, -wheelOffsetY, angle2);
 
         this.renderBody(ctx);
 
@@ -207,16 +217,14 @@ export class Car {
         // front wheels
         ctx.strokeStyle = 'green';
 
-        const hypotenuse1 = Math.sqrt((this.leg - WIDTH * 0.5) ** 2 + this.wheelBase ** 2);
         ctx.beginPath();
-        ctx.arc(-x, y + this.leg, Math.abs(hypotenuse1), 0, 2 * Math.PI);
+        ctx.arc(-x, y + this.leg, Math.abs(this.hypotenuse1), 0, 2 * Math.PI);
         ctx.moveTo(-x, y + this.leg);
         ctx.lineTo(x, y - WIDTH * 0.5);
         ctx.stroke();
 
-        const hypotenuse2 = Math.sqrt((this.leg + WIDTH * 0.5) ** 2 + this.wheelBase ** 2);
         ctx.beginPath();
-        ctx.arc(-x, y + this.leg, Math.abs(hypotenuse2), 0, 2 * Math.PI);
+        ctx.arc(-x, y + this.leg, Math.abs(this.hypotenuse2), 0, 2 * Math.PI);
         ctx.moveTo(-x, y + this.leg);
         ctx.lineTo(x, y + WIDTH * 0.5);
         ctx.stroke();
