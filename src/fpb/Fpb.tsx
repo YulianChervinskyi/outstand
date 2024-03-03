@@ -103,7 +103,6 @@ export class Fpb extends React.Component<IComponentProps, IState> {
             },
         });
 
-
         if (this.pointerLock && !this.controls.states.pointerLock) {
             this.setState({paused: true});
         }
@@ -124,6 +123,7 @@ export class Fpb extends React.Component<IComponentProps, IState> {
 
     resetGame = () => {
         this.setState(initialState);
+        this.controls.requestPointerLock();
     }
 
     componentDidUpdate(prevProps: Readonly<IComponentProps>, prevState: Readonly<IState>, snapshot?: any) {
@@ -149,6 +149,9 @@ export class Fpb extends React.Component<IComponentProps, IState> {
     }
 
     private handleKeyDown = (e: KeyboardEvent) => {
+        if (!this.props.active)
+            return;
+
         if (e.code === "KeyM") {
             this.setState({showMap: !this.state.showMap});
         } else if (e.code === "KeyI") {

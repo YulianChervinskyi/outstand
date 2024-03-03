@@ -1,12 +1,14 @@
-const LENGTH = 80;
-const WIDTH = 36;
+import {ICarData, IRenderOptions} from "./types";
 
-export interface IRenderOptions {
-    showGeometry: boolean;
-}
+const LENGTH = 160;
+const WIDTH = 72;
 
 export class Car {
-    private steering = 0;
+    private x: number;
+    private y: number;
+    private direction: number;
+    private speed: number;
+    private steering: number;
     private turning = 0;
     private driveChangeTime = 0;
     private wheelBase = LENGTH * 0.6;
@@ -14,7 +16,23 @@ export class Car {
     private hypotenuse: number = Infinity;
     private leg = Infinity;
 
-    constructor(public x: number, public y: number, public direction: number, public speed: number) {
+    constructor(data: ICarData) {
+        this.x = data.x;
+        this.y = data.y;
+        this.direction = data.direction;
+        this.speed = data.speed;
+        this.steering = data.steering;
+        this.steer(0);
+    }
+
+    get data(): ICarData {
+        return {
+            x: this.x,
+            y: this.y,
+            direction: this.direction,
+            speed: this.speed,
+            steering: this.steering,
+        };
     }
 
     steer(diff: number) {
@@ -77,6 +95,7 @@ export class Car {
         ctx.translate(this.x, this.y);
         ctx.rotate(this.direction);
         ctx.fillStyle = 'red';
+        ctx.globalAlpha = 0.5;
         ctx.fillRect(-LENGTH / 2, -WIDTH / 2, LENGTH, WIDTH);
         ctx.restore();
     }

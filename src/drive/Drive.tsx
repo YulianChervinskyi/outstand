@@ -2,8 +2,10 @@ import React from "react";
 import {IComponentProps} from "../Box";
 import {Controls} from "../Controls";
 import {Scene} from "./Scene";
+import {ISceneData} from "./types";
 
 interface IState {
+    data?: ISceneData;
     paused: boolean;
     showGeometry: boolean;
 }
@@ -15,6 +17,7 @@ const initialState: IState = {
 
 export class Drive extends React.Component<IComponentProps, IState> {
 
+    private pointerLock = false;
     private readonly canvasRef = React.createRef<HTMLCanvasElement>();
     private _controls: Controls | undefined;
     private _scene: Scene | undefined;
@@ -48,17 +51,31 @@ export class Drive extends React.Component<IComponentProps, IState> {
         document.addEventListener("keydown", this.handleKeyDown);
 
         this._controls = new Controls(canvas);
-        this._scene = new Scene(canvas);
-        requestAnimationFrame(this.update);
+        this._scene = new Scene(canvas, this.state.data);
+        this.scene.update(this.controls.states, 0, this.state);
+        requestAnimationFrame(this.tick);
     }
 
-    private update = (time: DOMHighResTimeStamp) => {
-        const seconds = (time - this.lastTime) / 1000;
-        if (seconds > 0 && seconds < 0.2)
-            this.scene.update(this.controls.states, seconds, this.state);
-
+    private tick = (time: DOMHighResTimeStamp) => {
+        this.update((time - this.lastTime) / 1000);
         this.lastTime = time;
-        requestAnimationFrame(this.update);
+        requestAnimationFrame(this.tick);
+    }
+
+    private update(seconds: number) {
+        if (!this.props.active || this.state.paused)
+            return;
+
+        if (seconds > 0 && seconds < 0.2) {
+            this.scene.update(this.controls.states, seconds, this.state);
+            this.setState({data: this.scene.data});
+        }
+
+        if (this.pointerLock && !this.controls.states.pointerLock) {
+            this.setState({paused: true});
+        }
+
+        this.pointerLock = this.controls.states.pointerLock;
     }
 
     private continueGame = () => {
@@ -68,6 +85,8 @@ export class Drive extends React.Component<IComponentProps, IState> {
 
     private resetGame = () => {
         this.setState(initialState);
+        this._scene = new Scene(this.canvasRef.current!, initialState.data);
+        this.controls.requestPointerLock();
     }
 
     render() {
@@ -85,8 +104,19 @@ export class Drive extends React.Component<IComponentProps, IState> {
     }
 
     private handleKeyDown = (e: KeyboardEvent) => {
+        if (!this.props.active)
+            return;
+
         if (e.code === "KeyG") {
             this.setState({showGeometry: !this.state.showGeometry});
+        } else if (e.code === "Escape") {
+            this.setState({paused: !this.state.paused});
         }
+    }
+
+    setState<K extends keyof IState>(state: Pick<IState, K> | IState | null) {
+        super.setState(state, () => {
+            this.props.onChange({text: JSON.stringify(this.state)});
+        });
     }
 }

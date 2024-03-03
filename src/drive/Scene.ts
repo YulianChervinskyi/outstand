@@ -1,17 +1,42 @@
 import {IControlsStates} from "../Controls";
-import {Car, IRenderOptions} from "./Car";
+import {Car} from "./Car";
+import {Cone} from "./Cone";
+import {IRenderOptions, ISceneData} from "./types";
 
 export class Scene {
 
     private readonly ctx: CanvasRenderingContext2D;
     private readonly car: Car;
+    private readonly cons: Cone[] = [];
 
-    constructor(canvas: HTMLCanvasElement) {
+    constructor(canvas: HTMLCanvasElement, data?: ISceneData) {
         this.ctx = canvas.getContext('2d')!;
         if (!this.ctx)
             throw new Error("2d context not supported");
 
-        this.car = new Car(canvas.width / 2, canvas.height / 2, -Math.PI / 2, 0);
+        if (!data) {
+            data = {
+                car: {x: canvas.width / 2, y: canvas.height / 2, direction: -Math.PI / 2, speed: 0, steering: 0},
+                cones: [
+                    {x: 100, y: 100},
+                    {x: 100, y: 200},
+                    {x: 100, y: 300},
+                    {x: 100, y: 400},
+                    {x: 100, y: 500},
+                    {x: 100, y: 600},
+                ]
+            }
+        }
+
+        this.car = new Car(data.car);
+        this.cons = data.cones.map(c => new Cone(c));
+    }
+
+    get data() {
+        return {
+            car: this.car.data,
+            cones: this.cons.map(c => c.data)
+        };
     }
 
     update(states: IControlsStates, seconds: number, renderOptions?: IRenderOptions) {
@@ -39,6 +64,7 @@ export class Scene {
     render(options?: IRenderOptions) {
         this.clear();
         this.car.render(this.ctx, options);
+        this.cons.forEach(c => c.render(this.ctx));
     }
 
     clear() {
