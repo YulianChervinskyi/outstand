@@ -33,14 +33,14 @@ export class Controls {
         movementY: 0,
     };
 
-    constructor(private readonly el: HTMLElement) {
+    constructor(private readonly el?: HTMLElement) {
         document.addEventListener('keydown', this.onKey.bind(this, true), false);
         document.addEventListener('keyup', this.onKey.bind(this, false), false);
         document.addEventListener('touchstart', this.onTouch.bind(this), false);
         document.addEventListener('touchmove', this.onTouch.bind(this), false);
         document.addEventListener('touchend', this.onTouchEnd.bind(this), false);
         document.addEventListener("mousemove", this.onMouseMove.bind(this), false);
-        el.addEventListener("click", this.requestPointerLock.bind(this), false);
+        el?.addEventListener("click", this.requestPointerLock.bind(this), false);
         document.addEventListener('pointerlockchange', this.onPointerLockChange.bind(this), false);
     }
 
@@ -57,8 +57,6 @@ export class Controls {
         e.preventDefault();
         e.stopPropagation();
     };
-
-    ox?: number;
 
     onMouseMove(e: MouseEvent) {
         if (!this.states.pointerLock)
@@ -77,7 +75,7 @@ export class Controls {
     }
 
     requestPointerLock() {
-        this.el.requestPointerLock();
+        this.el?.requestPointerLock();
     }
 
     onPointerLockChange() {

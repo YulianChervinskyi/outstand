@@ -1,11 +1,12 @@
 import {ICarData, IRenderOptions} from "./types";
+import {IRectangle} from "./Geometry";
 
 const LENGTH = 160;
 const WIDTH = 72;
 
 export class Car {
-    private x: number;
-    private y: number;
+    private _x: number;
+    private _y: number;
     private direction: number;
     private speed: number;
     private steering: number;
@@ -19,8 +20,8 @@ export class Car {
     private hypotenuse2: number = Infinity;
 
     constructor(data: ICarData) {
-        this.x = data.x;
-        this.y = data.y;
+        this._x = data.x;
+        this._y = data.y;
         this.direction = data.direction;
         this.speed = data.speed;
         this.steering = data.steering;
@@ -29,12 +30,20 @@ export class Car {
 
     get data(): ICarData {
         return {
-            x: this.x,
-            y: this.y,
+            x: this._x,
+            y: this._y,
             direction: this.direction,
             speed: this.speed,
             steering: this.steering,
         };
+    }
+
+    get x() {
+        return this._x;
+    }
+
+    get y() {
+        return this._y;
     }
 
     steer(diff: number) {
@@ -67,8 +76,8 @@ export class Car {
         const wheelOffsetX = WIDTH * 0.5;
         const wheelOffsetY = this.wheelBase * 0.5;
         const turningSign = Math.sign(this.turning);
-        const angle1 = turningSign * Math.acos((this.leg - wheelOffsetX) / this.hypotenuse1);
-        const angle2 = turningSign * Math.acos((this.leg + wheelOffsetX) / this.hypotenuse2);
+        const angle1 = turningSign * Math.acos((this.leg - wheelOffsetX) / this.hypotenuse1) || 0;
+        const angle2 = turningSign * Math.acos((this.leg + wheelOffsetX) / this.hypotenuse2) || 0;
 
         this.renderWheel(ctx, -wheelOffsetX, +wheelOffsetY, 0);
         this.renderWheel(ctx, wheelOffsetX, +wheelOffsetY, 0);
@@ -80,29 +89,31 @@ export class Car {
         this.renderSteering(ctx);
         this.renderSpeed(ctx);
 
+        this.drawRectangle(ctx, this.getRectangle());
+
         options?.showGeometry && this.renderTurningGeometry(ctx);
     }
 
     private move(distance: number) {
         if (this.turning === 0) {
-            this.x += Math.cos(this.direction) * distance;
-            this.y += Math.sin(this.direction) * distance;
+            this._x += Math.cos(this.direction) * distance;
+            this._y += Math.sin(this.direction) * distance;
             delete this.turningPoint;
         } else {
             this.turningPoint = {
-                x: this.x - Math.sin(this.direction) * this.leg - Math.cos(this.direction) * LENGTH * 0.3,
-                y: this.y + Math.cos(this.direction) * this.leg - Math.sin(this.direction) * LENGTH * 0.3,
+                x: this._x - Math.sin(this.direction) * this.leg - Math.cos(this.direction) * LENGTH * 0.3,
+                y: this._y + Math.cos(this.direction) * this.leg - Math.sin(this.direction) * LENGTH * 0.3,
 
             };
             this.direction += distance / this.hypotenuse;
-            this.x = this.turningPoint.x + Math.sin(this.direction) * this.leg + Math.cos(this.direction) * LENGTH * 0.3;
-            this.y = this.turningPoint.y - Math.cos(this.direction) * this.leg + Math.sin(this.direction) * LENGTH * 0.3;
+            this._x = this.turningPoint.x + Math.sin(this.direction) * this.leg + Math.cos(this.direction) * LENGTH * 0.3;
+            this._y = this.turningPoint.y - Math.cos(this.direction) * this.leg + Math.sin(this.direction) * LENGTH * 0.3;
         }
     }
 
     private renderBody(ctx: CanvasRenderingContext2D) {
         ctx.save();
-        ctx.translate(this.x, this.y);
+        ctx.translate(this._x, this._y);
         ctx.rotate(this.direction);
         ctx.fillStyle = 'red';
         ctx.globalAlpha = 0.5;
@@ -115,7 +126,7 @@ export class Car {
 
         const cos = Math.cos(this.direction - Math.PI / 2);
         const sin = Math.sin(this.direction - Math.PI / 2);
-        ctx.translate(this.x + x * cos + y * sin, this.y + x * sin - y * cos);
+        ctx.translate(this._x + x * cos + y * sin, this._y + x * sin - y * cos);
         ctx.rotate(this.direction + direction);
         ctx.fillStyle = 'black';
         const width = WIDTH / 6;
@@ -178,7 +189,7 @@ export class Car {
             return;
 
         ctx.save();
-        ctx.translate(this.x, this.y);
+        ctx.translate(this._x, this._y);
         ctx.rotate(this.direction);
         ctx.strokeStyle = 'yellow';
         ctx.lineWidth = 1;
@@ -188,18 +199,18 @@ export class Car {
         // const frontAngle = this.turning + Math.PI / 2;
         // ctx.lineTo(x + Math.cos(frontAngle) * this.hypotenuse, y + Math.sin(frontAngle) * this.hypotenuse);
         ctx.rotate(-this.direction);
-        ctx.translate(-this.x, -this.y);
+        ctx.translate(-this._x, -this._y);
         ctx.lineTo(this.turningPoint.x, this.turningPoint.y);
-        ctx.translate(this.x, this.y);
+        ctx.translate(this._x, this._y);
         ctx.rotate(this.direction);
 
         ctx.moveTo(-x, y);
         // const backAngle = Math.PI / 2;
         // ctx.lineTo(-x + Math.cos(backAngle) * this.leg, y + Math.sin(backAngle) * this.leg);
         ctx.rotate(-this.direction);
-        ctx.translate(-this.x, -this.y);
+        ctx.translate(-this._x, -this._y);
         ctx.lineTo(this.turningPoint.x, this.turningPoint.y);
-        ctx.translate(this.x, this.y);
+        ctx.translate(this._x, this._y);
         ctx.rotate(this.direction);
         ctx.stroke();
 
@@ -241,5 +252,35 @@ export class Car {
         ctx.stroke();
 
         ctx.restore();
+    }
+
+    getRectangle(): IRectangle {
+        const cos = Math.cos(this.direction);
+        const sin = Math.sin(this.direction);
+        const x = this._x;
+        const y = this._y;
+        const hw = WIDTH / 2;
+        const hl = LENGTH / 2;
+
+        const a = {x: x + hl * cos - hw * sin, y: y + hl * sin + hw * cos};
+        const b = {x: x - hl * cos - hw * sin, y: y - hl * sin + hw * cos};
+        const c = {x: x - hl * cos + hw * sin, y: y - hl * sin - hw * cos};
+        const d = {x: x + hl * cos + hw * sin, y: y + hl * sin - hw * cos};
+        return {a, b, c, d};
+    }
+
+    drawRectangle(ctx: CanvasRenderingContext2D, rectangle: IRectangle) {
+        ctx.beginPath();
+        ctx.strokeStyle = 'white';
+        ctx.moveTo(rectangle.a.x, rectangle.a.y);
+        ctx.lineTo(rectangle.b.x, rectangle.b.y);
+        ctx.lineTo(rectangle.c.x, rectangle.c.y);
+        ctx.lineTo(rectangle.d.x, rectangle.d.y);
+        ctx.lineTo(rectangle.a.x, rectangle.a.y);
+        ctx.stroke();
+    }
+
+    setHit(collision: boolean) {
+        // show collision effect
     }
 }

@@ -17,8 +17,8 @@ const initialState: IState = {
 
 export class Drive extends React.Component<IComponentProps, IState> {
 
-    private pointerLock = false;
     private readonly canvasRef = React.createRef<HTMLCanvasElement>();
+    private pointerLock = false;
     private _controls: Controls | undefined;
     private _scene: Scene | undefined;
     private lastTime: DOMHighResTimeStamp = 0;
@@ -50,7 +50,7 @@ export class Drive extends React.Component<IComponentProps, IState> {
 
         document.addEventListener("keydown", this.handleKeyDown);
 
-        this._controls = new Controls(canvas);
+        this._controls = new Controls();
         this._scene = new Scene(canvas, this.state.data);
         this.scene.update(this.controls.states, 0, this.state);
         requestAnimationFrame(this.tick);
